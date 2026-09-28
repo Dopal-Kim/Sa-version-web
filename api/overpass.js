@@ -50,7 +50,7 @@ export default async function handler(req, res) {
   if (!q) return res.status(400).json({ error: "missing 'data' (Overpass QL)" });
 
   const hinted = Number(req.headers["x-budget-ms"]);
-  const total = Math.min(isFinite(hinted) && hinted > 5000 ? hinted : 55000, 55000); // 함수 상한 60s 안
+  const total = Math.min(isFinite(hinted) && hinted > 5000 ? hinted : 48000, 48000); // 함수 상한 60s 안 — 슬롯 확인(≤4s)과 응답 전송 시간을 남긴다(504 방지)
   const deadline = Date.now() + total;
   const notes = [];
   const short = (u) => u.replace(/^https:\/\//, "");

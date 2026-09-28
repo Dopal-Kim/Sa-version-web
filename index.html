@@ -7015,8 +7015,12 @@ function setRealEnvCaption3(text, holdMs){
 // 같은 실패를 두 번 기다리는 꼴이므로 직접 호출은 kumi 하나만 두고, 곧바로 서버 중계(메인 클러스터 우선)로 넘어간다.
 // 배포(웹 호스팅)에서는 서버 중계가 1순위 — 중계는 6개 인스턴스의 슬롯 상태를 먼저 읽고 비어 있는 곳에만 질의한다.
 // 로컬(Live Server 등, /api 없음)에서는 브라우저가 직접 kumi → private.coffee 를 부른다.
-const OVERPASS_HOSTED3 = typeof location !== 'undefined' && /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
-const OVERPASS_ENDPOINTS3 = OVERPASS_HOSTED3
+const WEB_HOSTED3 = typeof location !== 'undefined' && /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+if(WEB_HOSTED3){
+  const el = document.getElementById('wxStatus'); if(el) el.textContent = '기상청 API허브 호출 — 서버 중계(/api/forecast)를 사용합니다. 인증키는 서버에 설정된 키(KMA_AUTH_KEY)를 쓰므로 이 칸은 비워 두면 됩니다.';
+  const k = document.getElementById('wxKey'); if(k) k.placeholder = '비워 두면 서버에 설정된 키를 사용합니다';
+}
+const OVERPASS_ENDPOINTS3 = WEB_HOSTED3
   ? ['/api/overpass', 'https://overpass.kumi.systems/api/interpreter']
   : ['https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
 /* 직접 호출 전 슬롯 확인 — 공개 Overpass 는 IP 당 동시 실행 수를 제한하고 초과분을 대기열에 세운다. 대기열에 선 요청은
@@ -7282,7 +7286,7 @@ async function geocodeAddress3(address, onStatus){
   // 배포에서는 서버 중계 하나만 쓴다(서버가 User-Agent 를 붙여 Nominatim → Photon 순으로 부른다). Nominatim 은 브라우저
   // 직접 호출을 IP 단위로 제한하고 UA 없는 요청을 거부하므로, 배포 도메인에서 직접 부르는 것은 실패 경로만 늘린다.
   // 로컬(/api 없음)에서만 브라우저가 직접 Nominatim → Photon 을 부른다.
-  const providers = OVERPASS_HOSTED3 ? [
+  const providers = WEB_HOSTED3 ? [
     { name: '서버 중계', url: '/api/geocode?q=' + enc, timeoutMs: 25000,
       pick: (j) => j && isFinite(j.lat) ? { lat: +j.lat, lng: +j.lng } : null, detail: (j) => j && (j.last || j.error) },
   ] : [
@@ -9124,7 +9128,8 @@ document.getElementById('wxBtn').addEventListener('click', async () => {
     }
     // [D1] 데모용 키를 기본값으로 넣어두지 않으므로, 빈 칸이면 여기서 분명히 알린다
     // (그대로 보내면 기상청이 돌려주는 모호한 오류로 원인이 흐려진다).
-    if(!key){
+    // 웹 호스팅에서는 서버에 KMA_AUTH_KEY 환경변수가 있으면 칸이 비어 있어도 된다(서버가 자기 키를 쓴다). 로컬은 반드시 입력.
+    if(!key && !WEB_HOSTED3){
       throw preflight('기상청 API 인증키가 비어 있습니다 — apihub.kma.go.kr에서 발급받은 본인 인증키를 위 칸에 입력한 뒤 다시 조회하세요.');
     }
     // [격자 변환] 기상청 격자변환 API를 호출하지 않고 공개된 공식으로 직접 계산한다 —
@@ -9148,7 +9153,10 @@ document.getElementById('wxBtn').addEventListener('click', async () => {
       base_date = `${y}${mo}${d}`;
       base_time = String(picked).padStart(2,'0') + '00';
     }
-    const fcstUrl = `http://localhost:8001/forecast?base_date=${base_date}&base_time=${base_time}&nx=${nx}&ny=${ny}&key=${key}`;
+    // 웹 호스팅(Vercel)에서는 같은 도메인의 서버 함수 /api/forecast 가 기상청을 대신 호출한다(api/forecast.js).
+    // 로컬에서는 기존대로 python weather_proxy.py(localhost:8001). 두 경로의 쿼리 형식은 같다.
+    const fcstBase = WEB_HOSTED3 ? '/api/forecast' : 'http://localhost:8001/forecast';
+    const fcstUrl = `${fcstBase}?base_date=${base_date}&base_time=${base_time}&nx=${nx}&ny=${ny}&key=${encodeURIComponent(key)}`;
     const fcstResp = await fetch(fcstUrl);
     proxyReached = true; // 응답이 왔다 = 프록시는 떠 있다. 이후 오류는 프록시 탓이 아니다.
     const fcstText = await fcstResp.text();
@@ -9216,7 +9224,9 @@ document.getElementById('wxBtn').addEventListener('click', async () => {
     // 사용자를 헤매게 하지 않도록 프록시 문구 없이 실제 사유만 그대로 보여준다.
     status.textContent = (proxyReached || (err && (err.kmaPermission || err.preflight)))
       ? '조회 실패 — ' + err.message
-      : '조회 실패 — 로컬 프록시 서버(python weather_proxy.py, localhost:8001)가 실행 중인지 확인하세요. (' + err.message + ')';
+      : (WEB_HOSTED3
+          ? '조회 실패 — 서버 중계(/api/forecast)에 연결하지 못했습니다. 저장소에 api/forecast.js 가 있고 배포가 끝났는지 확인하세요. (' + err.message + ')'
+          : '조회 실패 — 로컬 프록시 서버(python weather_proxy.py, localhost:8001)가 실행 중인지 확인하세요. (' + err.message + ')');
     status.className = 'status-line err';
   }
 });
