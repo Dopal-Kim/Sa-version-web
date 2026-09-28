@@ -7307,7 +7307,8 @@ function overpassStatsPut3(stageKey, ms){
    (1) `(around:r)` 는 후보를 모은 뒤 거리를 일일이 계산한다. 특히 relation 에 around 를 걸면 멤버 형상을 전부
        조립해야 해서 매우 느리다. → 모든 문장을 bbox `(s,w,n,e)` 로 바꿔 공간 색인을 그대로 탄다.
    (2) `out geom` 은 relation 의 전체 형상을 내보낸다. 부지 옆에 강(예: 한강 relation, 수천 개 멤버)이 있으면
-       500m 질의인데도 수십 MB 를 만든다. → `out geom(s,w,n,e)` 로 형상을 bbox 안으로 잘라 받는다.
+       500m 질의인데도 수십 MB 를 만든다. → relation 을 way 단계에서 떼어내 3단계로 보낸다(아래 (3)).
+       (`out geom(bbox)` 클리핑은 쓰지 않는다 — bbox 밖 정점이 null 로 와 파서가 죽고, 끊긴 링은 그릴 수 없다.)
    (3) relation 은 3단계로 분리해 1·2단계(way 만)가 먼저 끝나게 한다. 3단계는 실패해도 화면에 영향 없음.
    (4) [timeout] 을 단계별로 짧게 — 서버는 클라이언트가 끊어도 timeout 까지 계속 계산하며 IP 슬롯을 점유한다.
        긴 timeout 은 재시도를 스스로 막히게 만든다. */
@@ -7326,7 +7327,9 @@ function overpassStageQuery3(lat, lng, stage){
   const rels = (B) => `relation["natural"="water"](${B});relation["leisure"="park"](${B});`;
   const sel = stage.kind === 'relations' ? rels : ways;
   const body = stage.inner > 0 ? `((${sel(outerB)}); - (${sel(bboxAround3(lat, lng, stage.inner))}););` : `(${sel(outerB)});`;
-  return `[out:json][timeout:${stage.qlTimeout}];${body}out geom(${outerB});`;
+  // out geom(bbox) 로 잘라 받으면 bbox 밖 정점이 null 로 오고(파서가 g.lat 에서 실패), relation 링은 끊겨 그릴 수 없다.
+  // way 는 작아 클리핑이 필요 없고 파서가 반경으로 다시 자르므로 형상은 통째로 받는다.
+  return `[out:json][timeout:${stage.qlTimeout}];${body}out geom;`;
 }
 function fmtBytes3(n){ return n < 1048576 ? (n/1024).toFixed(0) + 'KB' : (n/1048576).toFixed(1) + 'MB'; }
 /* 한 단계를 미러 순서대로 시도한다. onProgress({stage, stageIdx, stageCount, endpoint, attempt, elapsedMs, estMs, pct, bytes, phase}) 를 0.5초마다 부른다. */
@@ -7373,6 +7376,11 @@ async function fetchOverpassStage3(lat, lng, stage, stageIdx, stageCount, onProg
         clearTimeout(timer); clearInterval(ticker);
         const json = JSON.parse(text);
         if(!json || !Array.isArray(json.elements)) throw new Error('Overpass 응답 형식 오류');
+        // 형상 배열에 null 정점이 섞여 오는 경우(클리핑된 응답·일부 미러)를 여기서 한 번에 걸러 파서가 g.lat 에서 죽지 않게 한다.
+        for(const el of json.elements){
+          if(Array.isArray(el.geometry)) el.geometry = el.geometry.filter(Boolean);
+          if(Array.isArray(el.members)) for(const m of el.members) if(Array.isArray(m.geometry)) m.geometry = m.geometry.filter(Boolean);
+        }
         overpassStatsPut3(stage.key, performance.now() - t0);
         if(onProgress) onProgress({ stage, stageIdx, stageCount, endpoint: short(url), attempt, elapsedMs: performance.now() - t0, estMs, pct: 100, bytes: state.bytes, phase: '완료' });
         return json;
