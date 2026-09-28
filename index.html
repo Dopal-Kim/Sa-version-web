@@ -1359,6 +1359,7 @@ body.clientMode #quickDemoBtn{display:inline-block !important;}
       <div id="realEnvCacheRow3" style="max-width:320px;display:none;align-items:flex-start;gap:6px;margin-top:6px;">
         <p class="hint" id="realEnvCacheNote3" style="flex:1;min-width:0;max-width:none;margin:0;"></p>
         <button class="ghost" id="realEnvRefreshBtn3" type="button" style="padding:6px 9px;font-size:12.5px;white-space:nowrap;">새로 조회</button>
+        <button class="ghost" id="realEnvExportBtn3" type="button" style="padding:6px 9px;font-size:12.5px;white-space:nowrap;" title="현재 브라우저에 저장된 조회 결과를 site-context.json 으로 내려받습니다. 저장소 data/ 폴더에 올리면 배포본에 내장됩니다." onclick="exportOverpassCache3()">조회 결과 파일로 내보내기</button>
       </div>
       <div style="max-width:320px;display:flex;gap:6px;">
         <input type="text" id="realEnvAddress3" placeholder="예: 서울특별시 강남구 테헤란로 152" style="flex:1;min-width:0;">
@@ -7393,15 +7394,56 @@ function overpassCacheKey3(lat, lng){
   return OVERPASS_CACHE_PREFIX3 + lat.toFixed(3) + ',' + lng.toFixed(3) + ',r' + REAL_ENV_QUERY_RADIUS_M3;
 }
 function overpassCacheGet3(lat, lng){
+  const key = overpassCacheKey3(lat, lng);
   try{
-    const raw = localStorage.getItem(overpassCacheKey3(lat, lng));
-    if(!raw) return null;
-    const rec = JSON.parse(raw);
-    if(!rec || !rec.json || !isFinite(rec.ts)) return null;
-    const age = Date.now() - rec.ts;
-    if(age < 0 || age > OVERPASS_CACHE_TTL_MS3) return null;
-    return { json: rec.json, ageMs: age };
-  }catch(e){ return null; } // 저장소 차단·파손된 항목 — 캐시 미스로 취급
+    const raw = localStorage.getItem(key);
+    if(raw){
+      const rec = JSON.parse(raw);
+      if(rec && rec.json && isFinite(rec.ts)){
+        const age = Date.now() - rec.ts;
+        if(age >= 0 && age <= OVERPASS_CACHE_TTL_MS3) return { json: rec.json, ageMs: age };
+      }
+    }
+  }catch(e){} // 저장소 차단·파손된 항목 — 캐시 미스로 취급하고 내장 파일로 넘어간다
+  // [배포 내장본] data/site-context.json 에서 읽어 둔 항목. localStorage 는 origin 마다 따로라서
+  // 로컬(127.0.0.1)에서 쌓인 캐시가 배포 도메인에는 없다 — 그 차이를 이 파일이 메운다. TTL 없음(파일 갱신으로 관리).
+  const b = BUNDLED_CONTEXT3[key];
+  if(b && b.json) return { json: b.json, ageMs: isFinite(b.ts) ? Math.max(0, Date.now() - b.ts) : NaN, bundled: true };
+  return null;
+}
+/* ---- [배포 내장본] 저장소와 무관하게 항상 같은 결과를 보여주기 위한 정적 조회 결과 ----
+   data/site-context.json 형식: { "entries": { "<overpassCacheKey3>": { "ts": <ms>, "json": <Overpass 응답> }, ... } }
+   만드는 법: 조회가 성공한 브라우저(로컬 서버든 배포본이든)에서 "조회 결과 파일로 내보내기" 버튼 →
+   내려받은 site-context.json 을 저장소의 data/ 폴더에 올린다. 공개 Overpass 미러 상태와 무관하게
+   시연이 재현되고, "새로 조회"를 누르면 여전히 실시간 조회로 덮어쓴다. */
+const BUNDLED_CONTEXT3 = {};
+const BUNDLED_CONTEXT_READY3 = (async () => {
+  if(typeof location === 'undefined' || !/^https?:$/.test(location.protocol)) return; // file:// 은 fetch 불가
+  try{
+    const res = await fetch('data/site-context.json', { cache: 'no-cache' });
+    if(!res.ok) return; // 파일이 없으면(404) 조용히 넘어간다 — 선택 기능
+    const doc = await res.json();
+    const entries = (doc && doc.entries) || {};
+    for(const k of Object.keys(entries)) if(k.indexOf(OVERPASS_CACHE_PREFIX3) === 0) BUNDLED_CONTEXT3[k] = entries[k];
+  }catch(e){}
+})();
+function exportOverpassCache3(){
+  const entries = {};
+  try{
+    for(let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k && k.indexOf(OVERPASS_CACHE_PREFIX3) === 0) entries[k] = JSON.parse(localStorage.getItem(k));
+    }
+  }catch(e){}
+  for(const k of Object.keys(BUNDLED_CONTEXT3)) if(!entries[k]) entries[k] = BUNDLED_CONTEXT3[k];
+  const n = Object.keys(entries).length;
+  if(!n){ setRealEnvCaption3('내보낼 조회 결과가 없습니다 — 먼저 주소를 검색해 조회를 한 번 성공시켜야 합니다.', 6000); return; }
+  const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), radiusM: REAL_ENV_QUERY_RADIUS_M3, entries })], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'site-context.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  setRealEnvCaption3(`조회 결과 ${n}건을 site-context.json 으로 내보냈습니다 — 저장소의 data/ 폴더에 올리면 배포본에 내장됩니다.`, 8000);
 }
 function overpassCacheSet3(lat, lng, json){
   try{
@@ -7433,7 +7475,10 @@ function updateRealEnvCacheNote3(info){
   const note = document.getElementById('realEnvCacheNote3');
   if(!row || !note) return;
   row.style.display = 'flex';
-  if(info && info.cached){
+  if(info && info.cached && info.bundled){
+    const when = isFinite(info.ageMs) ? `약 ${formatCacheAge3(info.ageMs)} 전에 받아` : '이전에 받아';
+    note.textContent = `배포 파일에 내장된 조회 결과 사용 — ${when} data/site-context.json 에 넣어 둔 데이터입니다(실시간 조회 아님). 최신 상태가 필요하면 "새로 조회"를 누르세요.`;
+  }else if(info && info.cached){
     note.textContent = `저장된 조회 결과 사용 — 약 ${formatCacheAge3(info.ageMs)} 전에 받은 데이터입니다(실시간 조회 아님, 보관 기간 7일). 최신 상태가 필요하면 "새로 조회"를 누르세요.`;
   }else if(info && info.stored === false){
     note.textContent = '방금 조회한 최신 데이터입니다. (브라우저 저장소를 쓸 수 없어 이 결과는 보관하지 못했습니다 — 다음에도 매번 새로 조회합니다.)';
@@ -7445,9 +7490,10 @@ async function applyRealEnvContext3(lat, lng, opts){
   if(!isFinite(lat) || !isFinite(lng)){ setRealEnvCaption3('오류: 위도/경도 값이 올바르지 않습니다.', 5000); return; }
   const force = !!(opts && opts.forceRefresh);
   if(!force){
+    await BUNDLED_CONTEXT_READY3; // 배포 내장본(data/site-context.json) 읽기가 끝난 뒤 판단
     const hit = overpassCacheGet3(lat, lng);
     if(hit){
-      commitRealEnvJson3(hit.json, lat, lng, { cached: true, ageMs: hit.ageMs });
+      commitRealEnvJson3(hit.json, lat, lng, { cached: true, ageMs: hit.ageMs, bundled: !!hit.bundled });
       return;
     }
   }
