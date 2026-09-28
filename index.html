@@ -7260,76 +7260,115 @@ async function geocodeAddress3(address){
    도로"만 남긴다(생활도로·이면도로 service/living_street 포함 — 현장 진입로로 자주 쓰인다).
    이 필터는 UI 안내문에도 명시한다. */
 const OVERPASS_HIGHWAY_FILTER3 = '^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|service|pedestrian|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link)$';
-async function fetchOverpassContext3(lat, lng, onAttempt){
-  // [반경 1km] timeout 10 -> 40, 클라이언트 abort 14s -> 45s.
-  //   반경 100m 시절의 timeout:10 은 "서버가 빨리 포기하게 해 모호한 게이트웨이 504 대신
-  //   명확한 응답을 받자"는 의도였다. 그러나 조회 면적이 100배(π·0.1km² -> π·1km²)로 늘어난
-  //   지금은 정상적으로 처리 중인 질의조차 10초 안에 끝나지 않아, 서버가 스스로 죽이는
-  //   시간초과가 "정상 동작인데 실패"로 바뀐다. 넓어진 면적에 맞춰 서버 예산을 40초로 주고,
-  //   클라이언트 abort 는 그보다 넉넉한 45초로 둬서 서버의 명확한 응답을 받을 수 있게 한다.
-  //   대신 같은 미러 재시도는 첫 번째 미러에서만 한다 — 모든 미러에서 2회씩 재시도하면
-  //   최악의 경우 사용자가 4분 넘게 기다리게 되기 때문이다(최악 3분 -> 약 2분 15초).
+/* ---- [단계 조회 + 실시간 진행률] ----
+   반경 1km 를 한 번에 받으면 미러 부하에 따라 1~3분이 걸리고 그동안 화면엔 아무것도 없다.
+   그래서 두 단계로 나눈다: 1단계 = 반경 500m(도로·건물·녹지·수역 전부) → 먼저 그린다,
+   2단계 = 500m~1km 고리(Overpass 집합 차 `(A; - B;)`) → 받는 즉시 합쳐 다시 그린다.
+   진행률은 서버가 알려주지 않으므로 "경과 시간 / 예상 시간"으로 추정한다. 예상 시간은 이 브라우저에서
+   최근 성공한 조회의 소요 시간(중앙값)을 쓰고, 기록이 없으면 기본값을 쓴다. 응답 본문은 스트림으로
+   읽어 수신 바이트를 함께 보여준다(응답이 오기 시작하면 서버 처리는 끝난 것이므로 그 뒤는 다운로드 진행). */
+const OVERPASS_STAGES3 = [
+  { key: 'A', label: '1단계 · 반경 500m', inner: 0,   outer: 500,  defaultMs: 30000 },
+  { key: 'B', label: '2단계 · 500m~1km 확장', inner: 500, outer: 1000, defaultMs: 90000 },
+];
+const OVERPASS_STATS_KEY3 = 'sa4d.overpass.stats.v1';
+function overpassStatsGet3(stageKey){
+  try{ const st = JSON.parse(localStorage.getItem(OVERPASS_STATS_KEY3) || '{}'); const arr = st[stageKey] || [];
+    if(!arr.length) return null; const a = arr.slice().sort((x,y)=>x-y); return a[Math.floor(a.length/2)]; }catch(e){ return null; }
+}
+function overpassStatsPut3(stageKey, ms){
+  try{ const st = JSON.parse(localStorage.getItem(OVERPASS_STATS_KEY3) || '{}'); st[stageKey] = ((st[stageKey] || []).concat([ms])).slice(-5);
+    localStorage.setItem(OVERPASS_STATS_KEY3, JSON.stringify(st)); }catch(e){}
+}
+function overpassStageQuery3(lat, lng, inner, outer){
   const hw = OVERPASS_HIGHWAY_FILTER3;
-  const r = REAL_ENV_QUERY_RADIUS_M3;
-  // 녹지·수역은 닫힌 면(way)과 멀티폴리곤(relation, 큰 호수·강 등)만 가져온다. 태그는 아래
-  // 화이트리스트로 좁혔다 — landuse/natural 을 통째로 받으면 주거지·상업지 등 수천 개 면이 딸려온다.
-  const A = `(around:${r},${lat},${lng})`;
   const GREEN_LEISURE = '^(park|garden|playground|golf_course|recreation_ground)$';
   const GREEN_LANDUSE = '^(grass|forest|meadow|village_green|recreation_ground)$';
-  const q = `[out:json][timeout:60];(way["highway"~"${hw}"]${A};way["building"]${A};` +
-    `way["leisure"~"${GREEN_LEISURE}"]${A};way["landuse"~"${GREEN_LANDUSE}"]${A};way["natural"~"^(wood|scrub|water)$"]${A};` +
-    `way["waterway"="riverbank"]${A};way["landuse"="reservoir"]${A};` +
-    `relation["natural"="water"]${A};relation["leisure"="park"]${A};);out geom;`;
-  let lastErr = null;
-  const failures = [];
+  // 녹지·수역은 닫힌 면(way)과 멀티폴리곤(relation)만. 태그 화이트리스트로 좁힌다(주거지·상업지 면 수천 개 제외).
+  const sel = (r) => { const A = `(around:${r},${lat},${lng})`;
+    return `way["highway"~"${hw}"]${A};way["building"]${A};way["leisure"~"${GREEN_LEISURE}"]${A};way["landuse"~"${GREEN_LANDUSE}"]${A};` +
+      `way["natural"~"^(wood|scrub|water)$"]${A};way["waterway"="riverbank"]${A};way["landuse"="reservoir"]${A};` +
+      `relation["natural"="water"]${A};relation["leisure"="park"]${A};`; };
+  const body = inner > 0 ? `((${sel(outer)}); - (${sel(inner)}););` : `(${sel(outer)});`;
+  return `[out:json][timeout:150];${body}out geom;`;
+}
+function fmtBytes3(n){ return n < 1048576 ? (n/1024).toFixed(0) + 'KB' : (n/1048576).toFixed(1) + 'MB'; }
+/* 한 단계를 미러 순서대로 시도한다. onProgress({stage, stageIdx, stageCount, endpoint, attempt, elapsedMs, estMs, pct, bytes, phase}) 를 0.5초마다 부른다. */
+async function fetchOverpassStage3(lat, lng, stage, stageIdx, stageCount, onProgress){
+  const q = overpassStageQuery3(lat, lng, stage.inner, stage.outer);
+  const estMs = overpassStatsGet3(stage.key) || stage.defaultMs;
+  let lastErr = null; const failures = [];
+  const short = (u) => u.replace(/^https:\/\//, '').replace(/\/api\/interpreter$/, '');
   for(let i = 0; i < OVERPASS_ENDPOINTS3.length; i++){
     const url = OVERPASS_ENDPOINTS3[i];
-    // 공개 Overpass 미러는 부하에 따라 504를 일시적으로 반환하는 경우가 흔하므로, 다음
-    // 미러로 넘어가기 전에 같은 미러를 짧은 backoff 후 한 번 더 재시도한다.
     for(let attempt = 1; attempt <= 2; attempt++){
-      if(onAttempt) onAttempt(i + 1, OVERPASS_ENDPOINTS3.length, attempt);
+      const t0 = performance.now();
+      const state = { bytes: 0, phase: '서버 처리 중' };
+      const tick = () => { if(!onProgress) return; const el = performance.now() - t0;
+        // 응답이 오기 전엔 경과/예상으로 추정(최대 95%), 본문 수신 중엔 95%에서 99% 사이로 표시 — 완료(100%)는 파싱이 끝났을 때만.
+        const pct = state.phase === '서버 처리 중' ? Math.min(95, Math.round(el / estMs * 95)) : 97;
+        onProgress({ stage, stageIdx, stageCount, endpoint: short(url), attempt, elapsedMs: el, estMs, pct, bytes: state.bytes, phase: state.phase }); };
+      const ticker = setInterval(tick, 500); tick();
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 65000); // 서버 [timeout:60] 보다 넉넉하게 (녹지·수역 태그 추가로 40→60)
+      const timer = setTimeout(() => controller.abort(), 160000); // 서버 [timeout:150] 보다 넉넉하게
       try{
         // Overpass 표준 POST 형식(data=...) + Accept 헤더 — 헤더 없는 요청을 봇으로 거르는 406 회피.
         const res = await fetch(url, { method:'POST', body: 'data=' + encodeURIComponent(q),
-          headers: { 'Content-Type':'application/x-www-form-urlencoded', 'Accept':'application/json' },
-          signal: controller.signal });
-        clearTimeout(timer);
+          headers: { 'Content-Type':'application/x-www-form-urlencoded', 'Accept':'application/json' }, signal: controller.signal });
         if(!res.ok){
-          // 중계 함수(/api/overpass)가 502로 돌려줄 때는 본문에 실패한 미러·사유가 담겨 있다 → 메시지에 포함.
           let detail = '';
           try{ const j = await res.json(); const e2 = j && (j.last || j.error);
-            // Vercel 404 는 {error:{code:'NOT_FOUND',...}} 처럼 객체로 오므로 문자열로 정리한다.
             if(e2) detail = ' ' + (typeof e2 === 'object' ? (e2.code || e2.message || JSON.stringify(e2)) : e2); }catch(_){}
-          const e = new Error('HTTP ' + res.status + detail);
-          e.httpStatus = res.status;
-          throw e;
+          const e = new Error('HTTP ' + res.status + detail); e.httpStatus = res.status; throw e;
         }
-        return await res.json();
+        state.phase = '응답 수신 중';
+        let text;
+        if(res.body && res.body.getReader){
+          const reader = res.body.getReader(); const chunks = [];
+          for(;;){ const { done, value } = await reader.read(); if(done) break; chunks.push(value); state.bytes += value.length; }
+          const all = new Uint8Array(state.bytes); let off = 0; for(const c of chunks){ all.set(c, off); off += c.length; }
+          text = new TextDecoder().decode(all);
+        }else{ text = await res.text(); state.bytes = text.length; }
+        clearTimeout(timer); clearInterval(ticker);
+        const json = JSON.parse(text);
+        if(!json || !Array.isArray(json.elements)) throw new Error('Overpass 응답 형식 오류');
+        overpassStatsPut3(stage.key, performance.now() - t0);
+        if(onProgress) onProgress({ stage, stageIdx, stageCount, endpoint: short(url), attempt, elapsedMs: performance.now() - t0, estMs, pct: 100, bytes: state.bytes, phase: '완료' });
+        return json;
       }catch(err){
-        clearTimeout(timer);
+        clearTimeout(timer); clearInterval(ticker);
         lastErr = err;
-        // 끝점별 실패 사유를 모아 두었다가 최종 오류 메시지에 전부 싣는다 — "마지막 미러의 오류"만
-        // 보여주면 앞선 끝점(특히 /api/overpass)이 왜 실패했는지 알 수 없다.
-        failures.push(url.replace(/^https:\/\//, '').replace(/\/api\/interpreter$/, '') + ': ' +
-          (err && err.name === 'AbortError' ? '시간 초과(65초)' : (err && err.message ? err.message : String(err))));
-        // file:// 차단은 미러를 바꿔도 동일하게 막히므로 즉시 중단하고 원인을 그대로 알린다.
-        if(typeof location !== 'undefined' && location.protocol === 'file:') throw err;
-        if(attempt === 1 && i === 0){
-          // 첫 번째(주) 미러만 짧은 backoff 후 1회 재시도 — 일시적 과부하/504 대응.
-          // 나머지 미러는 1회씩만 시도해 전체 대기 시간이 지나치게 길어지지 않게 한다.
-          await new Promise(r => setTimeout(r, 1500 + Math.random()*500));
-          continue;
-        }
-        if(attempt === 1) break; // 2·3번 미러는 재시도 없이 바로 다음 미러로
-        // 재시도까지 실패 -> 다음 미러로 계속한다.
+        failures.push(short(url) + ': ' + (err && err.name === 'AbortError' ? '시간 초과(160초)' : (err && err.message ? err.message : String(err))));
+        if(typeof location !== 'undefined' && location.protocol === 'file:') throw err; // file:// 은 미러를 바꿔도 같다
+        if(attempt === 1 && i === 0 && !(err && err.name === 'AbortError')){ await new Promise(r => setTimeout(r, 1500 + Math.random()*500)); continue; }
+        if(attempt === 1) break;
       }
     }
   }
   const summary = new Error(failures.length ? failures.join(' / ') : 'Overpass 서버 응답 없음');
   summary.httpStatus = lastErr && lastErr.httpStatus;
   throw summary;
+}
+function mergeOverpassJson3(a, b){
+  const seen = new Set(); const out = [];
+  for(const el of (a.elements || []).concat(b.elements || [])){ const k = el.type + ':' + el.id; if(seen.has(k)) continue; seen.add(k); out.push(el); }
+  return { version: a.version || b.version, elements: out };
+}
+/* 두 단계를 순서대로. onStage(stageIdx, json) 은 각 단계의 (누적) 결과를 받는 즉시 호출되어 화면을 먼저 그리게 한다.
+   1단계 실패 → 예외. 2단계 실패 → 1단계 결과만 담은 { json, partial:true, error } 를 돌려준다. */
+async function fetchOverpassContext3(lat, lng, onProgress, onStage, opts){
+  const stages = OVERPASS_STAGES3; const n = stages.length;
+  const skipA = opts && opts.startJson; // 500m 캐시가 이미 있으면 1단계는 건너뛰고 2단계만
+  let acc = skipA ? opts.startJson : await fetchOverpassStage3(lat, lng, stages[0], 1, n, onProgress);
+  if(!skipA && onStage) onStage(1, acc);
+  try{
+    const ring = await fetchOverpassStage3(lat, lng, stages[1], 2, n, onProgress);
+    acc = mergeOverpassJson3(acc, ring);
+    if(onStage) onStage(2, acc);
+    return { json: acc, partial: false };
+  }catch(err){
+    return { json: acc, partial: true, error: err };
+  }
 }
 /* 실측 컨텍스트(REAL_ROADS3/REAL_NEIGHBOR_BUILDINGS3) 반영 직후 호출 — 대상 건물이 항상
    화면의 시각적 중심이자 충분히 알아볼 수 있는 크기로 남도록 카메라를 재조정한다.
@@ -7390,11 +7429,11 @@ function realEnvViewWidthM3(){
      보여주지 않는다). 강제 새로고침 버튼으로 언제든 네트워크 재조회가 가능하다. */
 const OVERPASS_CACHE_TTL_MS3 = 7 * 24 * 60 * 60 * 1000; // 7일
 const OVERPASS_CACHE_PREFIX3 = 'sa4d.overpass.v1.';
-function overpassCacheKey3(lat, lng){
-  return OVERPASS_CACHE_PREFIX3 + lat.toFixed(3) + ',' + lng.toFixed(3) + ',r' + REAL_ENV_QUERY_RADIUS_M3;
+function overpassCacheKey3(lat, lng, radiusM){
+  return OVERPASS_CACHE_PREFIX3 + lat.toFixed(3) + ',' + lng.toFixed(3) + ',r' + (radiusM || REAL_ENV_QUERY_RADIUS_M3);
 }
-function overpassCacheGet3(lat, lng){
-  const key = overpassCacheKey3(lat, lng);
+function overpassCacheGet3(lat, lng, radiusM){
+  const key = overpassCacheKey3(lat, lng, radiusM);
   try{
     const raw = localStorage.getItem(key);
     if(raw){
@@ -7417,15 +7456,18 @@ function overpassCacheGet3(lat, lng){
    내려받은 site-context.json 을 저장소의 data/ 폴더에 올린다. 공개 Overpass 미러 상태와 무관하게
    시연이 재현되고, "새로 조회"를 누르면 여전히 실시간 조회로 덮어쓴다. */
 const BUNDLED_CONTEXT3 = {};
+let BUNDLED_STATUS3 = '아직 확인 전'; // 오류 문구에 그대로 실어 "내장 파일이 왜 안 쓰였는지"를 화면에서 바로 알 수 있게 한다
 const BUNDLED_CONTEXT_READY3 = (async () => {
-  if(typeof location === 'undefined' || !/^https?:$/.test(location.protocol)) return; // file:// 은 fetch 불가
+  if(typeof location === 'undefined' || !/^https?:$/.test(location.protocol)){ BUNDLED_STATUS3 = 'file:// 로 열어 내장 파일을 읽을 수 없음'; return; }
   try{
     const res = await fetch('data/site-context.json', { cache: 'no-cache' });
-    if(!res.ok) return; // 파일이 없으면(404) 조용히 넘어간다 — 선택 기능
+    if(!res.ok){ BUNDLED_STATUS3 = `data/site-context.json 없음 (HTTP ${res.status})`; return; } // 선택 기능 — 없으면 실시간 조회
     const doc = await res.json();
     const entries = (doc && doc.entries) || {};
     for(const k of Object.keys(entries)) if(k.indexOf(OVERPASS_CACHE_PREFIX3) === 0) BUNDLED_CONTEXT3[k] = entries[k];
-  }catch(e){}
+    const keys = Object.keys(BUNDLED_CONTEXT3);
+    BUNDLED_STATUS3 = keys.length ? `내장 파일 로드됨 ${keys.length}건: ${keys.map(k => k.slice(OVERPASS_CACHE_PREFIX3.length)).join(' | ')}` : '내장 파일은 있으나 entries 가 비어 있음';
+  }catch(e){ BUNDLED_STATUS3 = 'data/site-context.json 읽기 실패: ' + (e && e.message ? e.message : e); }
 })();
 function exportOverpassCache3(){
   const entries = {};
@@ -7445,9 +7487,9 @@ function exportOverpassCache3(){
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   setRealEnvCaption3(`조회 결과 ${n}건을 site-context.json 으로 내보냈습니다 — 저장소의 data/ 폴더에 올리면 배포본에 내장됩니다.`, 8000);
 }
-function overpassCacheSet3(lat, lng, json){
+function overpassCacheSet3(lat, lng, json, radiusM){
   try{
-    localStorage.setItem(overpassCacheKey3(lat, lng), JSON.stringify({ ts: Date.now(), json }));
+    localStorage.setItem(overpassCacheKey3(lat, lng, radiusM), JSON.stringify({ ts: Date.now(), json }));
     return true;
   }catch(e){
     // QuotaExceededError 등 — 오래된 이 앱의 캐시 항목을 비우고 한 번만 다시 시도한다.
@@ -7456,7 +7498,7 @@ function overpassCacheSet3(lat, lng, json){
         const k = localStorage.key(i);
         if(k && k.indexOf(OVERPASS_CACHE_PREFIX3) === 0) localStorage.removeItem(k);
       }
-      localStorage.setItem(overpassCacheKey3(lat, lng), JSON.stringify({ ts: Date.now(), json }));
+      localStorage.setItem(overpassCacheKey3(lat, lng, radiusM), JSON.stringify({ ts: Date.now(), json }));
       return true;
     }catch(e2){ return false; } // 그래도 안 되면 캐시 없이 동작한다
   }
@@ -7475,7 +7517,9 @@ function updateRealEnvCacheNote3(info){
   const note = document.getElementById('realEnvCacheNote3');
   if(!row || !note) return;
   row.style.display = 'flex';
-  if(info && info.cached && info.bundled){
+  if(info && info.partial){
+    note.textContent = `반경 500m 까지만 표시 중 — 500m~1km 확장 조회가 실패했습니다(${info.partialReason || '사유 미상'}). "새로 조회"로 다시 시도할 수 있습니다.`;
+  }else if(info && info.cached && info.bundled){
     const when = isFinite(info.ageMs) ? `약 ${formatCacheAge3(info.ageMs)} 전에 받아` : '이전에 받아';
     note.textContent = `배포 파일에 내장된 조회 결과 사용 — ${when} data/site-context.json 에 넣어 둔 데이터입니다(실시간 조회 아님). 최신 상태가 필요하면 "새로 조회"를 누르세요.`;
   }else if(info && info.cached){
@@ -7486,27 +7530,55 @@ function updateRealEnvCacheNote3(info){
     note.textContent = '방금 조회한 최신 데이터입니다. 같은 위치를 다시 불러오면 7일 동안은 저장된 결과를 재사용합니다.';
   }
 }
+function fmtSec3(ms){ return Math.max(0, Math.round(ms / 1000)) + '초'; }
+/* 진행 캡션 — "몇 단계인지 · 어느 미러인지 · 경과/예상 · 퍼센트 · 수신량"을 0.5초마다 갱신한다.
+   퍼센트는 서버가 알려주는 값이 아니라 경과/예상 추정치이며, 예상은 이 브라우저의 최근 성공 기록(중앙값)이다. */
+function realEnvProgressCaption3(p){
+  const est = p.estMs, el = p.elapsedMs;
+  const src = p.endpoint === '/api/overpass' ? '서버 중계' : p.endpoint;
+  const retry = p.attempt > 1 ? ` (${p.attempt}차)` : '';
+  if(p.phase === '완료') return `${p.stage.label} 완료 — ${fmtSec3(el)} 소요 · 수신 ${fmtBytes3(p.bytes)}`;
+  const over = el > est;
+  const eta = over ? `예상 초과 +${fmtSec3(el - est)} (미러 부하 — 최대 160초까지 기다립니다)` : `예상 약 ${fmtSec3(est)} · 남은 ${fmtSec3(est - el)}`;
+  const recv = p.phase === '응답 수신 중' ? ` · 수신 ${fmtBytes3(p.bytes)}` : '';
+  return `주변 정보 조회 ${p.stageIdx}/${p.stageCount} · ${p.stage.label} · ${p.pct}% · ${p.phase}${recv} · 경과 ${fmtSec3(el)} · ${eta} · 경로 ${src}${retry}`;
+}
 async function applyRealEnvContext3(lat, lng, opts){
   if(!isFinite(lat) || !isFinite(lng)){ setRealEnvCaption3('오류: 위도/경도 값이 올바르지 않습니다.', 5000); return; }
   const force = !!(opts && opts.forceRefresh);
+  let startJson = null; // 500m 캐시가 있으면 1단계를 건너뛰기 위한 출발점
   if(!force){
     await BUNDLED_CONTEXT_READY3; // 배포 내장본(data/site-context.json) 읽기가 끝난 뒤 판단
-    const hit = overpassCacheGet3(lat, lng);
+    const hit = overpassCacheGet3(lat, lng, 1000);
     if(hit){
       commitRealEnvJson3(hit.json, lat, lng, { cached: true, ageMs: hit.ageMs, bundled: !!hit.bundled });
       return;
     }
+    const hit500 = overpassCacheGet3(lat, lng, 500);
+    if(hit500){ startJson = hit500.json; commitRealEnvJson3(hit500.json, lat, lng, { cached: true, ageMs: hit500.ageMs, partial: true, partialReason: '1km 확장분을 이어서 조회 중' }); }
   }
-  setRealEnvCaption3('주변 도로·건물·녹지·수역 정보 조회 중... (반경 1km — 면적이 넓어 수십 초 걸릴 수 있습니다)', 120000);
+  setRealEnvCaption3(startJson ? '반경 500m 는 저장본으로 먼저 표시 — 500m~1km 확장 조회를 시작합니다...' : '주변 정보 조회 시작 — 1단계(반경 500m)를 먼저 받아 그리고, 2단계(1km 확장)를 이어서 받습니다...', 20000);
   try{
-    const json = await fetchOverpassContext3(lat, lng, (i, n, attempt) => {
-      const label = attempt > 1 ? ` - ${attempt}차 시도` : '';
-      setRealEnvCaption3(`Overpass 서버 조회 중 (${i}/${n}${label}) — 반경 1km 조회라 최대 65초 걸릴 수 있습니다...`, 60000);
-    });
-    const stored = overpassCacheSet3(lat, lng, json);
-    commitRealEnvJson3(json, lat, lng, { cached: false, stored });
+    const result = await fetchOverpassContext3(lat, lng,
+      (p) => setRealEnvCaption3(realEnvProgressCaption3(p), 4000),
+      (stageIdx, json) => {
+        if(stageIdx === 1){
+          overpassCacheSet3(lat, lng, json, 500);
+          commitRealEnvJson3(json, lat, lng, { cached: false, stored: true, partial: true, partialReason: '2단계 확장 조회 진행 중' });
+        }
+      }, { startJson });
+    if(result.partial){
+      const reason = result.error && result.error.message ? result.error.message : String(result.error || '');
+      commitRealEnvJson3(result.json, lat, lng, { cached: false, partial: true, partialReason: reason });
+      setRealEnvCaption3('반경 500m 까지 표시 완료 — 500m~1km 확장 조회 실패: ' + fetchFailureDetail3(result.error) + ' ("새로 조회"로 재시도 가능)', 15000);
+      return;
+    }
+    const stored = overpassCacheSet3(lat, lng, result.json, 1000);
+    commitRealEnvJson3(result.json, lat, lng, { cached: false, stored });
+    setRealEnvCaption3('주변 정보 조회 완료 — 반경 1km 도로·건물·녹지·수역 반영', 6000);
   }catch(err){
-    setRealEnvCaption3('오류: 주변 정보 조회 실패 — ' + fetchFailureDetail3(err) + ' 실측 도로/건물 데이터가 없어 인력·장비 동선은 표시되지 않습니다.', 9000);
+    setRealEnvCaption3('오류: 주변 정보 조회 실패 — ' + fetchFailureDetail3(err) + ' 실측 도로/건물 데이터가 없어 인력·장비 동선은 표시되지 않습니다.' +
+      ` [내장 파일: ${BUNDLED_STATUS3} / 이번 조회 키: ${overpassCacheKey3(lat, lng, 1000).slice(OVERPASS_CACHE_PREFIX3.length)}]`, 15000);
   }
 }
 /* [데이터 주입 인터페이스] 지도 API(V-World/국토부/카카오 등)·파일·직접 입력 어디서 왔든

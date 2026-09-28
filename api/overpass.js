@@ -1,7 +1,9 @@
 // Overpass 중계 함수 — 브라우저가 Overpass 미러를 직접 부르면 CORS·망 차단·봇 필터로
 // "Failed to fetch"가 나는 환경이 있어, 같은 도메인(/api/overpass)으로 받아 서버에서 대신 호출한다.
-// 서버-서버 통신은 CORS 제약이 없고, 미러 3곳을 순서대로 시도해 첫 성공 응답을 그대로 돌려준다.
-export const config = { maxDuration: 60 };
+// 서버-서버 통신은 CORS 제약이 없고, 미러를 순서대로 시도해 첫 성공 응답을 그대로 돌려준다.
+// 반경 1km 질의는 미러 부하에 따라 1~2분 걸리므로 함수 상한을 300초로 둔다
+// (Vercel Hobby 는 Fluid Compute 가 켜져 있어야 60초를 넘길 수 있다 — Settings → Functions → Fluid Compute).
+export const config = { maxDuration: 300 };
 
 const MIRRORS = [
   "https://overpass.kumi.systems/api/interpreter",
@@ -17,13 +19,14 @@ export default async function handler(req, res) {
   const q = (req.body && req.body.data) || (typeof req.body === "string" ? req.body : "");
   if (!q) return res.status(400).json({ error: "missing 'data' (Overpass QL)" });
 
-  const deadline = Date.now() + 55000; // 함수 상한(60s) 안에서 끝내기 위한 총 예산
-  let last = "no mirror tried";
+  const deadline = Date.now() + 280000; // 함수 상한(300s) 안에서 끝내기 위한 총 예산
+  const errors = [];
   for (const url of MIRRORS) {
-    const budget = Math.min(50000, deadline - Date.now()); // 1km 질의는 수십 초 걸리므로 첫 미러에 예산을 몰아준다
-    if (budget < 3000) break;
+    const budget = Math.min(160000, deadline - Date.now()); // 질의의 [timeout:150] 보다 조금 넉넉하게
+    if (budget < 5000) break;
     const ctl = new AbortController();
     const t = setTimeout(() => ctl.abort(), budget);
+    const t0 = Date.now();
     try {
       const r = await fetch(url, {
         method: "POST",
@@ -37,13 +40,13 @@ export default async function handler(req, res) {
       });
       clearTimeout(t);
       const text = await r.text();
-      if (!r.ok) { last = `${url} -> HTTP ${r.status}`; continue; }
+      if (!r.ok) { errors.push(`${url} -> HTTP ${r.status} (${Math.round((Date.now() - t0) / 1000)}s)`); continue; }
       res.setHeader("Content-Type", "application/json; charset=utf-8");
       return res.status(200).send(text);
     } catch (e) {
       clearTimeout(t);
-      last = `${url} -> ${e && e.name === "AbortError" ? "timeout" : String(e)}`;
+      errors.push(`${url} -> ${e && e.name === "AbortError" ? "timeout" : String(e)} (${Math.round((Date.now() - t0) / 1000)}s)`);
     }
   }
-  res.status(502).json({ error: "all Overpass mirrors failed", last });
+  res.status(502).json({ error: "all Overpass mirrors failed", last: errors.join(" ; ") });
 }
