@@ -7007,11 +7007,14 @@ function setRealEnvCaption3(text, holdMs){
 // [Vercel 배포] 웹 호스팅에서는 같은 도메인의 중계 함수(/api/overpass)를 먼저 쓴다 — 브라우저→미러
 // 직접 호출이 CORS/망 차단/봇 필터로 "Failed to fetch"가 나는 환경을 서버 측 호출로 우회한다.
 // 로컬(python -m http.server 등)에서는 /api/overpass 가 없어 404 → 아래 공개 미러로 자동 폴백.
+// [v8] 순서를 브라우저 직접 → 서버 중계로 바꿨다. 공개 Overpass 는 IP 당 동시 슬롯(보통 2개)을 제한하는데,
+// Vercel 함수의 나가는 IP 는 수많은 사이트가 공유하므로 중계 경로는 대기열에 걸리기 쉽다. 사용자 본인의 IP 로
+// 직접 부르는 편이 슬롯을 확보하기 유리하고, 중계는 CORS/봇 필터로 직접 호출이 막힌 환경의 보루로만 쓴다.
+// z.overpass-api.de(메인 클러스터)는 브라우저 호출을 봇으로 걸러 즉시 실패하므로 중계 함수 안에서만 시도한다.
 const OVERPASS_ENDPOINTS3 = [
-  ...(typeof location !== 'undefined' && /^https?:$/.test(location.protocol) ? ['/api/overpass'] : []),
   'https://overpass.kumi.systems/api/interpreter',
   'https://overpass.private.coffee/api/interpreter',
-  'https://z.overpass-api.de/api/interpreter',
+  ...(typeof location !== 'undefined' && /^https?:$/.test(location.protocol) ? ['/api/overpass'] : []),
 ];
 // fetch 실패 원인을 사람이 읽을 수 있는 문구로 변환한다.
 // file://로 직접 연 경우 브라우저가 원격 fetch 자체를 차단하는 것이 거의 확실한
@@ -7268,8 +7271,9 @@ const OVERPASS_HIGHWAY_FILTER3 = '^(motorway|trunk|primary|secondary|tertiary|un
    최근 성공한 조회의 소요 시간(중앙값)을 쓰고, 기록이 없으면 기본값을 쓴다. 응답 본문은 스트림으로
    읽어 수신 바이트를 함께 보여준다(응답이 오기 시작하면 서버 처리는 끝난 것이므로 그 뒤는 다운로드 진행). */
 const OVERPASS_STAGES3 = [
-  { key: 'A', label: '1단계 · 반경 500m', inner: 0,   outer: 500,  defaultMs: 30000 },
-  { key: 'B', label: '2단계 · 500m~1km 확장', inner: 500, outer: 1000, defaultMs: 90000 },
+  { key: 'A', label: '1단계 · 반경 500m 도로·건물·녹지', inner: 0,   outer: 500,  kind: 'ways',      qlTimeout: 45,  defaultMs: 15000 },
+  { key: 'B', label: '2단계 · 500m~1km 확장',          inner: 500, outer: 1000, kind: 'ways',      qlTimeout: 120, defaultMs: 60000 },
+  { key: 'C', label: '3단계 · 하천·호수·공원 면(선택)',  inner: 0,   outer: 1000, kind: 'relations', qlTimeout: 60,  defaultMs: 20000 },
 ];
 const OVERPASS_STATS_KEY3 = 'sa4d.overpass.stats.v1';
 function overpassStatsGet3(stageKey){
@@ -7280,22 +7284,35 @@ function overpassStatsPut3(stageKey, ms){
   try{ const st = JSON.parse(localStorage.getItem(OVERPASS_STATS_KEY3) || '{}'); st[stageKey] = ((st[stageKey] || []).concat([ms])).slice(-5);
     localStorage.setItem(OVERPASS_STATS_KEY3, JSON.stringify(st)); }catch(e){}
 }
-function overpassStageQuery3(lat, lng, inner, outer){
+/* 질의 설계(v8) — 왜 느렸는가:
+   (1) `(around:r)` 는 후보를 모은 뒤 거리를 일일이 계산한다. 특히 relation 에 around 를 걸면 멤버 형상을 전부
+       조립해야 해서 매우 느리다. → 모든 문장을 bbox `(s,w,n,e)` 로 바꿔 공간 색인을 그대로 탄다.
+   (2) `out geom` 은 relation 의 전체 형상을 내보낸다. 부지 옆에 강(예: 한강 relation, 수천 개 멤버)이 있으면
+       500m 질의인데도 수십 MB 를 만든다. → `out geom(s,w,n,e)` 로 형상을 bbox 안으로 잘라 받는다.
+   (3) relation 은 3단계로 분리해 1·2단계(way 만)가 먼저 끝나게 한다. 3단계는 실패해도 화면에 영향 없음.
+   (4) [timeout] 을 단계별로 짧게 — 서버는 클라이언트가 끊어도 timeout 까지 계속 계산하며 IP 슬롯을 점유한다.
+       긴 timeout 은 재시도를 스스로 막히게 만든다. */
+function bboxAround3(lat, lng, r){
+  const dLat = r / 111320, dLng = r / (111320 * Math.cos(lat * Math.PI / 180));
+  const f = (v) => v.toFixed(6);
+  return `${f(lat - dLat)},${f(lng - dLng)},${f(lat + dLat)},${f(lng + dLng)}`;
+}
+function overpassStageQuery3(lat, lng, stage){
   const hw = OVERPASS_HIGHWAY_FILTER3;
   const GREEN_LEISURE = '^(park|garden|playground|golf_course|recreation_ground)$';
   const GREEN_LANDUSE = '^(grass|forest|meadow|village_green|recreation_ground)$';
-  // 녹지·수역은 닫힌 면(way)과 멀티폴리곤(relation)만. 태그 화이트리스트로 좁힌다(주거지·상업지 면 수천 개 제외).
-  const sel = (r) => { const A = `(around:${r},${lat},${lng})`;
-    return `way["highway"~"${hw}"]${A};way["building"]${A};way["leisure"~"${GREEN_LEISURE}"]${A};way["landuse"~"${GREEN_LANDUSE}"]${A};` +
-      `way["natural"~"^(wood|scrub|water)$"]${A};way["waterway"="riverbank"]${A};way["landuse"="reservoir"]${A};` +
-      `relation["natural"="water"]${A};relation["leisure"="park"]${A};`; };
-  const body = inner > 0 ? `((${sel(outer)}); - (${sel(inner)}););` : `(${sel(outer)});`;
-  return `[out:json][timeout:150];${body}out geom;`;
+  const outerB = bboxAround3(lat, lng, stage.outer);
+  const ways = (B) => `way["highway"~"${hw}"](${B});way["building"](${B});way["leisure"~"${GREEN_LEISURE}"](${B});way["landuse"~"${GREEN_LANDUSE}"](${B});` +
+      `way["natural"~"^(wood|scrub|water)$"](${B});way["waterway"="riverbank"](${B});way["landuse"="reservoir"](${B});`;
+  const rels = (B) => `relation["natural"="water"](${B});relation["leisure"="park"](${B});`;
+  const sel = stage.kind === 'relations' ? rels : ways;
+  const body = stage.inner > 0 ? `((${sel(outerB)}); - (${sel(bboxAround3(lat, lng, stage.inner))}););` : `(${sel(outerB)});`;
+  return `[out:json][timeout:${stage.qlTimeout}];${body}out geom(${outerB});`;
 }
 function fmtBytes3(n){ return n < 1048576 ? (n/1024).toFixed(0) + 'KB' : (n/1048576).toFixed(1) + 'MB'; }
 /* 한 단계를 미러 순서대로 시도한다. onProgress({stage, stageIdx, stageCount, endpoint, attempt, elapsedMs, estMs, pct, bytes, phase}) 를 0.5초마다 부른다. */
 async function fetchOverpassStage3(lat, lng, stage, stageIdx, stageCount, onProgress){
-  const q = overpassStageQuery3(lat, lng, stage.inner, stage.outer);
+  const q = overpassStageQuery3(lat, lng, stage);
   const estMs = overpassStatsGet3(stage.key) || stage.defaultMs;
   let lastErr = null; const failures = [];
   const short = (u) => u.replace(/^https:\/\//, '').replace(/\/api\/interpreter$/, '');
@@ -7307,14 +7324,16 @@ async function fetchOverpassStage3(lat, lng, stage, stageIdx, stageCount, onProg
       const tick = () => { if(!onProgress) return; const el = performance.now() - t0;
         // 응답이 오기 전엔 경과/예상으로 추정(최대 95%), 본문 수신 중엔 95%에서 99% 사이로 표시 — 완료(100%)는 파싱이 끝났을 때만.
         const pct = state.phase === '서버 처리 중' ? Math.min(95, Math.round(el / estMs * 95)) : 97;
-        onProgress({ stage, stageIdx, stageCount, endpoint: short(url), attempt, elapsedMs: el, estMs, pct, bytes: state.bytes, phase: state.phase }); };
+        onProgress({ stage, stageIdx, stageCount, endpoint: short(url), attempt, elapsedMs: el, estMs, pct, bytes: state.bytes, phase: state.phase, abortMs: (stage.qlTimeout + 12) * 1000 }); };
       const ticker = setInterval(tick, 500); tick();
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 160000); // 서버 [timeout:150] 보다 넉넉하게
+      const abortMs = (stage.qlTimeout + 12) * 1000; // 서버 [timeout] 보다 조금 넉넉하게 — 서버가 먼저 명확한 답을 주게 한다
+      const timer = setTimeout(() => controller.abort(), abortMs);
       try{
         // Overpass 표준 POST 형식(data=...) + Accept 헤더 — 헤더 없는 요청을 봇으로 거르는 406 회피.
-        const res = await fetch(url, { method:'POST', body: 'data=' + encodeURIComponent(q),
-          headers: { 'Content-Type':'application/x-www-form-urlencoded', 'Accept':'application/json' }, signal: controller.signal });
+        const headers = { 'Content-Type':'application/x-www-form-urlencoded', 'Accept':'application/json' };
+        if(url.charAt(0) === '/') headers['X-Budget-Ms'] = String(abortMs - 3000); // 같은 도메인 중계에만 (외부 미러에 커스텀 헤더를 붙이면 CORS preflight 가 생긴다)
+        const res = await fetch(url, { method:'POST', body: 'data=' + encodeURIComponent(q), headers, signal: controller.signal });
         if(!res.ok){
           let detail = '';
           try{ const j = await res.json(); const e2 = j && (j.last || j.error);
@@ -7338,7 +7357,7 @@ async function fetchOverpassStage3(lat, lng, stage, stageIdx, stageCount, onProg
       }catch(err){
         clearTimeout(timer); clearInterval(ticker);
         lastErr = err;
-        failures.push(short(url) + ': ' + (err && err.name === 'AbortError' ? '시간 초과(160초)' : (err && err.message ? err.message : String(err))));
+        failures.push(short(url) + ': ' + (err && err.name === 'AbortError' ? `시간 초과(${Math.round(abortMs/1000)}초)` : (err && err.message ? err.message : String(err))));
         if(typeof location !== 'undefined' && location.protocol === 'file:') throw err; // file:// 은 미러를 바꿔도 같다
         if(attempt === 1 && i === 0 && !(err && err.name === 'AbortError')){ await new Promise(r => setTimeout(r, 1500 + Math.random()*500)); continue; }
         if(attempt === 1) break;
@@ -7357,18 +7376,19 @@ function mergeOverpassJson3(a, b){
 /* 두 단계를 순서대로. onStage(stageIdx, json) 은 각 단계의 (누적) 결과를 받는 즉시 호출되어 화면을 먼저 그리게 한다.
    1단계 실패 → 예외. 2단계 실패 → 1단계 결과만 담은 { json, partial:true, error } 를 돌려준다. */
 async function fetchOverpassContext3(lat, lng, onProgress, onStage, opts){
-  const stages = OVERPASS_STAGES3; const n = stages.length;
-  const skipA = opts && opts.startJson; // 500m 캐시가 이미 있으면 1단계는 건너뛰고 2단계만
-  let acc = skipA ? opts.startJson : await fetchOverpassStage3(lat, lng, stages[0], 1, n, onProgress);
+  const [A, B, C] = OVERPASS_STAGES3; const n = 3;
+  const skipA = opts && opts.startJson; // 500m 캐시가 이미 있으면 1단계는 건너뛰고 2단계부터
+  let acc = skipA ? opts.startJson : await fetchOverpassStage3(lat, lng, A, 1, n, onProgress);
   if(!skipA && onStage) onStage(1, acc);
-  try{
-    const ring = await fetchOverpassStage3(lat, lng, stages[1], 2, n, onProgress);
-    acc = mergeOverpassJson3(acc, ring);
-    if(onStage) onStage(2, acc);
-    return { json: acc, partial: false };
-  }catch(err){
-    return { json: acc, partial: true, error: err };
-  }
+  let ring;
+  try{ ring = await fetchOverpassStage3(lat, lng, B, 2, n, onProgress); }
+  catch(err){ return { json: acc, partial: true, error: err }; }
+  acc = mergeOverpassJson3(acc, ring);
+  if(onStage) onStage(2, acc);
+  // 3단계(강·호수·공원 멀티폴리곤)는 선택 — 실패해도 1km way 결과는 완전한 것으로 취급한다.
+  try{ const rels = await fetchOverpassStage3(lat, lng, C, 3, n, onProgress); acc = mergeOverpassJson3(acc, rels); if(onStage) onStage(3, acc); }
+  catch(err){ return { json: acc, partial: false, relationsFailed: err }; }
+  return { json: acc, partial: false };
 }
 /* 실측 컨텍스트(REAL_ROADS3/REAL_NEIGHBOR_BUILDINGS3) 반영 직후 호출 — 대상 건물이 항상
    화면의 시각적 중심이자 충분히 알아볼 수 있는 크기로 남도록 카메라를 재조정한다.
@@ -7539,7 +7559,7 @@ function realEnvProgressCaption3(p){
   const retry = p.attempt > 1 ? ` (${p.attempt}차)` : '';
   if(p.phase === '완료') return `${p.stage.label} 완료 — ${fmtSec3(el)} 소요 · 수신 ${fmtBytes3(p.bytes)}`;
   const over = el > est;
-  const eta = over ? `예상 초과 +${fmtSec3(el - est)} (미러 부하 — 최대 160초까지 기다립니다)` : `예상 약 ${fmtSec3(est)} · 남은 ${fmtSec3(est - el)}`;
+  const eta = over ? `예상 초과 +${fmtSec3(el - est)} (미러 부하 — 이 경로는 최대 ${fmtSec3(p.abortMs || 60000)}까지 기다린 뒤 다음 경로로)` : `예상 약 ${fmtSec3(est)} · 남은 ${fmtSec3(est - el)}`;
   const recv = p.phase === '응답 수신 중' ? ` · 수신 ${fmtBytes3(p.bytes)}` : '';
   return `주변 정보 조회 ${p.stageIdx}/${p.stageCount} · ${p.stage.label} · ${p.pct}% · ${p.phase}${recv} · 경과 ${fmtSec3(el)} · ${eta} · 경로 ${src}${retry}`;
 }
@@ -7575,7 +7595,9 @@ async function applyRealEnvContext3(lat, lng, opts){
     }
     const stored = overpassCacheSet3(lat, lng, result.json, 1000);
     commitRealEnvJson3(result.json, lat, lng, { cached: false, stored });
-    setRealEnvCaption3('주변 정보 조회 완료 — 반경 1km 도로·건물·녹지·수역 반영', 6000);
+    setRealEnvCaption3(result.relationsFailed
+      ? '주변 정보 조회 완료 — 반경 1km 도로·건물·녹지 반영 (하천·호수·공원 면은 이번에 받지 못함: ' + fetchFailureDetail3(result.relationsFailed) + ')'
+      : '주변 정보 조회 완료 — 반경 1km 도로·건물·녹지·수역 반영', 8000);
   }catch(err){
     setRealEnvCaption3('오류: 주변 정보 조회 실패 — ' + fetchFailureDetail3(err) + ' 실측 도로/건물 데이터가 없어 인력·장비 동선은 표시되지 않습니다.' +
       ` [내장 파일: ${BUNDLED_STATUS3} / 이번 조회 키: ${overpassCacheKey3(lat, lng, 1000).slice(OVERPASS_CACHE_PREFIX3.length)}]`, 15000);

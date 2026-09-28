@@ -19,7 +19,9 @@ export default async function handler(req, res) {
   const q = (req.body && req.body.data) || (typeof req.body === "string" ? req.body : "");
   if (!q) return res.status(400).json({ error: "missing 'data' (Overpass QL)" });
 
-  const deadline = Date.now() + 280000; // 함수 상한(300s) 안에서 끝내기 위한 총 예산
+  // 클라이언트가 단계별 예산(X-Budget-Ms)을 알려주면 그 안에서만 기다린다 — 브라우저가 이미 포기한 요청을 붙들고 있지 않기 위해.
+  const hinted = Number(req.headers["x-budget-ms"]);
+  const deadline = Date.now() + (isFinite(hinted) && hinted > 5000 ? Math.min(hinted, 280000) : 280000); // 함수 상한(300s) 안
   const errors = [];
   for (const url of MIRRORS) {
     const budget = Math.min(160000, deadline - Date.now()); // 질의의 [timeout:150] 보다 조금 넉넉하게
