@@ -7000,10 +7000,13 @@ function setRealEnvCaption3(text, holdMs){
 // (2026-09 기준 확인: overpass.kumi.systems, lz4.overpass-api.de 모두 현재 운영 중인
 //  공개 Overpass 인스턴스. overpass.openstreetmap.ru는 OSM 위키에 폐지(취소선) 표시가
 //  있어 제외했다.)
+// [배포 수정] 메인 overpass-api.de 는 2025~26년부터 브라우저 fetch 를 봇으로 간주해 406/429 를
+// 즉시 돌려주는 경우가 많아 1/3 이 항상 실패하고 곧바로 2/3 에서 오래 대기하는 현상이 났다.
+// 미러 우선 순서로 바꾸고 메인은 목록에서 뺐다(총 3개 유지 → 상태 표시 n/3 그대로).
 const OVERPASS_ENDPOINTS3 = [
-  'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
-  'https://lz4.overpass-api.de/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+  'https://z.overpass-api.de/api/interpreter',
 ];
 // fetch 실패 원인을 사람이 읽을 수 있는 문구로 변환한다.
 // file://로 직접 연 경우 브라우저가 원격 fetch 자체를 차단하는 것이 거의 확실한
@@ -7282,7 +7285,10 @@ async function fetchOverpassContext3(lat, lng, onAttempt){
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 65000); // 서버 [timeout:60] 보다 넉넉하게 (녹지·수역 태그 추가로 40→60)
       try{
-        const res = await fetch(url, { method:'POST', body: q, signal: controller.signal });
+        // Overpass 표준 POST 형식(data=...) + Accept 헤더 — 헤더 없는 요청을 봇으로 거르는 406 회피.
+        const res = await fetch(url, { method:'POST', body: 'data=' + encodeURIComponent(q),
+          headers: { 'Content-Type':'application/x-www-form-urlencoded', 'Accept':'application/json' },
+          signal: controller.signal });
         clearTimeout(timer);
         if(!res.ok){
           const e = new Error('Overpass 응답 오류 (' + res.status + ')');
@@ -7433,7 +7439,7 @@ async function applyRealEnvContext3(lat, lng, opts){
   try{
     const json = await fetchOverpassContext3(lat, lng, (i, n, attempt) => {
       const label = attempt > 1 ? ` - ${attempt}차 시도` : '';
-      setRealEnvCaption3(`Overpass 서버 조회 중 (${i}/${n}${label})...`, 60000);
+      setRealEnvCaption3(`Overpass 서버 조회 중 (${i}/${n}${label}) — 반경 1km 조회라 최대 65초 걸릴 수 있습니다...`, 60000);
     });
     const stored = overpassCacheSet3(lat, lng, json);
     commitRealEnvJson3(json, lat, lng, { cached: false, stored });
