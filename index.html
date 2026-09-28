@@ -7298,7 +7298,9 @@ async function fetchOverpassContext3(lat, lng, onAttempt){
         if(!res.ok){
           // 중계 함수(/api/overpass)가 502로 돌려줄 때는 본문에 실패한 미러·사유가 담겨 있다 → 메시지에 포함.
           let detail = '';
-          try{ const j = await res.json(); if(j && (j.last || j.error)) detail = ' ' + (j.last || j.error); }catch(_){}
+          try{ const j = await res.json(); const e2 = j && (j.last || j.error);
+            // Vercel 404 는 {error:{code:'NOT_FOUND',...}} 처럼 객체로 오므로 문자열로 정리한다.
+            if(e2) detail = ' ' + (typeof e2 === 'object' ? (e2.code || e2.message || JSON.stringify(e2)) : e2); }catch(_){}
           const e = new Error('HTTP ' + res.status + detail);
           e.httpStatus = res.status;
           throw e;
