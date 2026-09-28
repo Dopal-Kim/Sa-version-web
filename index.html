@@ -7280,6 +7280,7 @@ async function fetchOverpassContext3(lat, lng, onAttempt){
     `way["waterway"="riverbank"]${A};way["landuse"="reservoir"]${A};` +
     `relation["natural"="water"]${A};relation["leisure"="park"]${A};);out geom;`;
   let lastErr = null;
+  const failures = [];
   for(let i = 0; i < OVERPASS_ENDPOINTS3.length; i++){
     const url = OVERPASS_ENDPOINTS3[i];
     // 공개 Overpass 미러는 부하에 따라 504를 일시적으로 반환하는 경우가 흔하므로, 다음
@@ -7295,7 +7296,10 @@ async function fetchOverpassContext3(lat, lng, onAttempt){
           signal: controller.signal });
         clearTimeout(timer);
         if(!res.ok){
-          const e = new Error('Overpass 응답 오류 (' + res.status + ')');
+          // 중계 함수(/api/overpass)가 502로 돌려줄 때는 본문에 실패한 미러·사유가 담겨 있다 → 메시지에 포함.
+          let detail = '';
+          try{ const j = await res.json(); if(j && (j.last || j.error)) detail = ' ' + (j.last || j.error); }catch(_){}
+          const e = new Error('HTTP ' + res.status + detail);
           e.httpStatus = res.status;
           throw e;
         }
@@ -7303,6 +7307,10 @@ async function fetchOverpassContext3(lat, lng, onAttempt){
       }catch(err){
         clearTimeout(timer);
         lastErr = err;
+        // 끝점별 실패 사유를 모아 두었다가 최종 오류 메시지에 전부 싣는다 — "마지막 미러의 오류"만
+        // 보여주면 앞선 끝점(특히 /api/overpass)이 왜 실패했는지 알 수 없다.
+        failures.push(url.replace(/^https:\/\//, '').replace(/\/api\/interpreter$/, '') + ': ' +
+          (err && err.name === 'AbortError' ? '시간 초과(65초)' : (err && err.message ? err.message : String(err))));
         // file:// 차단은 미러를 바꿔도 동일하게 막히므로 즉시 중단하고 원인을 그대로 알린다.
         if(typeof location !== 'undefined' && location.protocol === 'file:') throw err;
         if(attempt === 1 && i === 0){
@@ -7316,7 +7324,9 @@ async function fetchOverpassContext3(lat, lng, onAttempt){
       }
     }
   }
-  throw lastErr || new Error('Overpass 서버 응답 없음');
+  const summary = new Error(failures.length ? failures.join(' / ') : 'Overpass 서버 응답 없음');
+  summary.httpStatus = lastErr && lastErr.httpStatus;
+  throw summary;
 }
 /* 실측 컨텍스트(REAL_ROADS3/REAL_NEIGHBOR_BUILDINGS3) 반영 직후 호출 — 대상 건물이 항상
    화면의 시각적 중심이자 충분히 알아볼 수 있는 크기로 남도록 카메라를 재조정한다.
