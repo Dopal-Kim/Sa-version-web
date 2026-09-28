@@ -7273,20 +7273,24 @@ function parseOverpassContext3(json, originLat, originLng){
    1) Nominatim 직접  2) Photon(komoot) 직접  3) 서버 중계 /api/geocode (배포에서만; 서버가 User-Agent 를 붙여 Nominatim→Photon) */
 async function geocodeAddress3(address, onStatus){
   const enc = encodeURIComponent(address);
-  const providers = [
-    { name: 'Nominatim', url: 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + enc,
+  // 배포에서는 서버 중계 하나만 쓴다(서버가 User-Agent 를 붙여 Nominatim → Photon 순으로 부른다). Nominatim 은 브라우저
+  // 직접 호출을 IP 단위로 제한하고 UA 없는 요청을 거부하므로, 배포 도메인에서 직접 부르는 것은 실패 경로만 늘린다.
+  // 로컬(/api 없음)에서만 브라우저가 직접 Nominatim → Photon 을 부른다.
+  const providers = OVERPASS_HOSTED3 ? [
+    { name: '서버 중계', url: '/api/geocode?q=' + enc, timeoutMs: 25000,
+      pick: (j) => j && isFinite(j.lat) ? { lat: +j.lat, lng: +j.lng } : null, detail: (j) => j && (j.last || j.error) },
+  ] : [
+    { name: 'Nominatim', url: 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + enc, timeoutMs: 10000,
       pick: (j) => j && j.length ? { lat: parseFloat(j[0].lat), lng: parseFloat(j[0].lon) } : null },
-    { name: 'Photon', url: 'https://photon.komoot.io/api/?limit=1&lang=en&q=' + enc,
+    { name: 'Photon', url: 'https://photon.komoot.io/api/?limit=1&lang=en&q=' + enc, timeoutMs: 10000,
       pick: (j) => { const f = j && j.features && j.features[0]; return f && f.geometry ? { lat: +f.geometry.coordinates[1], lng: +f.geometry.coordinates[0] } : null; } },
-    ...(OVERPASS_HOSTED3 ? [{ name: '서버 중계', url: '/api/geocode?q=' + enc,
-      pick: (j) => j && isFinite(j.lat) ? { lat: +j.lat, lng: +j.lng } : null, detail: (j) => j && (j.last || j.error) }] : []),
   ];
   const failures = [];
   for(const p of providers){
     const ctl = new AbortController(); const t0 = performance.now();
-    const tick = () => { if(onStatus) onStatus(`주소 검색 중 · ${p.name} · 경과 ${Math.round((performance.now() - t0)/1000)}초 (최대 10초)`); };
+    const tick = () => { if(onStatus) onStatus(`주소 검색 중 · ${p.name} · 경과 ${Math.round((performance.now() - t0)/1000)}초 (최대 ${Math.round(p.timeoutMs/1000)}초)`); };
     const iv = setInterval(tick, 500); tick();
-    const timer = setTimeout(() => ctl.abort(), 10000);
+    const timer = setTimeout(() => ctl.abort(), p.timeoutMs);
     try{
       const res = await fetch(p.url, { headers: { 'Accept':'application/json' }, signal: ctl.signal });
       const j = await res.json().catch(() => null);
@@ -7295,7 +7299,7 @@ async function geocodeAddress3(address, onStatus){
       if(!hit) throw new Error('결과 없음');
       return hit;
     }catch(err){
-      failures.push(p.name + ': ' + (err && err.name === 'AbortError' ? '시간 초과(10초)' : (err && err.message ? err.message : String(err))));
+      failures.push(p.name + ': ' + (err && err.name === 'AbortError' ? `시간 초과(${Math.round(p.timeoutMs/1000)}초)` : (err && err.message ? err.message : String(err))));
     }finally{ clearTimeout(timer); clearInterval(iv); }
   }
   throw new Error(failures.join(' / '));
@@ -7534,7 +7538,8 @@ let BUNDLED_STATUS3 = '아직 확인 전'; // 오류 문구에 그대로 실어 
 const BUNDLED_CONTEXT_READY3 = (async () => {
   if(typeof location === 'undefined' || !/^https?:$/.test(location.protocol)){ BUNDLED_STATUS3 = 'file:// 로 열어 내장 파일을 읽을 수 없음'; return; }
   try{
-    const res = await fetch('data/site-context.json', { cache: 'no-cache' });
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 8000); // 선택 기능 — 8초 안에 못 읽으면 없는 것으로 본다
+    const res = await fetch('data/site-context.json', { cache: 'no-cache', signal: ctl.signal }).finally(() => clearTimeout(timer));
     if(!res.ok){ BUNDLED_STATUS3 = `data/site-context.json 없음 (HTTP ${res.status})`; return; } // 선택 기능 — 없으면 실시간 조회
     const doc = await res.json();
     const entries = (doc && doc.entries) || {};
@@ -7617,12 +7622,15 @@ function realEnvProgressCaption3(p){
   const recv = p.phase === '응답 수신 중' ? ` · 수신 ${fmtBytes3(p.bytes)}` : '';
   return `주변 정보 조회 ${p.stageIdx}/${p.stageCount} · ${p.stage.label} · ${p.pct}% · ${p.phase}${recv} · 경과 ${fmtSec3(el)} · ${eta} · 경로 ${src}${retry}`;
 }
+let REALENV_STEP3 = ''; // 현재 어느 단계에 있는지 — 캡션이 끊겼을 때 감시 타이머가 이 값을 화면에 보여준다
 async function applyRealEnvContext3(lat, lng, opts){
   if(!isFinite(lat) || !isFinite(lng)){ setRealEnvCaption3('오류: 위도/경도 값이 올바르지 않습니다.', 5000); return; }
   const force = !!(opts && opts.forceRefresh);
   let startJson = null; // 500m 캐시가 있으면 1단계를 건너뛰기 위한 출발점
+  REALENV_STEP3 = `좌표 확정 (${lat.toFixed(4)}, ${lng.toFixed(4)}) → 저장본·내장 파일 확인`;
+  setRealEnvCaption3(REALENV_STEP3 + ' 중...', 15000);
   if(!force){
-    await BUNDLED_CONTEXT_READY3; // 배포 내장본(data/site-context.json) 읽기가 끝난 뒤 판단
+    await BUNDLED_CONTEXT_READY3; // 배포 내장본(data/site-context.json) 읽기가 끝난 뒤 판단 (8초 상한)
     const hit = overpassCacheGet3(lat, lng, 1000);
     if(hit){
       commitRealEnvJson3(hit.json, lat, lng, { cached: true, ageMs: hit.ageMs, bundled: !!hit.bundled });
@@ -7631,10 +7639,11 @@ async function applyRealEnvContext3(lat, lng, opts){
     const hit500 = overpassCacheGet3(lat, lng, 500);
     if(hit500){ startJson = hit500.json; commitRealEnvJson3(hit500.json, lat, lng, { cached: true, ageMs: hit500.ageMs, partial: true, partialReason: '1km 확장분을 이어서 조회 중' }); }
   }
+  REALENV_STEP3 = 'Overpass 조회 시작';
   setRealEnvCaption3(startJson ? '반경 500m 는 저장본으로 먼저 표시 — 500m~1km 확장 조회를 시작합니다...' : '주변 정보 조회 시작 — 1단계(반경 500m)를 먼저 받아 그리고, 2단계(1km 확장)를 이어서 받습니다...', 20000);
   try{
     const result = await fetchOverpassContext3(lat, lng,
-      (p) => setRealEnvCaption3(realEnvProgressCaption3(p), 4000),
+      (p) => { REALENV_STEP3 = `${p.stage.label} · ${p.phase} · ${p.endpoint}`; setRealEnvCaption3(realEnvProgressCaption3(p), 4000); },
       (stageIdx, json) => {
         if(stageIdx === 1){
           overpassCacheSet3(lat, lng, json, 500);
@@ -7739,9 +7748,30 @@ async function handleRealEnvGeocode3(){
   const address = addrEl ? addrEl.value.trim() : '';
   if(!address){ setRealEnvCaption3('오류: 주소를 입력하세요.', 4000); return; }
   setRealEnvCaption3('주소 검색 중...', 12000);
+  REALENV_STEP3 = '주소 검색';
+  const flowT0 = performance.now();
+  // 타이머가 "안 도는" 것처럼 보일 때를 위한 진단: 메인 스레드를 오래 막은 작업(longtask)과 탭 비활성 여부를 함께 적는다.
+  let worstBlockMs = 0, blockCount = 0;
+  let lto = null;
+  try{ lto = new PerformanceObserver((l) => { for(const e of l.getEntries()){ blockCount++; if(e.duration > worstBlockMs) worstBlockMs = e.duration; } }); lto.observe({ entryTypes: ['longtask'] }); }catch(e){}
+  const diag = () => {
+    const parts = [];
+    if(worstBlockMs > 0) parts.push(`메인 스레드 차단 ${blockCount}회, 최대 ${Math.round(worstBlockMs)}ms`);
+    if(typeof document !== 'undefined' && document.visibilityState === 'hidden') parts.push('탭 비활성(브라우저가 타이머를 늦춤)');
+    return parts.length ? ' · ' + parts.join(' · ') : '';
+  };
+  const watchdog = setInterval(() => {
+    // 캡션 보류 시간이 지나 화면이 비었는데 흐름이 아직 안 끝났으면, 마지막 단계와 경과 시간을 대신 보여준다.
+    if(!realEnvCaptionOverride3 || performance.now() >= realEnvCaptionOverride3.until)
+      setRealEnvCaption3(`진행 중 — ${REALENV_STEP3} (시작 후 ${Math.round((performance.now() - flowT0)/1000)}초)${diag()}`, 4000);
+  }, 2000);
+  try{ await handleRealEnvGeocodeFlow3(address, addrEl); }
+  finally{ clearInterval(watchdog); if(lto) lto.disconnect(); REALENV_STEP3 = ''; }
+}
+async function handleRealEnvGeocodeFlow3(address, addrEl){
   let lat, lng;
   try{
-    ({ lat, lng } = await geocodeAddress3(address, (t) => setRealEnvCaption3(t, 12000)));
+    ({ lat, lng } = await geocodeAddress3(address, (t) => { REALENV_STEP3 = t; setRealEnvCaption3(t, 12000); }));
     // [기상] 처음 입력한 도로명 주소와 그 좌표를 기상 예보 기준점으로 보관한다.
     // 이후 건물 배치(②)를 바꿔도 이 값은 덮어쓰이지 않는다 — WEATHER_ORIGIN3 선언부 주석 참고.
     WEATHER_ORIGIN3 = { address, lat, lng };
