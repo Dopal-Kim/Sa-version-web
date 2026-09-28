@@ -7191,6 +7191,12 @@ function polygonAreaMM23(pts){
 function parseOverpassContext3(json, originLat, originLng){
   const roads = [], buildings = [], areas = [];
   const elements = (json && json.elements) || [];
+  // 정점 null 제거 — 실시간 응답뿐 아니라 저장본(localStorage)·내장 파일·주입 데이터도 전부 이 파서를 지나므로 여기서 한 번에 거른다.
+  // (v8 배포가 out geom(bbox) 로 받은 응답에는 bbox 밖 정점이 null 로 들어 있었고, 그 응답이 저장본에 남아 이후 매번 여기서 죽었다.)
+  for(const el of elements){
+    if(el && Array.isArray(el.geometry)) el.geometry = el.geometry.filter(Boolean);
+    if(el && Array.isArray(el.members)) for(const m of el.members) if(m && Array.isArray(m.geometry)) m.geometry = m.geometry.filter(Boolean);
+  }
   let clippedRoads = 0, droppedBuildings = 0, droppedAreas = 0;
   // 녹지·수역(면) — 태그로 종류를 정하고, 닫힌 링(첫점==끝점)만 면으로 인정한다. 열린 way 는
   // 강 중심선 같은 선형 지물이거나 멀티폴리곤의 일부 조각이라 임의로 닫으면 없는 형상이 생긴다.
@@ -7404,11 +7410,6 @@ async function fetchOverpassStage3(lat, lng, stage, stageIdx, stageCount, onProg
         clearTimeout(timer); clearInterval(ticker);
         const json = JSON.parse(text);
         if(!json || !Array.isArray(json.elements)) throw new Error('Overpass 응답 형식 오류');
-        // 형상 배열에 null 정점이 섞여 오는 경우(클리핑된 응답·일부 미러)를 여기서 한 번에 걸러 파서가 g.lat 에서 죽지 않게 한다.
-        for(const el of json.elements){
-          if(Array.isArray(el.geometry)) el.geometry = el.geometry.filter(Boolean);
-          if(Array.isArray(el.members)) for(const m of el.members) if(Array.isArray(m.geometry)) m.geometry = m.geometry.filter(Boolean);
-        }
         overpassStatsPut3(stage.key, performance.now() - t0);
         if(onProgress) onProgress({ stage, stageIdx, stageCount, endpoint: short(url), attempt, elapsedMs: performance.now() - t0, estMs, pct: 100, bytes: state.bytes, phase: '완료' });
         return json;
@@ -7506,7 +7507,7 @@ function realEnvViewWidthM3(){
    - 캐시본을 쓴 경우 "언제 받은 데이터인지"를 화면에 반드시 적는다(오래된 데이터를 실시간인 척
      보여주지 않는다). 강제 새로고침 버튼으로 언제든 네트워크 재조회가 가능하다. */
 const OVERPASS_CACHE_TTL_MS3 = 7 * 24 * 60 * 60 * 1000; // 7일
-const OVERPASS_CACHE_PREFIX3 = 'sa4d.overpass.v1.';
+const OVERPASS_CACHE_PREFIX3 = 'sa4d.overpass.v2.'; // v1 → v2: v8 배포에서 null 정점이 섞인 응답이 v1 키에 저장된 브라우저가 있어 키를 올려 무시한다
 function overpassCacheKey3(lat, lng, radiusM){
   return OVERPASS_CACHE_PREFIX3 + lat.toFixed(3) + ',' + lng.toFixed(3) + ',r' + (radiusM || REAL_ENV_QUERY_RADIUS_M3);
 }
@@ -7633,11 +7634,14 @@ async function applyRealEnvContext3(lat, lng, opts){
     await BUNDLED_CONTEXT_READY3; // 배포 내장본(data/site-context.json) 읽기가 끝난 뒤 판단 (8초 상한)
     const hit = overpassCacheGet3(lat, lng, 1000);
     if(hit){
-      commitRealEnvJson3(hit.json, lat, lng, { cached: true, ageMs: hit.ageMs, bundled: !!hit.bundled });
-      return;
+      try{ commitRealEnvJson3(hit.json, lat, lng, { cached: true, ageMs: hit.ageMs, bundled: !!hit.bundled }); return; }
+      catch(e){ try{ localStorage.removeItem(overpassCacheKey3(lat, lng, 1000)); }catch(_){} setRealEnvCaption3('저장본이 손상되어 버리고 새로 조회합니다: ' + (e && e.message ? e.message : e), 6000); }
     }
     const hit500 = overpassCacheGet3(lat, lng, 500);
-    if(hit500){ startJson = hit500.json; commitRealEnvJson3(hit500.json, lat, lng, { cached: true, ageMs: hit500.ageMs, partial: true, partialReason: '1km 확장분을 이어서 조회 중' }); }
+    if(hit500){
+      try{ commitRealEnvJson3(hit500.json, lat, lng, { cached: true, ageMs: hit500.ageMs, partial: true, partialReason: '1km 확장분을 이어서 조회 중' }); startJson = hit500.json; }
+      catch(e){ try{ localStorage.removeItem(overpassCacheKey3(lat, lng, 500)); }catch(_){} startJson = null; }
+    }
   }
   REALENV_STEP3 = 'Overpass 조회 시작';
   setRealEnvCaption3(startJson ? '반경 500m 는 저장본으로 먼저 표시 — 500m~1km 확장 조회를 시작합니다...' : '주변 정보 조회 시작 — 1단계(반경 500m)를 먼저 받아 그리고, 2단계(1km 확장)를 이어서 받습니다...', 20000);
@@ -8209,11 +8213,11 @@ canvas3.addEventListener('wheel', (e) => {
 const heldKeys3 = new Set();
 const FP_MOVE_KEYS3 = new Set(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright',' ','shift']);
 window.addEventListener('keydown', (e) => {
-  const k = e.key.toLowerCase();
+  const k = (e.key || '').toLowerCase(); // IME(한글) 조합 중엔 e.key 가 undefined 로 오는 브라우저가 있다
   if(cam3.viewMode === 'firstPerson' && FP_MOVE_KEYS3.has(k)) e.preventDefault();
   heldKeys3.add(k);
 });
-window.addEventListener('keyup', (e) => { heldKeys3.delete(e.key.toLowerCase()); });
+window.addEventListener('keyup', (e) => { heldKeys3.delete((e.key || '').toLowerCase()); });
 const FP_SPEED3 = 70; // mm / 프레임(~60fps 기준 약 4.2m/s)
 function fpMoveTick3(){
   if(cam3.viewMode === 'firstPerson' && heldKeys3.size){
