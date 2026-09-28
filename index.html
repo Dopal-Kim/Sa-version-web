@@ -7068,7 +7068,8 @@ function localToLatLng3(x, y, originLat, originLng){
    res.ok 체크, 실패 시 명확한 한국어 Error를 던짐)을 그대로 따른다. */
 async function reverseGeocodeLatLng3(lat, lng){
   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-  const res = await fetch(url, { headers: { 'Accept':'application/json' } });
+  const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 10000); // 상한 없이 매달리지 않게
+  const res = await fetch(url, { headers: { 'Accept':'application/json' }, signal: ctl.signal }).finally(() => clearTimeout(timer));
   if(!res.ok) throw new Error('Nominatim 역지오코딩 응답 오류 (' + res.status + ')');
   const obj = await res.json();
   if(!obj || !obj.display_name) throw new Error('해당 좌표의 주소를 찾을 수 없습니다');
@@ -7268,13 +7269,36 @@ function parseOverpassContext3(json, originLat, originLng){
   }
   return { roads, buildings, areas, clippedRoads, droppedBuildings, droppedAreas };
 }
-async function geocodeAddress3(address){
-  const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(address);
-  const res = await fetch(url, { headers: { 'Accept':'application/json' } });
-  if(!res.ok) throw new Error('Nominatim 응답 오류 (' + res.status + ')');
-  const arr = await res.json();
-  if(!arr || !arr.length) throw new Error('주소를 찾을 수 없습니다');
-  return { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
+/* 주소 → 좌표. 공급자 3곳을 순서대로, 각 10초 상한 — 이전엔 Nominatim 하나에 상한 없이 매달려 "주소 검색 중"에서 멈췄다.
+   1) Nominatim 직접  2) Photon(komoot) 직접  3) 서버 중계 /api/geocode (배포에서만; 서버가 User-Agent 를 붙여 Nominatim→Photon) */
+async function geocodeAddress3(address, onStatus){
+  const enc = encodeURIComponent(address);
+  const providers = [
+    { name: 'Nominatim', url: 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + enc,
+      pick: (j) => j && j.length ? { lat: parseFloat(j[0].lat), lng: parseFloat(j[0].lon) } : null },
+    { name: 'Photon', url: 'https://photon.komoot.io/api/?limit=1&lang=en&q=' + enc,
+      pick: (j) => { const f = j && j.features && j.features[0]; return f && f.geometry ? { lat: +f.geometry.coordinates[1], lng: +f.geometry.coordinates[0] } : null; } },
+    ...(OVERPASS_HOSTED3 ? [{ name: '서버 중계', url: '/api/geocode?q=' + enc,
+      pick: (j) => j && isFinite(j.lat) ? { lat: +j.lat, lng: +j.lng } : null, detail: (j) => j && (j.last || j.error) }] : []),
+  ];
+  const failures = [];
+  for(const p of providers){
+    const ctl = new AbortController(); const t0 = performance.now();
+    const tick = () => { if(onStatus) onStatus(`주소 검색 중 · ${p.name} · 경과 ${Math.round((performance.now() - t0)/1000)}초 (최대 10초)`); };
+    const iv = setInterval(tick, 500); tick();
+    const timer = setTimeout(() => ctl.abort(), 10000);
+    try{
+      const res = await fetch(p.url, { headers: { 'Accept':'application/json' }, signal: ctl.signal });
+      const j = await res.json().catch(() => null);
+      if(!res.ok){ const d = p.detail ? p.detail(j) : ''; throw new Error('HTTP ' + res.status + (d ? ' ' + d : '')); }
+      const hit = p.pick(j);
+      if(!hit) throw new Error('결과 없음');
+      return hit;
+    }catch(err){
+      failures.push(p.name + ': ' + (err && err.name === 'AbortError' ? '시간 초과(10초)' : (err && err.message ? err.message : String(err))));
+    }finally{ clearTimeout(timer); clearInterval(iv); }
+  }
+  throw new Error(failures.join(' / '));
 }
 /* 도로 태그 화이트리스트 — 반경 1km 에서는 highway=* 를 전부 받으면 보도(footway)·계단·
    등산로(path)·자전거도로까지 수천 개가 딸려와 응답 크기와 서버 부하만 키우고, 화면에서는
@@ -7714,10 +7738,10 @@ async function handleRealEnvGeocode3(){
   const addrEl = document.getElementById('realEnvAddress3');
   const address = addrEl ? addrEl.value.trim() : '';
   if(!address){ setRealEnvCaption3('오류: 주소를 입력하세요.', 4000); return; }
-  setRealEnvCaption3('주소 검색 중... (Nominatim)', 30000);
+  setRealEnvCaption3('주소 검색 중...', 12000);
   let lat, lng;
   try{
-    ({ lat, lng } = await geocodeAddress3(address));
+    ({ lat, lng } = await geocodeAddress3(address, (t) => setRealEnvCaption3(t, 12000)));
     // [기상] 처음 입력한 도로명 주소와 그 좌표를 기상 예보 기준점으로 보관한다.
     // 이후 건물 배치(②)를 바꿔도 이 값은 덮어쓰이지 않는다 — WEATHER_ORIGIN3 선언부 주석 참고.
     WEATHER_ORIGIN3 = { address, lat, lng };
