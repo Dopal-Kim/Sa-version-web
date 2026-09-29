@@ -247,25 +247,33 @@ table.cmp tr.best td:first-child::before{content:'최적 ';font-weight:700;}
      --tb-top:auto; --tb-bottom:14px; --tb-right:auto; --tb-left:14px; --tb-flow:row; --tb-btn-w:auto;
    좌측 세로는 --tb-right:auto; --tb-left:10px;  (범례 위치는 우측 배치 기준으로 파생 — 필요 시 #trafficLegend3 만 조정) */
 #viewerOffline{--tb-top:10px;--tb-right:10px;--tb-bottom:auto;--tb-left:auto;--tb-flow:column;--tb-btn-w:196px;}
-#viewToolbar3{position:absolute;top:var(--tb-top);right:var(--tb-right);bottom:var(--tb-bottom);left:var(--tb-left);
-  display:flex;flex-direction:var(--tb-flow);gap:6px;z-index:5;}
-#viewToolbar3 > button{display:flex;align-items:center;gap:8px;width:var(--tb-btn-w);height:38px;padding:0 12px;border-radius:19px;
-  background:rgba(255,255,255,.94);border:1px solid var(--border);font-family:inherit;font-size:13.5px;color:var(--text-primary);
-  cursor:pointer;font-weight:600;white-space:nowrap;}
-#viewToolbar3 > button:hover{border-color:var(--accent-secondary);color:var(--accent-secondary);}
-#viewToolbar3 > button.active{border-color:var(--accent-primary);color:var(--accent-primary);background:#e8eaee;} /* 불투명 — 뒤 캔버스(어두운 건물)가 비쳐 흐려지지 않게 */
-/* 아이콘은 버튼 안 인라인 단색 SVG(currentColor) — 색 없이 형태만 쓰므로 혼잡도·시공 상태 색과 경쟁하지 않는다. */
-#viewToolbar3 .tbIc{order:-1;width:20px;height:20px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-/* 켜짐/꺼짐 스위치형 버튼(.tbToggle)은 우측에 ON/OFF 배지 */
-#viewToolbar3 > .tbToggle::after{content:'OFF';margin-left:auto;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;
-  border:1px solid var(--border);color:var(--text-muted);}
-#viewToolbar3 > .tbToggle.active::after{content:'ON';border-color:var(--accent-primary);color:var(--accent-primary);}
-#detailRadiusSeg3{width:var(--tb-btn-w);background:rgba(255,255,255,.94);border:1px solid var(--border);border-radius:12px;padding:6px 7px 7px;}
-#detailRadiusSeg3 .tbLabel{font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:5px;}
-#detailRadiusSeg3 .subtabs{display:flex;width:100%;box-sizing:border-box;}
-#detailRadiusSeg3 .subtabs button{flex:1;justify-content:center;padding:5px 4px;font-size:12.5px;min-height:28px;}
-#trafficLegend3{position:absolute;right:calc(var(--tb-right) + var(--tb-btn-w) + 10px);top:var(--tb-top);display:none;max-width:272px;background:rgba(255,255,255,.96);
-  border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;color:var(--text-primary);line-height:1.5;}
+/* ---- 뷰어 상단 고정 툴바 (계기판식: 직각·1px 선·모노 라벨·정사각 상태등) ---- */
+#viewToolbar3{position:absolute;top:10px;left:10px;right:10px;display:flex;flex-wrap:wrap;gap:8px;z-index:6;align-items:flex-start;pointer-events:none;}
+#viewToolbar3 .tbGroup{display:flex;align-items:stretch;border:1px solid var(--border-strong);background:rgba(255,255,255,.96);pointer-events:auto;}
+#viewToolbar3 .tbGroup > button,#viewToolbar3 .tbCheck,#viewToolbar3 .tbLabel{display:flex;align-items:center;gap:7px;height:34px;padding:0 11px;margin:0;
+  border:0;border-right:1px solid var(--border);background:transparent;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.3px;
+  color:var(--text-primary);cursor:pointer;white-space:nowrap;user-select:none;position:relative;}
+#viewToolbar3 .tbGroup > *:last-child{border-right:0;}
+#viewToolbar3 .tbLabel{cursor:default;color:var(--text-secondary);}
+#viewToolbar3 .tbGroup > button:hover,#viewToolbar3 .tbCheck:hover{background:var(--bg-2);}
+#viewToolbar3 .tbIc{width:16px;height:16px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:square;stroke-linejoin:miter;}
+/* 상태등: 켜짐=채운 정사각, 꺼짐=빈 정사각 (색이 아니라 형태로 구분 — 흑백 인쇄에서도 읽힘) */
+#viewToolbar3 .tbSt{width:8px;height:8px;border:1px solid currentColor;margin-left:2px;}
+#viewToolbar3 .tbToggle.active,#viewToolbar3 .tbCheck:has(input:checked){background:var(--ink,#16181C);color:#fff;}
+#viewToolbar3 .tbToggle.active .tbSt,#viewToolbar3 .tbCheck:has(input:checked) .tbSt{background:currentColor;}
+#viewToolbar3 .tbCheck input{position:absolute;opacity:0;width:0;height:0;margin:0;}
+#viewToolbar3 .tbCheck:focus-within,#viewToolbar3 .tbGroup > button:focus-visible{outline:2px solid var(--accent-primary);outline-offset:-2px;}
+#detailRadiusSeg3 .subtabs{display:flex;gap:0;background:transparent;border:0;border-radius:0;padding:0;}
+#detailRadiusSeg3 .subtabs button{height:34px;min-height:0;padding:0 10px;border:0;border-left:1px solid var(--border);border-radius:0;
+  font-family:var(--font-mono);font-size:11.5px;background:transparent;color:var(--text-primary);}
+#detailRadiusSeg3 .subtabs button.active{background:var(--ink,#16181C);color:#fff;}
+/* 툴팁: title 은 JS가 data-tip 으로 옮긴다(네이티브 툴팁 중복 방지). 버튼 아래에 한 줄 설명 */
+#viewToolbar3 [data-tip]::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 6px);z-index:20;max-width:340px;width:max-content;
+  padding:7px 9px;border:1px solid var(--border-strong);background:#16181C;color:#fff;font-family:var(--font-mono);font-size:11px;line-height:1.5;
+  letter-spacing:.2px;white-space:normal;text-align:left;pointer-events:none;opacity:0;transform:translateY(-2px);transition:opacity .12s,transform .12s;}
+#viewToolbar3 [data-tip]:hover::after,#viewToolbar3 [data-tip]:focus-visible::after{opacity:1;transform:translateY(0);}
+#trafficLegend3{position:absolute;right:10px;top:54px;display:none;max-width:300px;background:rgba(255,255,255,.96);
+  border:1px solid var(--border-strong);padding:10px 12px;font-size:12.5px;color:var(--text-primary);line-height:1.5;z-index:5;}
 #trafficLegend3 .tlTitle{font-weight:700;font-size:13px;margin-bottom:6px;}
 #trafficLegend3 .tlSample{display:inline-block;margin-left:5px;padding:1px 6px;border:1px solid var(--status-risk);
   border-radius:4px;color:var(--status-risk);font-size:11px;font-weight:700;}
@@ -323,6 +331,19 @@ table.ovTable td{padding:7px 0;border-bottom:1px solid var(--border);color:var(-
 table.ovTable tr:last-child th,table.ovTable tr:last-child td{border-bottom:none;}
 
 /* ---- 탭③ 교통 혼잡도 조회 (출처·신선도·매칭 정확도를 표면에 드러내는 표) ---- */
+.trSum{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0;border:1px solid var(--border-strong);background:var(--bg-1);margin:2px 0 10px;}
+.trSum .cell{padding:9px 11px;border-right:1px solid var(--border);min-width:0;}
+.trSum .cell:last-child{border-right:0;}
+.trSum .k{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.6px;color:var(--text-muted);text-transform:uppercase;white-space:nowrap;}
+.trSum .v{font-family:var(--font-mono);font-size:20px;line-height:1.15;color:var(--text-primary);margin-top:3px;font-variant-numeric:tabular-nums;}
+.trSum .v small{font-size:11px;color:var(--text-secondary);margin-left:3px;}
+.trSum .sw{display:inline-block;width:10px;height:10px;vertical-align:-1px;margin-right:6px;border:1px solid rgba(22,24,28,.3);}
+.trSum .bar{grid-column:1/-1;display:flex;height:10px;border-top:1px solid var(--border);}
+.trSum .bar span{display:block;height:100%;}
+.trSum .verdict{grid-column:1/-1;border-top:1px solid var(--border-strong);padding:9px 11px;font-size:13px;color:var(--text-primary);display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;}
+.trSum .verdict b{font-family:var(--font-mono);font-size:14px;letter-spacing:.3px;}
+.trSum .verdict .rule{font-size:11.5px;color:var(--text-muted);margin-left:auto;}
+#trafficLegend3 .tlVerdict{margin-top:8px;padding-top:7px;border-top:1px solid var(--border);display:flex;gap:7px;align-items:center;font-size:12.5px;}
 .trProv{border:1px solid var(--border);border-radius:8px;background:var(--bg-2);padding:11px 13px;margin-top:2px;
   font-size:12.5px;color:var(--text-secondary);line-height:1.6;}
 .trProv dl{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:0;}
@@ -607,12 +628,7 @@ details.noteBox summary{font-family:inherit;}
   color:var(--ink-text);background:var(--ink);border:1px solid #000;border-radius:2px;padding:6px 9px;pointer-events:none;white-space:nowrap;text-align:right;}
 #hud3 b{font-weight:600;color:#fff;}
 #hud3 span{color:var(--ink-muted);}
-#viewToolbar3 > button{border-radius:var(--radius);border-color:var(--hairline);background:rgba(255,255,255,.96);font-size:13px;height:36px;}
-#viewToolbar3 > button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
-#viewToolbar3 > .tbToggle::after{font-family:var(--font-mono);border-radius:2px;font-size:10px;letter-spacing:.6px;}
-#viewToolbar3 > .tbToggle.active::after{color:#fff;border-color:rgba(255,255,255,.55);}
-#detailRadiusSeg3{border-radius:var(--radius);border-color:var(--hairline);}
-#detailRadiusSeg3 .tbLabel{font-family:var(--font-mono);font-size:11px;letter-spacing:.4px;}
+/* (툴바 스타일은 위 '뷰어 상단 고정 툴바' 블록 하나로 통합) */
 #camhint3{border-radius:2px !important;font-family:var(--font-mono) !important;font-size:11.5px !important;border-color:var(--hairline) !important;}
 #fpCaption3{border-radius:2px;font-family:var(--font-mono);font-size:12px;}
 #trafficLegend3{border-radius:var(--radius);}
@@ -1286,16 +1302,31 @@ body.clientMode #quickDemoBtn{display:inline-block !important;}
           border-radius:8px;padding:9px 13px;font-size:12.5px;color:var(--text-secondary);line-height:1.6;">
           <b style="color:var(--accent-secondary);">좌클릭 드래그</b>=회전 · <b style="color:var(--accent-secondary);">Shift+드래그</b>=이동 · <b style="color:var(--accent-secondary);">휠</b>=확대/축소<br>(BIM/CAD 자유시점 방식)
         </div>
-        <div id="viewToolbar3">
-          <button id="resetCamBtn3" type="button" title="시점 초기화">시점 초기화<svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
-          <button id="envToggleBtn3" type="button" class="tbToggle" title="실 환경 조회로 전환">실 환경<svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg></button>
-          <button id="fpToggleBtn3" type="button" class="tbToggle" title="1인칭 시점으로 전환">1인칭 뷰<svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          <button id="trafficViewBtn3" type="button" class="tbToggle" title="도로 혼잡도(원활-지체-정체) 보기로 전환 — 시공 상태 색은 꺼집니다">교통 혼잡도<svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="20" rx="3"/><circle cx="12" cy="7" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="17" r="1.5"/></svg></button>
-          <button id="equipAccessBtn3" type="button" class="tbToggle active" title="배치 위치에서 가장 가까운 실측 도로 지점(장비 진입로)을 주황 화살표로 표시 — 실 환경 모드, 도로 데이터 필요">장비 진입로<svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v6H3z"/><path d="M6 13v8M18 13v8M7 7l6 6M13 7l6 6"/></svg></button>
-          <button id="placementResetBtn3" type="button" title="건물 배치 위치·회전을 기본값으로 되돌립니다">배치 초기화<svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></button>
-          <button id="boreholeMarkerResetBtn3" type="button" title="시추공 위치 표시를 모두 지웁니다">위치 표시 초기화<svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20H9l-5-5a2 2 0 0 1 0-2.8l8.5-8.5a2 2 0 0 1 2.8 0l5.2 5.2a2 2 0 0 1 0 2.8L13 20"/><path d="M8 11l6 6"/></svg></button>
-          <div id="detailRadiusSeg3" hidden>
-            <div class="tbLabel"><svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><path d="M3 11l5-4 5 4v8H3z"/><path d="M13 19v-6l4-3 4 3v6z"/></svg>근접 건물 입체 반경</div>
+        <div id="viewToolbar3" role="toolbar" aria-label="보기 도구">
+          <div class="tbGroup" aria-label="보기 모드">
+            <label id="logisticsToggleWrap3" class="tbCheck" title="인력·장비 동선 — 배치 위치와 활성 공정 구역 사이의 이동 경로를 점선과 움직이는 점으로 표시합니다 (실측 도로 데이터 필요)">
+              <input type="checkbox" id="logisticsToggle3" checked>
+              <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18c4-1 5-6 8-7s5 4 8-3"/><circle cx="4" cy="18" r="1.6"/><circle cx="20" cy="8" r="1.6"/></svg><span class="tbTx">동선</span><span class="tbSt" aria-hidden="true"></span>
+            </label>
+            <button id="envToggleBtn3" type="button" class="tbToggle" title="실 환경 — 그리드 대신 주소 검색으로 받은 실제 도로·건물·녹지를 부지 주변에 그립니다">
+              <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span class="tbTx">실 환경</span><span class="tbSt" aria-hidden="true"></span></button>
+            <button id="fpToggleBtn3" type="button" class="tbToggle" title="1인칭 뷰 — 현장 눈높이에서 봅니다. 드래그=시선 회전, WASD/방향키=이동, Space=상승, Shift=하강">
+              <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="tbTx">1인칭</span><span class="tbSt" aria-hidden="true"></span></button>
+            <button id="trafficViewBtn3" type="button" class="tbToggle" title="교통 혼잡도 — 도로를 원활/서행/지체/정체 등급색으로 칠합니다. 시공 상태 색(완료/진행/지연)은 이 모드에서 꺼집니다">
+              <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="20"/><circle cx="12" cy="7" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="17" r="1.5"/></svg><span class="tbTx">혼잡도</span><span class="tbSt" aria-hidden="true"></span></button>
+            <button id="equipAccessBtn3" type="button" class="tbToggle active" title="장비 진입로 — 배치 위치에서 가장 가까운 실측 도로 지점까지의 진입 경로를 화살표로 표시합니다 (실 환경 모드, 도로 데이터 필요)">
+              <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v6H3z"/><path d="M6 13v8M18 13v8M7 7l6 6M13 7l6 6"/></svg><span class="tbTx">진입로</span><span class="tbSt" aria-hidden="true"></span></button>
+          </div>
+          <div class="tbGroup" aria-label="초기화">
+            <button id="resetCamBtn3" type="button" title="시점 초기화 — 카메라 회전·이동·배율을 기본 등각 시점으로 되돌립니다">
+              <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="tbTx">시점 초기화</span></button>
+            <button id="placementResetBtn3" type="button" title="배치 초기화 — 건물 배치 위치·회전을 기본값으로 되돌립니다">
+              <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg><span class="tbTx">배치 초기화</span></button>
+            <button id="boreholeMarkerResetBtn3" type="button" title="위치 표시 초기화 — 시추공 위치 표시를 모두 지웁니다">
+              <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20H9l-5-5a2 2 0 0 1 0-2.8l8.5-8.5a2 2 0 0 1 2.8 0l5.2 5.2a2 2 0 0 1 0 2.8L13 20"/><path d="M8 11l6 6"/></svg><span class="tbTx">표시 초기화</span></button>
+          </div>
+          <div class="tbGroup" id="detailRadiusSeg3" hidden aria-label="근접 건물 입체 반경">
+            <div class="tbLabel" title="근접 건물 입체 반경 — 부지에서 이 거리 안의 이웃 건물만 입체(높이)로 그립니다. 넓을수록 느려집니다"><svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l5-4 5 4v8H3z"/><path d="M13 19v-6l4-3 4 3v6z"/></svg><span class="tbTx">입체 반경</span></div>
             <div class="subtabs" role="group" aria-label="근접 건물 입체 표시 반경">
               <button type="button" data-r="100000" title="부지 100m 안쪽 건물만 입체로">100m</button>
               <button type="button" data-r="300000" class="active" title="부지 300m 안쪽 건물만 입체로 (기본)">300m</button>
@@ -1304,13 +1335,7 @@ body.clientMode #quickDemoBtn{display:inline-block !important;}
           </div>
         </div>
         <div id="trafficLegend3"></div>
-        <label id="logisticsToggleWrap3" style="position:absolute;left:14px;top:14px;background:rgba(255,255,255,.93);
-          border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--text-primary);
-          display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;font-weight:500;">
-          <input type="checkbox" id="logisticsToggle3" checked style="margin:0;cursor:pointer;width:16px;height:16px;accent-color:var(--accent-primary);">
-          인력·장비 동선 표시
-        </label>
-        <div id="logisticsRealDataNote3" style="display:none;position:absolute;left:14px;top:56px;max-width:260px;
+        <div id="logisticsRealDataNote3" style="display:none;position:absolute;left:10px;top:58px;max-width:260px;
           background:rgba(255,255,255,.94);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;
           font-size:12px;color:var(--text-muted);line-height:1.5;">동선은 실제 도로 데이터가 있을 때 그려집니다 — 아래 "주변 환경 반영"에서 주소를 검색하면 켜집니다</div>
         <div id="fpCaption3">현장 1인칭 시점 — 드래그로 시선 회전 · WASD(또는 방향키)=이동 · Space=상승 · Shift=하강 · 다시 누르면 탑뷰로 복귀</div>
@@ -1573,46 +1598,31 @@ BH-2,34.8,4.2,풍화토,2.5,8"></textarea>
         불러온 혼잡도는 탭②의 실 환경 화면에서 "교통 혼잡도 보기"로 전환하면 도로 위에 그대로 칠해집니다.</p>
 
       <details class="noteBox"><summary>무료 공개 소스가 실제로 주는 것과 주지 않는 것 (반드시 읽어야 할 한계)</summary><div class="noteBody">
-        <p><b>경기도 교통정보센터(GITS)</b> <code>getRoadLinkCongestInfo</code> — 무료 등록 후 <code>serviceKey</code>로 호출합니다. 응답에는
-          수집시각(procDate), 노선ID/노선명(routeId/routeNm), 링크ID(linkId), 시점·종점 명칭, 속도(spd), 통행시간(trvlTime),
-          구간길이(linkLength), 방향(routeWay)이 들어 있고, 혼잡도 등급은 <b>0=정보없음 / 1=원활 / 2=지체 / 3=정체</b>의 4단계입니다.</p>
-        <p><b>이 API는 좌표를 돌려주지 않으며, 사각형 영역(bbox) 조회도 지원하지 않습니다.</b> 즉 "현장 반경 1km를 전부 주세요"라는 질의 자체가
-          존재하지 않고, 노선ID 또는 링크ID를 지정해야만 조회됩니다. 아래 ①에서 ID를 직접 넣게 되어 있는 이유가 이것입니다.</p>
-        <p><b>국토교통부 교통소통정보</b>(data.go.kr 15040463 · ITS)는 전국 단위이지만 <b>고속도로·국도 중심</b>이라 도시 생활도로는 거의 포함되지 않습니다.</p>
-        <p><b>포함되지 않는 것 — 이 기능의 가장 중요한 한계:</b> 주택가 소로·이면도로는 어느 무료 소스에서도 혼잡도를 제공하지 않는 것이 일반적입니다.
-          현장이 주택단지 안에 있다면 바로 앞 도로는 대체로 "데이터 없음"으로 남습니다. 이 앱은 그 사실을 감추지 않고 개수로 표시합니다.</p>
-        <p><b>유료 지도 API(TMAP·카카오·네이버)를 쓰지 않은 이유:</b> 도시 생활도로 커버리지는 훨씬 낫지만, 비용과 별개로 그 교통정보는 대체로
-          <b>해당 사업자의 지도 위에서만</b> 표출하도록 이용약관이 제한합니다. 이 앱처럼 자체 캔버스에 직접 그리는 것은 약관 위반 소지가 커서 연동하지 않았습니다.</p>
+        <p><b>TMAP 교통정보 API</b> (<code>apis.openapi.sk.com/tmap/traffic</code>) — 전국 도로를 <b>현장 좌표 기준 반경(300m~2.7km)</b>으로 조회하며,
+          응답이 GeoJSON이라 <b>도로 형상(LineString)과 혼잡 등급이 함께</b> 옵니다. 그래서 링크ID·표준노드링크 매칭 없이 화면 도로에 바로 붙습니다.
+          혼잡 등급은 <b>0=정보없음 / 1=원활 / 2=서행 / 3=지체 / 4=정체</b>의 5값입니다. 무료 1,000건/일, 초과 시 건당 11원(SK open API 요금표 기준).</p>
+        <p><b>키 관리:</b> 웹 배포에서는 서버(Vercel 환경변수 <code>TMAP_APP_KEY</code>)가 키를 보관해 방문자는 키 없이 조회합니다. 로컬 실행에서만 아래에 appKey를 직접 입력합니다.</p>
+        <p><b>이용약관 유의:</b> SK open API 약관은 TMAP 교통정보를 타사 지도 서비스 위에 표출하는 것을 제한합니다. 이 앱은 자체 캔버스(지도 서비스 아님)에 그리지만
+          상업 서비스로 확장할 때는 약관을 다시 확인해야 합니다. 조회 결과에는 "출처: TMAP" 표기를 유지합니다.</p>
+        <p><b>포함되지 않는 것:</b> 주택가 소로·이면도로는 TMAP도 등급 없음(0)으로 주는 경우가 많습니다. 그런 도로는 "데이터 없음"으로 남기고 개수를 셉니다 — 값을 추정해 칠하지 않습니다.</p>
+        <p><b>기준시각:</b> 이 API 응답에는 수집시각 필드가 없어 "조회 시각"을 기준시각으로 표시합니다.</p>
       </div></details>
 
       <div class="inline2" style="align-items:start;gap:0 28px;">
       <div>
       <div class="fieldGroup">
-        <p class="fgTitle">① 실시간 혼잡도 조회</p>
-        <label>데이터 출처</label>
-        <select id="trafficSourceSel3">
-          <option value="gits">경기도 교통정보센터(GITS) — getRoadLinkCongestInfo</option>
-          <option value="sample">내장 샘플 데이터 (실시간 아님 · 시연용)</option>
+        <p class="fgTitle">① 실시간 혼잡도 조회 (TMAP · 전국)</p>
+        <label>조회 반경 (현장 예보 기준 좌표 중심)</label>
+        <select id="trafficRadiusSel3">
+          <option value="1">300m</option><option value="2">600m</option><option value="3">900m</option>
+          <option value="4" selected>1.2km (기본 — 탭② 도로 반경 1km를 덮음)</option>
+          <option value="5">1.5km</option><option value="6">1.8km</option><option value="7">2.1km</option><option value="8">2.4km</option><option value="9">2.7km</option>
         </select>
-        <div id="trafficGitsFields3">
-          <label style="margin-top:9px;">GITS 서비스키 (serviceKey)</label>
-          <input type="text" id="gitsKey3" placeholder="openapigits.gg.go.kr에서 무료 발급받은 키">
-          <div class="inline2" style="margin-top:9px;">
-            <div>
-              <label>조회 기준</label>
-              <select id="trafficQueryMode3">
-                <option value="routeId">노선ID (routeId)</option>
-                <option value="linkId">링크ID (linkId)</option>
-              </select>
-            </div>
-            <div>
-              <label>조회할 ID (쉼표/공백 구분)</label>
-              <input type="text" id="trafficQueryIds3" placeholder="예: 1620015300, 1620015400">
-            </div>
-          </div>
-          <p class="hint">좌표로 "이 근처 전부"를 받는 방법이 이 API에 없어 ID를 직접 지정합니다. 아래 ②에서 표준노드링크 부분집합을 올리면
-            그 파일에 들어 있는 링크ID를 그대로 붙여 넣으면 됩니다.</p>
+        <div id="trafficKeyField3">
+          <label style="margin-top:9px;">TMAP appKey (로컬 실행 전용)</label>
+          <input type="password" id="tmapKey3" autocomplete="off" placeholder="openapi.sk.com에서 발급 — 웹 배포에서는 서버 키를 써서 비워 둡니다">
         </div>
+        <p class="hint" id="trafficQueryHint3">탭②에서 주소를 검색해 현장 좌표가 정해진 뒤 조회합니다. 응답의 도로 형상을 화면 도로에 40m 이내로 붙이고, 붙지 않은 것은 개수로 표시합니다.</p>
         <button class="primary" id="trafficFetchBtn3" type="button" style="width:100%;margin-top:8px;">혼잡도 조회</button>
         <button class="ghost" id="trafficClearBtn3" type="button" style="width:100%;margin-top:6px;">불러온 혼잡도 데이터 해제</button>
         <div class="status-line" id="trafficStatus3">아직 조회하지 않았습니다.</div>
@@ -1620,33 +1630,11 @@ BH-2,34.8,4.2,풍화토,2.5,8"></textarea>
       </div>
       <div>
       <div class="fieldGroup">
-        <p class="fgTitle">② 링크ID &rarr; 도로 위치 연결 (표준노드링크 부분집합)</p>
-        <p class="hint">공개 API는 <b>링크ID</b>만 주고 좌표를 주지 않으며, 화면에 그려진 도로는 OSM <b>좌표</b>만 있고 링크ID가 없습니다.
-          공통 키가 없는 이 둘을 정확히 잇는 유일한 무료 방법이 표준노드링크(nodelink.its.go.kr · data.go.kr 15025526, 무료 다운로드)입니다.
-          전국 파일에서 현장 주변만 잘라 아래 형식으로 올리면 <b>기하 기준</b>으로 매칭합니다.
-          올리지 않으면 <b>도로명 기준 근사 매칭</b>으로 내려가며, 그 사실과 매칭 개수를 아래 ④에 그대로 표시합니다.</p>
-        <details class="noteBox"><summary>입력 형식 (CSV 또는 GeoJSON)</summary><div class="noteBody">
-          <p>CSV: <code>linkId,roadName,coords</code> — coords는 <code>위도 경도;위도 경도;...</code> 형식이며 생략할 수 있습니다(생략 시 도로명만 사용).</p>
-          <p>GeoJSON: FeatureCollection의 각 feature가 <code>properties.LINK_ID</code>(또는 linkId)와 LineString 기하를 가지면 그대로 읽습니다.</p>
-          <p>기하가 있는 링크는 좌표를 현장 기준 로컬 좌표로 투영한 뒤, 평균 이격이 40m 이내로 가장 가까운 OSM 도로에 붙입니다. 40m를 넘으면 붙이지 않습니다.</p>
-          <p><b>남는 한계:</b> 표준노드링크의 링크 하나가 OSM way 하나와 1:1로 대응하지 않습니다 — 긴 OSM way 하나에 여러 링크가 걸리는 일이 흔하고,
-            그 경우 이 앱은 그 way 전체를 <b>가장 나쁜 등급</b> 하나로 칠합니다(반입 계획은 가장 나쁜 구간에 묶이므로 보수적으로 잡습니다).
-            즉 기하 매칭을 써도 "도로 단위"까지가 이 화면의 해상도이고, 링크 단위 구간 색분할은 하지 않습니다. 링크별 원본 값은 아래 ④ 표에 그대로 남습니다.</p>
-        </div></details>
-        <input type="file" id="nodeLinkFile3" accept=".csv,.json,.geojson" style="width:100%;">
-        <textarea id="nodeLinkCsv3" placeholder="linkId,roadName,coords
-1620015300,영통로,37.2513 127.0686;37.2506 127.0714"></textarea>
-        <button class="ghost" id="nodeLinkApplyBtn3" type="button" style="width:100%;margin-top:6px;">노드링크 부분집합 반영</button>
-        <div class="status-line" id="nodeLinkStatus3">미입력 — 도로명 기준 근사 매칭으로 동작합니다.</div>
-      </div>
-
-      <div class="fieldGroup">
-        <p class="fgTitle">③ 샘플 데이터 (형식 확인 · 오프라인 시연용)</p>
+        <p class="fgTitle">② 샘플 데이터 (형식 확인 · 오프라인 시연용)</p>
         <p class="hint">키 발급 전이거나 외부 네트워크가 막힌 환경에서도 화면이 어떻게 동작하는지 확인할 수 있도록, 실제 응답과 형식이 같은 샘플 한 벌을 내장했습니다.
           샘플이 적용된 동안에는 이 카드·현황 조회·3D 화면 범례 모두에 "샘플 데이터" 표시가 붙으며, 실시간 값처럼 보이지 않습니다.
           내용은 수원시 영통구 일대 도로명 기준이라 다른 지역을 불러오면 매칭 0개가 그대로 나옵니다(억지로 맞추지 않습니다).</p>
         <button class="ghost" id="trafficSampleDlBtn3" type="button" style="width:100%;">샘플 혼잡도 데이터 다운로드 (.csv)</button>
-        <button class="ghost" id="nodeLinkSampleDlBtn3" type="button" style="width:100%;margin-top:6px;">샘플 표준노드링크 부분집합 다운로드 (.csv)</button>
         <button class="ghost" id="trafficDemoBtn3" type="button" style="width:100%;margin-top:6px;">샘플 데이터로 시연 (실데이터 아님)</button>
       </div>
 
@@ -1654,14 +1642,14 @@ BH-2,34.8,4.2,풍화토,2.5,8"></textarea>
       </div>
 
       <div class="fieldGroup">
-        <p class="fgTitle">④ 조회 결과</p>
+        <p class="fgTitle">③ 조회 결과</p>
         <div id="trafficProvenance3"></div>
         <div id="trafficTableWrap3"></div>
         <div id="trafficInterp3"></div>
       </div>
 
       <div class="fieldGroup" style="max-width:640px;">
-        <p class="fgTitle">⑤ 수동 메모 (API가 알려주지 않는 것)</p>
+        <p class="fgTitle">④ 수동 메모 (API가 알려주지 않는 것)</p>
         <p class="hint">공사 차량 진입 제한, 통학시간 통제, 관리사무소 협의 사항처럼 소통정보 API에 들어 있지 않은 조건은 여기에 직접 적어 둡니다.</p>
         <label>교통 메모</label>
         <textarea id="trafficNote" placeholder="예: 주 진입로 사거리 오전 7~9시 상습 정체 — 레미콘 반입은 9시 이후 권장"></textarea>
@@ -5374,7 +5362,7 @@ function nearestPointOnRoads3(px,py){
   for(const road of REAL_ROADS3){
     for(let i=0;i<road.length-1;i++){
       const c = nearestPointOnSegment3(px,py,road[i],road[i+1]);
-      if(!best || c.d < best.d) best = c;
+      if(!best || c.d < best.d){ best = c; best.road = road; } // road: 반입 판정이 이 도로의 혼잡 등급을 읽는다
     }
   }
   return best;
@@ -6002,8 +5990,12 @@ const REAL_ENV_CLUSTER_HULL_COLOR3 = 'rgba(64,70,78,0.92)'; // 밝은 배경용�
    벌어지도록 어두운 무채색 아스팔트 톤으로 잡았다(예전 #AEB5BE는 지면 1.74:1, 건물 윗면 1.50:1로 미달).
    정체와 명도가 비슷하므로 구분은 색조(무채색 vs 적색)와 아래의 <b>중심선을 그리지 않는</b>
    구조적 차이를 둬서 흑백 인쇄에서도 "값이 아니라 부재"임이 구분되게 했다. */
-const TRAFFIC_TIER_LABEL3 = { 0:'정보없음', 1:'원활', 2:'지체', 3:'정체' };
-const TRAFFIC_TIER_COLOR3 = { 1:'#55A870', 2:'#946408', 3:'#7F1D16' };
+/* [4단계] TMAP 교통정보 API 의 congestion 정의를 그대로 따른다: 0 정보없음 / 1 원활 / 2 서행 / 3 지체 / 4 정체.
+   램프 명도(L*): 원활 62.6 → 서행 55 → 지체 46.2 → 정체 28.0 — 회색조 인쇄에서도 순서가 읽힌다. */
+const TRAFFIC_TIER_LABEL3 = { 0:'정보없음', 1:'원활', 2:'서행', 3:'지체', 4:'정체' };
+const TRAFFIC_TIER_COLOR3 = { 1:'#55A870', 2:'#8C8512', 3:'#946408', 4:'#7F1D16' };
+const TRAFFIC_TIER_MAX3 = 4;
+function isTrafficTier3(t){ return t === 1 || t === 2 || t === 3 || t === 4; }
 const TRAFFIC_NODATA_COLOR3 = '#3E434B';
 const TRAFFIC_LINK_MATCH_TOL_MM3 = 40000; // 40m — 표준노드링크 기하와 OSM way 를 같은 도로로 볼 최대 평균 이격
 
@@ -6042,9 +6034,9 @@ const TRAFFIC_SPEED_SMOOTH3 = 25; // km/h 이상 = 원활
 const TRAFFIC_SPEED_SLOW3 = 15;   // km/h 이상 = 지체, 미만 = 정체
 function tierFromSpeed3(spd){
   if(spd === null || spd === undefined || !isFinite(spd)) return null;
-  if(spd >= TRAFFIC_SPEED_SMOOTH3) return 1;
-  if(spd >= TRAFFIC_SPEED_SLOW3) return 2;
-  return 3;
+  if(spd >= TRAFFIC_SPEED_SMOOTH3) return 1; // 원활
+  if(spd >= TRAFFIC_SPEED_SLOW3) return 3;   // 지체 (속도만으로는 서행/지체를 나누지 않는다)
+  return 4;                                   // 정체
 }
 function trafficPick3(obj, names){
   const keys = Object.keys(obj || {});
@@ -6076,7 +6068,7 @@ function normalizeTrafficRecord3(o){
   rec.linkLength = num(trafficPick3(o, ['linkLength','LINK_LENGTH','length','구간길이']));
   const raw = trafficPick3(o, ['congestion','congest','cgestId','linkCongest','congestionLevel','혼잡도']);
   const t = parseInt(raw, 10);
-  if(!isNaN(t) && t >= 0 && t <= 3){ rec.tier = t; rec.tierSource = 'api'; }
+  if(!isNaN(t) && t >= 0 && t <= TRAFFIC_TIER_MAX3){ rec.tier = t; rec.tierSource = 'api'; }
   else {
     const st = tierFromSpeed3(rec.spd);
     rec.tier = (st === null) ? 0 : st;
@@ -6256,7 +6248,7 @@ function applyTrafficToRoads3(){
     roadsAggregated: 0, roadsSpread: 0,
     recordsTotal: 0, recordsMatched: 0, recordsUnmatched: 0,
     tierFromSpeed: 0, tierFromApi: 0, tierUnknown: 0,
-    tiers: { 1:0, 2:0, 3:0 },
+    tiers: { 1:0, 2:0, 3:0, 4:0 },
     osmNamed: 0,
   };
   for(const r of roads){ if(r.osmName) stats.osmNamed++; }
@@ -6346,7 +6338,7 @@ function applyTrafficToRoads3(){
   }
   // 매칭 방식별 도로 수는 최종 결과(각 도로가 실제로 어떤 방식으로 색을 얻었는지)에서 센다.
   for(const r of roads){
-    if(r.trafficTier === 1 || r.trafficTier === 2 || r.trafficTier === 3){
+    if(isTrafficTier3(r.trafficTier)){
       stats.roadsWithData++;
       stats.tiers[r.trafficTier]++;
       if(r.trafficMatch === 'link') stats.byLink++;
@@ -6386,30 +6378,49 @@ function clearTrafficData3(){
 }
 
 /* ---- 어댑터 ---- */
-/* GITS(경기도교통정보센터) — getRoadLinkCongestInfo.
-   좌표/bbox 조회를 지원하지 않으므로 routeId 또는 linkId 를 반드시 지정해야 한다.
-   "이 현장 반경 1km 를 전부 주세요"라는 질의는 이 API에 존재하지 않는다는 뜻이고,
-   그 사실을 UI에도 그대로 적어 둔다. */
-const GITS_ENDPOINT3 = 'https://openapigits.gg.go.kr/api/rest/getRoadLinkCongestInfo';
-async function fetchGitsCongest3(serviceKey, mode, ids){
-  const list = String(ids || '').split(/[\s,]+/).map(s => s.trim()).filter(Boolean);
-  const records = [];
-  let procDate = '';
-  const queries = list.length ? list : [null];
-  for(const id of queries){
-    const params = ['serviceKey=' + encodeURIComponent(serviceKey)];
-    if(id) params.push((mode === 'linkId' ? 'linkId=' : 'routeId=') + encodeURIComponent(id));
-    const res = await fetch(GITS_ENDPOINT3 + '?' + params.join('&'));
-    const text = await res.text();
-    if(!res.ok) throw new Error(`HTTP ${res.status} — ` + text.slice(0, 160));
-    const parsed = parseTrafficResponse3(text);
-    if(!parsed.records.length && !records.length && list.length <= 1){
-      throw new Error('응답에 링크 레코드가 없습니다. 원문: ' + text.slice(0, 160));
-    }
-    for(const r of parsed.records) records.push(r);
-    if(!procDate && parsed.procDate) procDate = parsed.procDate;
+/* TMAP 교통정보 — 현장 좌표 중심 반경 조회. 웹 배포에서는 같은 도메인의 /api/traffic 이 서버 키로 TMAP 을 대신 부르고,
+   로컬에서는 브라우저가 appKey 헤더를 붙여 직접 부른다. 응답은 GeoJSON(FeatureCollection · LineString) 이며
+   properties 에 name / speed / congestion(0~4) / distance 등이 온다. 필드명은 문서 버전에 따라 다를 수 있어
+   normalizeTrafficRecord3 의 후보 이름 목록으로 받는다. */
+const TMAP_TRAFFIC_ENDPOINT3 = 'https://apis.openapi.sk.com/tmap/traffic';
+async function fetchTmapTraffic3(lat, lng, radiusIdx, appKey){
+  const url = WEB_HOSTED3
+    ? `/api/traffic?lat=${lat}&lng=${lng}&radius=${radiusIdx}`
+    : `${TMAP_TRAFFIC_ENDPOINT3}?version=1&centerLat=${lat}&centerLon=${lng}&radius=${radiusIdx}&trafficType=AROUND&zoomLevel=16&reqCoordType=WGS84GEO&resCoordType=WGS84GEO`;
+  const headers = { 'Accept': 'application/json' };
+  if(!WEB_HOSTED3) headers['appKey'] = appKey;
+  const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 20000);
+  let res, text;
+  try{ res = await fetch(url, { headers, signal: ctl.signal }); text = await res.text(); }
+  finally{ clearTimeout(timer); }
+  if(!res.ok){
+    let detail = text.slice(0, 200);
+    try{ const j = JSON.parse(text); detail = (j && (j.last || j.error || (j.error && j.error.message))) ? String(j.last || j.error.message || j.error) : detail; }catch(_){}
+    throw new Error(`HTTP ${res.status} — ${detail}`);
   }
-  return { records, procDate };
+  let geo; try{ geo = JSON.parse(text); }catch(e){ throw new Error('응답이 JSON 이 아닙니다: ' + text.slice(0, 120)); }
+  const feats = Array.isArray(geo && geo.features) ? geo.features : [];
+  const records = [], linkGeom = new Map();
+  feats.forEach((f, i) => {
+    const pr = f.properties || {};
+    const id = String(trafficPick3(pr, ['id','linkId','link_id','index']) || f.id || ('TMAP-' + i));
+    const rec = normalizeTrafficRecord3(Object.assign({ linkId: id }, pr));
+    // TMAP 필드명 보정: distance → 구간길이, name → 도로명 (후보 목록에 없는 이름만 여기서 붙인다)
+    if(rec.linkLength === null){ const d = parseFloat(trafficPick3(pr, ['distance','dist'])); if(isFinite(d)) rec.linkLength = d; }
+    if(!rec.routeNm) rec.routeNm = trafficPick3(pr, ['name','roadName','road_name']);
+    if(!rec.startNodeNm) rec.startNodeNm = trafficPick3(pr, ['startNodeName','fromName']);
+    if(!rec.endNodeNm) rec.endNodeNm = trafficPick3(pr, ['endNodeName','toName']);
+    records.push(rec);
+    const g = f.geometry;
+    if(g && g.type === 'LineString' && Array.isArray(g.coordinates)){
+      const pts = g.coordinates.filter(c => Array.isArray(c) && c.length >= 2).map(c => ({ lat: +c[1], lng: +c[0] }));
+      if(pts.length >= 2) linkGeom.set(id, { name: rec.routeNm, pts });
+    }else if(g && g.type === 'MultiLineString' && Array.isArray(g.coordinates)){
+      const pts = []; for(const line of g.coordinates) for(const c of line) if(Array.isArray(c) && c.length >= 2) pts.push({ lat: +c[1], lng: +c[0] });
+      if(pts.length >= 2) linkGeom.set(id, { name: rec.routeNm, pts });
+    }
+  });
+  return { records, linkGeom, featureCount: feats.length };
 }
 
 /* ---- 샘플(시연용) 데이터 ---- */
@@ -6420,16 +6431,16 @@ async function fetchGitsCongest3(serviceKey, mode, ids){
    다른 지역이면 매칭 0개가 그대로 표시된다(억지로 맞추지 않는다). */
 const SAMPLE_TRAFFIC_CSV3 =
 'procDate,routeId,routeNm,linkId,startNodeNm,endNodeNm,spd,trvlTime,linkLength,routeWay,congestion\n' +
-'20260918090000,SAMPLE-01,영통로,SAMPLE-L001,영통입구,영통역,18,96,480,1,2\n' +
-'20260918090000,SAMPLE-01,영통로,SAMPLE-L002,영통역,황골마을,11,204,620,1,3\n' +
+'20260918090000,SAMPLE-01,영통로,SAMPLE-L001,영통입구,영통역,18,96,480,1,3\n' +
+'20260918090000,SAMPLE-01,영통로,SAMPLE-L002,영통역,황골마을,11,204,620,1,4\n' +
 '20260918090000,SAMPLE-02,봉영로,SAMPLE-L003,신나무실,망포역,32,79,700,1,1\n' +
 '20260918090000,SAMPLE-02,봉영로,SAMPLE-L004,망포역,매탄공원,26,111,800,1,1\n' +
-'20260918090000,SAMPLE-03,덕영대로,SAMPLE-L005,원천삼거리,아주대삼거리,9,360,900,1,3\n' +
-'20260918090000,SAMPLE-03,덕영대로,SAMPLE-L006,아주대삼거리,광교사거리,21,120,700,2,2\n' +
+'20260918090000,SAMPLE-03,덕영대로,SAMPLE-L005,원천삼거리,아주대삼거리,9,360,900,1,4\n' +
+'20260918090000,SAMPLE-03,덕영대로,SAMPLE-L006,아주대삼거리,광교사거리,21,120,700,2,3\n' +
 '20260918090000,SAMPLE-04,중부대로,SAMPLE-L007,영통사거리,법원사거리,38,66,700,1,1\n' +
-'20260918090000,SAMPLE-05,매영로,SAMPLE-L008,매탄동,영통동,14,167,650,1,3\n' +
+'20260918090000,SAMPLE-05,매영로,SAMPLE-L008,매탄동,영통동,14,167,650,1,4\n' +
 '20260918090000,SAMPLE-06,월드컵로,SAMPLE-L009,월드컵경기장,원천리천,29,87,700,1,1\n' +
-'20260918090000,SAMPLE-07,센트럴타운로,SAMPLE-L010,광교중앙역,광교호수공원,23,94,600,1,2\n';
+'20260918090000,SAMPLE-07,센트럴타운로,SAMPLE-L010,광교중앙역,광교호수공원,23,94,600,1,3\n';
 const SAMPLE_NODELINK_CSV3 =
 'linkId,roadName,coords\n' +
 'SAMPLE-L001,영통로,37.2513 127.0686;37.2506 127.0714\n' +
@@ -6466,7 +6477,7 @@ function loadSampleTraffic3(){
 /* ---- 도로 렌더링 색 결정 ---- */
 function trafficRoadFill3(road){
   const tier = road ? road.trafficTier : null;
-  if(tier === 1 || tier === 2 || tier === 3) return TRAFFIC_TIER_COLOR3[tier];
+  if(isTrafficTier3(tier)) return TRAFFIC_TIER_COLOR3[tier];
   return TRAFFIC_NODATA_COLOR3;
 }
 /* 캔버스 위 범례 — 교통 보기 모드에서만 나타나고, 시공 상태 범례와 절대 같이 뜨지 않는다.
@@ -6479,9 +6490,7 @@ function updateTrafficLegend3(){
   const d = TRAFFIC_DATA3;
   const esc = (t) => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   let html = '<div class="tlTitle">교통 혼잡도 보기' + (d.sample ? ' <span class="tlSample">샘플 데이터</span>' : '') + '</div>';
-  html += '<div class="tlRow"><span class="tlSw" style="background:' + TRAFFIC_TIER_COLOR3[1] + '"></span>원활</div>';
-  html += '<div class="tlRow"><span class="tlSw" style="background:' + TRAFFIC_TIER_COLOR3[2] + '"></span>지체</div>';
-  html += '<div class="tlRow"><span class="tlSw" style="background:' + TRAFFIC_TIER_COLOR3[3] + '"></span>정체</div>';
+  for(let t = 1; t <= TRAFFIC_TIER_MAX3; t++) html += '<div class="tlRow"><span class="tlSw" style="background:' + TRAFFIC_TIER_COLOR3[t] + '"></span>' + TRAFFIC_TIER_LABEL3[t] + '</div>';
   html += '<div class="tlRow"><span class="tlSw" style="background:' + TRAFFIC_NODATA_COLOR3 + '"></span>데이터 없음 (중심선 없음)</div>';
   if(!trafficHasData3()){
     html += '<div class="tlNote">혼잡도 데이터가 없습니다 — 모든 도로를 회색으로 표시합니다. 값을 추정해 칠하지 않습니다.</div>';
@@ -6496,6 +6505,8 @@ function updateTrafficLegend3(){
     const age = trafficAgeText3();
     html += '<div class="tlNote">기준시각 ' + esc(pd || '정보 없음') + (age ? ' · ' + esc(age) : '') + '</div>';
     html += '<div class="tlNote">출처 ' + esc(d.sourceLabel || '알 수 없음') + '</div>';
+    const v = equipAccessVerdict3();
+    html += '<div class="tlVerdict" data-tier="' + (v.tier || 0) + '"><span class="tlSw" style="background:' + (isTrafficTier3(v.tier) ? TRAFFIC_TIER_COLOR3[v.tier] : TRAFFIC_NODATA_COLOR3) + '"></span><b>반입 ' + esc(v.label) + '</b> — ' + esc(v.reason) + '</div>';
   }
   box.innerHTML = html;
   box.style.display = 'block'; // CSS 기본값이 none 이라 '' 로 두면 다시 숨겨진다
@@ -6704,6 +6715,20 @@ function getRealEnvFarBuildingCells3(){
    직선 최단거리이므로 실제 진입 가능 여부(도로 폭·경사·진입 금지 구간)는 판단하지 않는다. ============================================================ */
 let equipAccessVisible3 = true;
 let _equipAccessCache3 = null;
+/* [반입 판정] 장비 진입로가 닿는 도로(배치 위치에서 가장 가까운 실측 도로)의 혼잡 등급으로 '지금 반입해도 되는가'를 판정한다.
+   규칙(화면에 그대로 적는다): 원활·서행 → 적합 / 지체 → 주의 / 정체 → 보류 / 데이터 없음 → 판단 불가.
+   그 도로에 여러 구간이 걸려 있으면 가장 나쁜 등급(trafficTier 는 이미 최악값)으로 본다 — 보수적. */
+function equipAccessVerdict3(){
+  const pt = (typeof getEquipAccess3 === 'function') ? getEquipAccess3() : null;
+  const road = pt && pt.road;
+  if(!road) return { label: '판단 불가', tier: 0, reason: '장비 진입로가 닿는 도로가 없습니다(실 환경 도로 데이터 필요)' };
+  const t = road.trafficTier;
+  const name = road.osmName || (road.trafficRec && road.trafficRec.routeNm) || '이름 없는 도로';
+  if(!isTrafficTier3(t)) return { label: '판단 불가', tier: 0, road, reason: '진입로 도로(' + name + ')에 혼잡도 데이터가 없습니다' };
+  const rule = { 1:'적합', 2:'적합', 3:'주의', 4:'보류' };
+  const why = { 1:'원활', 2:'서행 — 배차 간격에 여유', 3:'지체 — 연속 배차(레미콘 등)는 간격 확대', 4:'정체 — 타설·연속 반입은 시각 변경 검토' };
+  return { label: rule[t], tier: t, road, reason: '진입로 도로(' + name + ') ' + why[t] + (road.trafficRecCount > 1 ? ' · 구간 ' + road.trafficRecCount + '건 중 최악값' : '') };
+}
 function getEquipAccess3(){
   const sx = siteCX3(), sy = siteCY3();
   const c = _equipAccessCache3;
@@ -8363,6 +8388,14 @@ document.getElementById('envToggleBtn3').addEventListener('click', () => {
   btn.addEventListener('click', () => setTrafficView3(!TRAFFIC_VIEW3));
   setTrafficView3(false); // 초기 라벨/범례 상태 동기화
 })();
+/* 툴바 툴팁: 버튼의 title 을 data-tip 으로 옮겨 CSS 툴팁으로 보여준다. 기존 코드가 title 을 바꾸면(모드 전환 문구) 그대로 따라간다. */
+(function(){
+  const tb = document.getElementById('viewToolbar3'); if(!tb) return;
+  const move = (el) => { if(el.hasAttribute('title')){ el.dataset.tip = el.getAttribute('title'); el.removeAttribute('title'); } };
+  tb.querySelectorAll('[title]').forEach(move);
+  new MutationObserver((ms) => { for(const m of ms) if(m.type === 'attributes' && m.target.hasAttribute('title')) move(m.target); })
+    .observe(tb, { subtree: true, attributes: true, attributeFilter: ['title'] });
+})();
 document.getElementById('logisticsToggle3').addEventListener('change', (e) => {
   logisticsVisible3 = e.target.checked;
   updateLogisticsNote3();
@@ -9477,7 +9510,7 @@ function trafficMatchLabel3(m){
   return (m === 'link') ? base : (base + '<span class="trApprox">근사</span>');
 }
 function trafficTierCell3(tier, tierSource){
-  if(tier === 1 || tier === 2 || tier === 3){
+  if(isTrafficTier3(tier)){
     return '<span class="trTier"><span class="sw" style="background:' + TRAFFIC_TIER_COLOR3[tier] + '"></span>' +
            ovEsc(TRAFFIC_TIER_LABEL3[tier]) + '</span>' +
            (tierSource === 'speed' ? '<span class="trApprox">속도 기준 자체 분류</span>' : '');
@@ -9561,12 +9594,12 @@ function trafficProvenanceHtml3(){
   const d = TRAFFIC_DATA3;
   const s = d.stats;
   const roadsLoaded = (typeof REAL_ROADS3 !== 'undefined') ? REAL_ROADS3.length : 0;
-  const keyEl = document.getElementById('gitsKey3');
-  const key = keyEl ? keyEl.value.trim() : '';
+  const keyEl = document.getElementById('tmapKey3');
+  const key = WEB_HOSTED3 ? '서버 키(TMAP_APP_KEY)' : (keyEl ? keyEl.value.trim() : '');
   let h = '<div class="trProv"><dl>';
   if(!trafficHasData3()){
     h += '<dt>데이터</dt><dd><span class="trEmpty">아직 조회되지 않았습니다 — 값을 추정해 채우지 않습니다.</span></dd>';
-    h += '<dt>인증키</dt><dd>' + (key ? '입력됨 (' + ovEsc(key.slice(0, 4)) + '…, ' + key.length + '자)' : '<span class="trEmpty">미입력</span>') + '</dd>';
+    h += '<dt>인증키</dt><dd>' + (WEB_HOSTED3 ? ovEsc(key) : (key ? '입력됨 (' + ovEsc(key.slice(0, 4)) + '…, ' + key.length + '자)' : '<span class="trEmpty">미입력</span>')) + '</dd>';
     h += '<dt>불러온 도로</dt><dd>' + (roadsLoaded ? (roadsLoaded + '개 (탭② 반경 1km)') : '<span class="trEmpty">없음 — 탭②에서 주변 환경을 먼저 반영하세요</span>') + '</dd>';
     h += '</dl></div>';
     return h;
@@ -9574,7 +9607,7 @@ function trafficProvenanceHtml3(){
   const badge = d.sample ? '<span class="trBadge sample">샘플 데이터</span>' : '<span class="trBadge live">API 조회</span>';
   h += '<dt>출처</dt><dd>' + badge + ' ' + ovEsc(d.sourceLabel || '알 수 없음') + '</dd>';
   h += '<dt>인증키</dt><dd>' + (d.sample ? '<span class="trEmpty">해당 없음 (내장 샘플)</span>'
-        : (key ? '입력됨 (' + ovEsc(key.slice(0, 4)) + '…, ' + key.length + '자)' : '<span class="trEmpty">미입력</span>')) + '</dd>';
+        : (WEB_HOSTED3 ? ovEsc(key) : (key ? '입력됨 (' + ovEsc(key.slice(0, 4)) + '…, ' + key.length + '자)' : '<span class="trEmpty">미입력</span>'))) + '</dd>';
   const pd = formatProcDate3(d.procDate);
   const age = trafficAgeText3();
   h += '<dt>데이터 기준시각</dt><dd>' + (pd ? ovEsc(pd) + (age ? ' <span class="trEmpty">(' + ovEsc(age) + ')</span>' : '')
@@ -9587,7 +9620,7 @@ function trafficProvenanceHtml3(){
          (s.roadsTotal ? ' (' + Math.round(s.roadsWithData / s.roadsTotal * 100) + '%)' : '') +
          '<br><span class="trEmpty">이름 태그가 있는 도로 ' + s.osmNamed + '개 — 이름이 없는 도로는 도로명 매칭 대상이 될 수 없습니다.</span></dd>';
     const ways = [];
-    if(s.byLink) ways.push('표준노드링크 기하 ' + s.byLink + '개');
+    if(s.byLink) ways.push('도로 형상 기하 ' + s.byLink + '개');
     if(s.byNameExact) ways.push('도로명 일치 ' + s.byNameExact + '개 (근사)');
     if(s.byNamePartial) ways.push('도로명 부분일치 ' + s.byNamePartial + '개 (근사)');
     h += '<dt>매칭 방식</dt><dd>' + (ways.length ? ovEsc(ways.join(' · ')) : '<span class="trEmpty">매칭된 도로 없음</span>') + '</dd>';
@@ -9613,14 +9646,14 @@ function trafficProvenanceHtml3(){
 function trafficInterpHtml3(){
   if(!trafficHasData3()) return '';
   const roads = (typeof REAL_ROADS3 !== 'undefined') ? REAL_ROADS3 : [];
-  const withData = roads.filter(r => r.trafficTier === 1 || r.trafficTier === 2 || r.trafficTier === 3);
+  const withData = roads.filter(r => isTrafficTier3(r.trafficTier));
   let h = '<div class="trInterp"><h4>시공 관점 해석 (아래 숫자에서 끌어낸 판단 — API의 결론이 아닙니다)</h4>';
   if(TRAFFIC_DATA3.sample){
     h += '<p><b>샘플 데이터 기준입니다.</b> 실제 현장 판단에 사용하지 마십시오.</p>';
   }
   if(!withData.length){
     h += '<p>불러온 도로 중 혼잡도가 붙은 도로가 없어 반입 시간대 해석을 제시하지 않습니다. ' +
-         '주택가 소로·이면도로는 무료 소통정보에 포함되지 않는 것이 일반적이며, 이 경우 아래 ⑤ 수동 메모로 보완해야 합니다.</p>';
+         '주택가 소로·이면도로는 무료 소통정보에 포함되지 않는 것이 일반적이며, 이 경우 아래 ④ 수동 메모로 보완해야 합니다.</p>';
     h += '</div>';
     return h;
   }
@@ -9652,31 +9685,61 @@ function trafficInterpHtml3(){
     h += '<li>' + line + '</li>';
   }
   h += '</ul>';
-  if(worst === 3){
+  if(worst === 4){
     h += '<p>가장 가까운 접근로가 <b>정체</b>입니다. 레미콘은 비빔 시작부터 타설 완료까지의 운반 시간 한도(KS F 4009 기준 외기 25℃ 미만 90분, ' +
          '25℃ 이상 60분)가 있어, 이 시각대에 연속 반입을 잡으면 대기 중 한도를 넘길 위험이 있습니다. ' +
          '타설 시작 시각을 옮기거나 배차 간격을 늘려 잡는 쪽을 먼저 검토하십시오.</p>';
-  }else if(worst === 2){
+  }else if(worst === 3){
     h += '<p>가장 가까운 접근로가 <b>지체</b> 수준입니다. 단발 자재 반입에는 큰 제약이 없지만, 레미콘처럼 연속 배차가 필요한 작업은 ' +
          '차량 간 간격을 평소보다 넓게 잡아 현장 앞 대기 행렬이 생기지 않게 하는 편이 안전합니다.</p>';
+  }else if(worst === 2){
+    h += '<p>가장 가까운 접근로가 <b>서행</b>입니다. 반입은 가능하지만 도착 시각 편차가 커지므로 배차 간격에 여유를 두십시오.</p>';
   }else{
     h += '<p>가장 가까운 접근로가 <b>원활</b>합니다. 이 시각 기준으로는 반입 차량 진입에 큰 제약이 없는 상태입니다.</p>';
   }
   h += '<p class="trCaveat">이 해석은 위 표의 실제 값(속도·구간길이·수집시각)에서만 끌어낸 것이며, API가 알려준 결론이 아닙니다. ' +
-       '또한 <b>한 시점의 값</b>이므로 시간대별 패턴(출퇴근 첨두 등)은 이 응답 하나로는 알 수 없습니다 — 필요한 시각에 다시 조회하거나 ⑤ 수동 메모로 보완하십시오.' +
+       '또한 <b>한 시점의 값</b>이므로 시간대별 패턴(출퇴근 첨두 등)은 이 응답 하나로는 알 수 없습니다 — 필요한 시각에 다시 조회하거나 ④ 수동 메모로 보완하십시오.' +
        '</p></div>';
+  return h;
+}
+/* 요약 카드 — 등급별 도로 수·평균 속도·기준시각·데이터 없는 도로 수를 한 줄로, 그 아래 반입 판정. 값은 stats/records 에서만 끌어낸다. */
+function trafficSummaryHtml3(){
+  if(!trafficHasData3()) return '';
+  const d = TRAFFIC_DATA3, s = d.stats || { tiers:{1:0,2:0,3:0,4:0}, roadsTotal:0, roadsWithData:0 };
+  const spds = d.records.map(r => r.spd).filter(v => v !== null && isFinite(v));
+  const avg = spds.length ? (spds.reduce((a,b) => a+b, 0) / spds.length) : null;
+  const noData = Math.max(0, s.roadsTotal - s.roadsWithData);
+  let h = '<div class="trSum">';
+  for(let t = 1; t <= TRAFFIC_TIER_MAX3; t++){
+    h += '<div class="cell"><div class="k"><span class="sw" style="background:' + TRAFFIC_TIER_COLOR3[t] + '"></span>' + TRAFFIC_TIER_LABEL3[t] + '</div>' +
+         '<div class="v">' + (s.tiers[t] || 0) + '<small>개 도로</small></div></div>';
+  }
+  h += '<div class="cell"><div class="k"><span class="sw" style="background:' + TRAFFIC_NODATA_COLOR3 + '"></span>데이터 없음</div><div class="v">' + noData + '<small>개 도로</small></div></div>';
+  h += '<div class="cell"><div class="k">평균 속도</div><div class="v">' + (avg === null ? '-' : avg.toFixed(0)) + '<small>km/h · 링크 ' + spds.length + '건</small></div></div>';
+  h += '<div class="cell"><div class="k">기준시각</div><div class="v" style="font-size:13px;">' + ovEsc(formatProcDate3(d.procDate) || (d.fetchedAt ? d.fetchedAt.toLocaleString('ko-KR') : '-')) +
+       '<small>' + (d.procDate ? '수집시각' : '조회시각') + (d.sample ? ' · 샘플' : '') + '</small></div></div>';
+  if(s.roadsTotal){
+    h += '<div class="bar">';
+    for(let t = 1; t <= TRAFFIC_TIER_MAX3; t++) h += '<span style="width:' + ((s.tiers[t] || 0) / s.roadsTotal * 100) + '%;background:' + TRAFFIC_TIER_COLOR3[t] + '"></span>';
+    h += '<span style="width:' + (noData / s.roadsTotal * 100) + '%;background:' + TRAFFIC_NODATA_COLOR3 + '"></span></div>';
+  }
+  const v = equipAccessVerdict3();
+  h += '<div class="verdict"><span class="sw" style="background:' + (isTrafficTier3(v.tier) ? TRAFFIC_TIER_COLOR3[v.tier] : TRAFFIC_NODATA_COLOR3) + '"></span>' +
+       '<b>반입 ' + ovEsc(v.label) + '</b><span>' + ovEsc(v.reason) + '</span>' +
+       '<span class="rule">규칙: 진입로 도로 최악 등급 — 원활·서행 적합 / 지체 주의 / 정체 보류 / 데이터 없음 판단 불가</span></div>';
+  h += '</div>';
   return h;
 }
 function renderTrafficPanel3(){
   const prov = document.getElementById('trafficProvenance3');
   const tbl = document.getElementById('trafficTableWrap3');
   const itp = document.getElementById('trafficInterp3');
-  if(prov) prov.innerHTML = trafficProvenanceHtml3();
+  if(prov) prov.innerHTML = trafficSummaryHtml3() + trafficProvenanceHtml3();
   if(tbl){
     if(trafficHasData3()){
       tbl.innerHTML = trafficTableHtml3(true) +
         '<p class="trNote">머리글을 누르면 정렬됩니다. "근사" 표시가 붙은 행은 도로명으로 붙인 것이라 같은 이름의 여러 구간에 같은 값이 칠해집니다 — ' +
-        '구간 단위 정밀도가 필요하면 위 ②에서 표준노드링크 부분집합을 올리십시오.</p>';
+        '형상 기하로 붙은 행은 응답의 도로 선형을 화면 도로에 40m 이내로 맞춘 것입니다.</p>';
     }else{
       tbl.innerHTML = '';
     }
@@ -9697,67 +9760,46 @@ function renderTrafficPanel3(){
   });
 })();
 
-/* ---- 조회/샘플/노드링크 배선 ---- */
+/* ---- 조회/샘플 배선 ---- */
 (function(){
-  const sel = document.getElementById('trafficSourceSel3');
-  const gitsFields = document.getElementById('trafficGitsFields3');
   const status = document.getElementById('trafficStatus3');
   const setStatus = (t, cls) => { if(status){ status.textContent = t; status.className = 'status-line' + (cls ? ' ' + cls : ''); } };
-
-  function syncSource(){
-    if(gitsFields && sel) gitsFields.style.display = (sel.value === 'gits') ? '' : 'none';
-  }
-  if(sel){ sel.addEventListener('change', syncSource); syncSource(); }
+  // 웹 배포에서는 서버가 키를 보관하므로 키 칸을 숨긴다
+  if(WEB_HOSTED3){ const kf = document.getElementById('trafficKeyField3'); if(kf) kf.hidden = true; }
 
   const fetchBtn = document.getElementById('trafficFetchBtn3');
   if(fetchBtn) fetchBtn.addEventListener('click', async () => {
-    const source = sel ? sel.value : 'gits';
-    if(source === 'sample'){
-      const n = loadSampleTraffic3();
-      setStatus('샘플 데이터 ' + n + '건을 불러왔습니다 — 실시간 값이 아닙니다.', 'ok');
-      renderTrafficPanel3();
-      return;
-    }
-    const key = (document.getElementById('gitsKey3').value || '').trim();
-    const mode = document.getElementById('trafficQueryMode3').value;
-    const ids = (document.getElementById('trafficQueryIds3').value || '').trim();
-    if(!key){ setStatus('오류: GITS 서비스키를 입력하세요. (openapigits.gg.go.kr 무료 등록)', 'err'); return; }
-    if(!ids){
-      setStatus('오류: 조회할 노선ID 또는 링크ID를 입력하세요 — 이 API는 좌표/영역 조회를 지원하지 않아 ID 없이는 질의할 수 없습니다.', 'err');
-      return;
-    }
-    setStatus('GITS 조회 중… (' + mode + ' 기준)', '');
+    const origin = (typeof WEATHER_ORIGIN3 !== 'undefined' && WEATHER_ORIGIN3 && isFinite(WEATHER_ORIGIN3.lat)) ? WEATHER_ORIGIN3
+                 : ((typeof SITE_ORIGIN_LATLNG3 !== 'undefined' && SITE_ORIGIN_LATLNG3) ? SITE_ORIGIN_LATLNG3 : null);
+    if(!origin){ setStatus('오류: 현장 좌표가 없습니다 — 탭②에서 주소를 검색해 주변 환경을 먼저 반영하세요.', 'err'); return; }
+    const radiusIdx = Number(document.getElementById('trafficRadiusSel3').value) || 4;
+    const key = (document.getElementById('tmapKey3').value || '').trim();
+    if(!WEB_HOSTED3 && !key){ setStatus('오류: TMAP appKey 를 입력하세요. (openapi.sk.com 가입 후 앱 생성 → appKey)', 'err'); return; }
+    setStatus('TMAP 교통정보 조회 중… (반경 ' + (radiusIdx * 300) + 'm, ' + (WEB_HOSTED3 ? '서버 중계' : '브라우저 직접') + ')', '');
     try{
-      const { records, procDate } = await fetchGitsCongest3(key, mode, ids);
+      const { records, linkGeom, featureCount } = await fetchTmapTraffic3(origin.lat, origin.lng, radiusIdx, key);
       if(!records.length){
-        setStatus('정보 없음 — 응답은 받았지만 링크 레코드가 없습니다. ID가 맞는지, 해당 노선이 이 서비스 대상인지 확인하십시오.', 'err');
-        clearTrafficData3();
-        renderTrafficPanel3();
-        return;
+        setStatus('정보 없음 — 응답은 받았지만 도로 레코드가 없습니다(feature ' + featureCount + '개). 반경을 넓혀 다시 조회해 보십시오.', 'err');
+        clearTrafficData3(); renderTrafficPanel3(); return;
       }
-      setTrafficData3({
-        source: 'gits',
-        sourceLabel: '경기도 교통정보센터(GITS) getRoadLinkCongestInfo',
-        sample: false, records, procDate,
-      });
+      TRAFFIC_DATA3.linkGeom = linkGeom;
+      TRAFFIC_DATA3.linkGeomLabel = 'TMAP 응답의 도로 형상 (링크 ' + linkGeom.size + '개)';
+      setTrafficData3({ source: 'tmap', sourceLabel: 'TMAP 교통정보 API (반경 ' + (radiusIdx * 300) + 'm)', sample: false, records, procDate: '' });
       const s = TRAFFIC_DATA3.stats;
-      setStatus('조회 완료 — 레코드 ' + records.length + '건' +
-        (s ? (' · 도로 ' + s.roadsTotal + '개 중 ' + s.roadsWithData + '개에 매칭') : '') + '.', 'ok');
+      const graded = records.filter(r => isTrafficTier3(r.tier)).length;
+      setStatus('조회 완료 — 링크 ' + records.length + '건(등급 있음 ' + graded + '건)' +
+        (s ? (' · 화면 도로 ' + s.roadsTotal + '개 중 ' + s.roadsWithData + '개에 매칭') : '') + '.', 'ok');
       renderTrafficPanel3();
     }catch(err){
-      /* 조회 실패로 이전에 불러둔 데이터를 지우지는 않는다(일시적 오류로 멀쩡한 데이터를
-         날리는 편이 더 나쁘다). 대신 "지금 화면에 보이는 것은 이전 조회분"이라는 사실을
-         기준시각과 함께 명시해, 실패했는데 최신처럼 보이는 상황을 막는다. */
-      const prev = trafficHasData3()
-        ? ' 이전에 불러온 데이터(기준시각 ' + (formatProcDate3(TRAFFIC_DATA3.procDate) || '정보 없음') + ')가 그대로 적용된 상태입니다.'
-        : '';
-      setStatus('정보 없음 — GITS 조회 실패 (' + err.message + '). 값을 임의로 채우지 않습니다.' + prev, 'err');
+      const prev = trafficHasData3() ? ' 이전에 불러온 데이터(조회 ' + (TRAFFIC_DATA3.fetchedAt ? TRAFFIC_DATA3.fetchedAt.toLocaleString('ko-KR') : '시각 미상') + ')가 그대로 적용된 상태입니다.' : '';
+      setStatus('정보 없음 — TMAP 조회 실패 (' + err.message + '). 값을 임의로 채우지 않습니다.' + prev, 'err');
       renderTrafficPanel3();
     }
   });
 
   const clearBtn = document.getElementById('trafficClearBtn3');
   if(clearBtn) clearBtn.addEventListener('click', () => {
+    TRAFFIC_DATA3.linkGeom = new Map(); TRAFFIC_DATA3.linkGeomLabel = '';
     clearTrafficData3();
     setStatus('불러온 혼잡도 데이터를 해제했습니다 — 모든 도로가 "데이터 없음"으로 돌아갑니다.', '');
     renderTrafficPanel3();
@@ -9766,64 +9808,17 @@ function renderTrafficPanel3(){
   const demoBtn = document.getElementById('trafficDemoBtn3');
   if(demoBtn) demoBtn.addEventListener('click', () => {
     const n = loadSampleTraffic3();
-    if(sel){ sel.value = 'sample'; syncSource(); }
     const s = TRAFFIC_DATA3.stats;
-    setStatus('샘플 데이터 ' + n + '건 적용 (실데이터 아님)' +
-      (s ? (' — 도로 ' + s.roadsTotal + '개 중 ' + s.roadsWithData + '개 매칭') : '') + '.', 'ok');
+    setStatus('샘플 데이터 ' + n + '건 적용 (실데이터 아님)' + (s ? (' — 도로 ' + s.roadsTotal + '개 중 ' + s.roadsWithData + '개 매칭') : '') + '.', 'ok');
     renderTrafficPanel3();
   });
 
-  const dl = (text, name) => {
-    const blob = new Blob([text], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  };
   const sdl = document.getElementById('trafficSampleDlBtn3');
-  if(sdl) sdl.addEventListener('click', () => dl(SAMPLE_TRAFFIC_CSV3, '샘플_교통혼잡도(실데이터아님).csv'));
-  const ndl = document.getElementById('nodeLinkSampleDlBtn3');
-  if(ndl) ndl.addEventListener('click', () => dl(SAMPLE_NODELINK_CSV3, '샘플_표준노드링크부분집합(실데이터아님).csv'));
-
-  const nlStatus = document.getElementById('nodeLinkStatus3');
-  const setNl = (t, cls) => { if(nlStatus){ nlStatus.textContent = t; nlStatus.className = 'status-line' + (cls ? ' ' + cls : ''); } };
-  const nlApply = document.getElementById('nodeLinkApplyBtn3');
-  if(nlApply) nlApply.addEventListener('click', () => {
-    const text = (document.getElementById('nodeLinkCsv3').value || '').trim();
-    if(!text){ setNl('오류: 내용을 붙여넣거나 파일을 선택하세요.', 'err'); return; }
-    try{
-      const { map, withGeom } = parseNodeLinkSubset3(text);
-      TRAFFIC_DATA3.linkGeom = map;
-      TRAFFIC_DATA3.linkGeomLabel = '사용자 업로드 표준노드링크 부분집합 (링크 ' + map.size + '개 · 좌표 있음 ' + withGeom + '개)';
-      refreshTrafficLayer3();
-      const s = TRAFFIC_DATA3.stats;
-      /* 반영 자체는 성공했어도 "지금 불러온 혼잡도 레코드의 링크ID"와 겹치지 않으면 기하 매칭은 0개다.
-         그 경우까지 초록(ok)으로 칠하면 성공한 것처럼 읽히므로 색을 빼고 사실만 적는다. */
-      const geomHit = (s && trafficHasData3()) ? s.byLink : null;
-      setNl('링크 ' + map.size + '개 반영 (좌표 있음 ' + withGeom + '개)' +
-        (geomHit === null
-          ? ' — 혼잡도를 조회하면 기하 기준으로 매칭됩니다.'
-          : (geomHit > 0
-             ? (' — 기하 매칭 ' + geomHit + '개')
-             : ' — 다만 지금 불러온 혼잡도 레코드의 링크ID와 겹치는 것이 없어 기하 매칭은 0개입니다(도로명 매칭으로 동작).')),
-        geomHit === 0 ? '' : 'ok');
-      renderTrafficPanel3();
-    }catch(err){
-      setNl('오류: 노드링크 부분집합을 읽지 못했습니다 — ' + err.message, 'err');
-    }
-  });
-  const nlFile = document.getElementById('nodeLinkFile3');
-  if(nlFile) nlFile.addEventListener('change', (e) => {
-    const f = e.target.files && e.target.files[0];
-    if(!f) return;
-    const rd = new FileReader();
-    rd.onload = () => {
-      document.getElementById('nodeLinkCsv3').value = String(rd.result || '');
-      setNl('파일 "' + f.name + '"을 읽었습니다 — "노드링크 부분집합 반영"을 누르세요.', '');
-    };
-    rd.readAsText(f, 'utf-8');
-    e.target.value = '';
+  if(sdl) sdl.addEventListener('click', () => {
+    const blob = new Blob([SAMPLE_TRAFFIC_CSV3], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = '샘플_교통혼잡도(실데이터아님).csv'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
 
   renderTrafficPanel3();
@@ -10021,11 +10016,11 @@ function refreshSiteOverview3(){
   html += `<tr><th>반입 제한 시간대</th><td>${ovVal(trafficWindow)}</td></tr>`;
   html += '</table>';
   if(trafficRecs){
+    html += trafficSummaryHtml3();
     html += trafficTableHtml3(false);
     html += trafficInterpHtml3();
   }else{
-    html += '<p class="ovNote">무료 소통정보 API(경기도교통정보센터 GITS 등)는 링크ID 기준 조회만 지원하고 좌표/영역 조회를 제공하지 않습니다 — ' +
-            '"정보 입력·갱신"의 ④ 현장 인근 교통에서 노선ID/링크ID를 지정해 조회하거나, 샘플 데이터로 동작을 확인할 수 있습니다.</p>';
+    html += '<p class="ovNote">"정보 입력·갱신"의 4 현장 인근 교통에서 TMAP 교통정보를 조회하거나(현장 좌표 필요), 샘플 데이터로 동작을 확인할 수 있습니다.</p>';
   }
   html += '<p class="ovNote">주택가 소로·이면도로는 무료 소통정보에 대체로 포함되지 않습니다 — 그런 도로는 색을 추정하지 않고 "데이터 없음"으로 남기며, 위 "도로 매칭" 숫자가 그 비율을 그대로 보여줍니다.</p>';
   html += '</div></div>';
@@ -10038,7 +10033,7 @@ function refreshSiteOverview3(){
 (function(){
   const t3 = document.getElementById('t3Sub_input');
   if(t3) ['input','change'].forEach(ev => t3.addEventListener(ev, () => refreshSiteOverview3()));
-  const watched = ['wxStatus','wxTable','kigamStatus3','boreholeStatus3','wxBasis','trafficStatus3','nodeLinkStatus3'];
+  const watched = ['wxStatus','wxTable','kigamStatus3','boreholeStatus3','wxBasis','trafficStatus3'];
   if('MutationObserver' in window){
     const mo = new MutationObserver(() => refreshSiteOverview3());
     watched.forEach(id => {
