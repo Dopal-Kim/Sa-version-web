@@ -810,6 +810,13 @@ body.clientMode #quickDemoBtn{display:inline-block !important;}
 .ifcGenMetric4 .k{font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);letter-spacing:.5px;}
 .ifcGenMetric4 .v{font-family:var(--font-mono);font-size:21px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums;}
 .ifcGenTableWrap4{overflow:auto;max-height:420px;border:1px solid var(--hairline);margin-top:10px;}
+.ifcGanttWrap4{overflow:auto;max-height:560px;border:1px solid var(--hairline);margin-top:10px;background:var(--bg-1);}
+.ifcGanttWrap4 svg{display:block;}
+.ifcGanttWrap4 .gLbl{fill:var(--text-primary);font-size:11.5px;font-family:inherit;}
+.ifcGanttWrap4 .gLblSub{fill:var(--text-muted);font-size:10px;font-family:var(--font-mono);}
+.ifcGanttWrap4 .gHdrBg{fill:var(--bg-2);}
+.ifcGanttWrap4 .gLblBg{fill:var(--bg-1);}
+.ifcGanttWrap4 .gLblLine{stroke:var(--border-strong);stroke-width:1;}
 table.ifcGenTable4{width:100%;border-collapse:collapse;font-size:12.5px;min-width:900px;}
 table.ifcGenTable4 th{position:sticky;top:0;z-index:1;background:var(--bg-2);color:var(--text-secondary);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.35px;text-align:left;padding:7px 8px;border-bottom:1px solid var(--border-strong);white-space:nowrap;}
 table.ifcGenTable4 td{padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
@@ -4142,6 +4149,15 @@ BH-2,34.8,4.2,풍화토,2.5,8"></textarea>
       <div><div class="k">OPTIMIZED BASELINE</div><div class="v" id="ifcSumDays7">-</div></div>
     </div>
 
+    <!-- [간트] 최적 공정표는 간트 차트로 먼저 보여준다(ES→EF 막대·총여유·임계경로·FS 화살표). 표는 아래 접이식. -->
+    <div class="ifcGanttWrap4" id="ifcGanttWrap4"><div class="hint" style="padding:12px;">아직 생성된 최적 공정표가 없습니다 — 위 "최적 공정표 생성 · 검증"을 누르면 여기에 간트 차트가 그려집니다.</div></div>
+    <div class="legend" style="margin-top:6px;">
+      <span><span class="sw" style="background:var(--gantt-bar);"></span>여유 있는 작업</span>
+      <span><span class="sw" style="background:var(--critical);"></span>임계경로(TF=0)</span>
+      <span><span class="sw" style="background:var(--gantt-float);"></span>총여유 구간(ES→LS)</span>
+      <span><span class="sw" style="background:var(--gantt-arrow);height:2px;"></span>선후행 링크</span>
+    </div>
+    <details class="noteBox" style="margin-top:10px;"><summary>표로 보기 — 선행·자원순서·산정 근거</summary><div class="noteBody" style="padding:0;">
     <div class="ifcGenTableWrap4">
       <table class="ifcGenTable4" id="ifcGeneratedTable4">
         <colgroup>
@@ -4152,6 +4168,7 @@ BH-2,34.8,4.2,풍화토,2.5,8"></textarea>
         <tbody id="ifcScheduleBody4"><tr><td colspan="8">아직 생성된 최적 공정표가 없습니다.</td></tr></tbody>
       </table>
     </div>
+    </div></details>
 
     <details class="noteBox" style="margin-top:10px;"><summary>이 최적화가 하는 것 / 하지 않는 것</summary><div class="noteBody">
       <p><b>하는 것:</b> Activity 보존 → Zone 후보 → Hard/Soft 관계 생성 → SS+lag 병행 → 임계공정 우선 자원 스케줄링 → 자원충돌을 FS 링크로 공정표 자체에 고정 → 1번 파서 호환 검증.</p>
@@ -14037,7 +14054,59 @@ function buildIfcSchedule4(){
     document.getElementById('ifcDownloadSchedule4').disabled=true;document.getElementById('ifcApplySchedule4').disabled=true;
   }
 }
+/* [간트] 생성된 최적 공정표(IFC_GENERATED_ROWS4: ES/EF/LS/TF 일 단위, is_critical, predecessor_ids)를 SVG 간트로 그린다.
+   시간축은 프로젝트 시작일이 있으면 달력 날짜, 없으면 상대 일수. 화살표는 링크의 선행 EF → 후행 ES (FS 기준 단순 꺾은선). */
+function renderIfcGantt4(){
+  const wrap=document.getElementById('ifcGanttWrap4'); if(!wrap) return;
+  const rows=IFC_GENERATED_ROWS4.filter(r=>Number.isFinite(Number(r.ES))&&Number.isFinite(Number(r.EF)));
+  if(!rows.length){ wrap.innerHTML='<div class="hint" style="padding:12px;">아직 생성된 최적 공정표가 없습니다 — 위 "최적 공정표 생성 · 검증"을 누르면 여기에 간트 차트가 그려집니다.</div>'; return; }
+  const LW=300, HDR=30, RH=22, PAD=12, esc=escIfc4;
+  const total=Math.max(1,...rows.map(r=>Math.max(Number(r.EF),Number(r.LF)||0)));
+  const avail=Math.max(420,(wrap.clientWidth||900)-LW-PAD*2);
+  const ppd=Math.max(6,Math.min(48,avail/total));                 // px/일 — 전체가 한 화면에 들어오되 6px 아래로는 압축하지 않는다(가로 스크롤)
+  const W=LW+PAD+Math.ceil(total*ppd)+PAD, H=HDR+rows.length*RH+PAD;
+  const X=d=>LW+PAD+d*ppd, Y=i=>HDR+i*RH;
+  const startRaw=(document.getElementById('ifcProjectStart8')||{}).value||'';
+  const base=/^\d{4}-\d{2}-\d{2}$/.test(startRaw)?Date.parse(startRaw+'T00:00:00Z'):null;
+  const tickLbl=d=>{ if(base===null) return d+'일'; const t=new Date(base+d*86400000); return (t.getUTCMonth()+1)+'/'+t.getUTCDate(); };
+  const step=[1,2,5,7,10,14,30].find(k=>k*ppd>=52)||30;   // 눈금 라벨(≈48px)이 겹치지 않는 최소 간격
+  const idx=new Map(rows.map((r,i)=>[r.task_id,i])), ids=new Set(rows.map(r=>r.task_id));
+  let s=`<svg class="sgGanttBody" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="최적 공정표 간트 차트">`;
+  s+=`<rect class="gHdrBg" x="0" y="0" width="${W}" height="${HDR}"/>`;
+  for(let d=0; d<=total; d+=step){ const x=X(d); s+=`<line class="gGridDay" x1="${x}" y1="${HDR}" x2="${x}" y2="${H-PAD}"/><line class="gTickLine" x1="${x}" y1="${HDR-6}" x2="${x}" y2="${HDR}"/><text class="gTick" x="${x+3}" y="${HDR-9}">${tickLbl(d)}</text>`; }
+  rows.forEach((r,i)=>{ if(i%2) s+=`<rect class="gRowAlt" x="${LW}" y="${Y(i)}" width="${W-LW}" height="${RH}"/>`; });
+  // 막대: 총여유(ES→LS+dur) 뒤에, 작업 막대 앞에
+  rows.forEach((r,i)=>{
+    const es=Number(r.ES), ef=Number(r.EF), ls=Number.isFinite(Number(r.LS))?Number(r.LS):es, dur=Math.max(ef-es,0), y=Y(i)+5, h=RH-10;
+    if(ls>es+1e-6) s+=`<rect class="gFloat" x="${X(es)}" y="${y}" width="${Math.max(1,(ls-es+dur)*ppd)}" height="${h}"/>`;
+    const w=Math.max(2,dur*ppd), cls=r.is_critical?'gBar crit':'gBar', cx=X(es), cy=y+h/2;
+    s+=dur<=1e-6
+      ? `<g class="gBarRow"><path class="${r.is_critical?'gMile crit':'gMile'}" d="M${cx},${cy-6} l6,6 l-6,6 l-6,-6 z"><title>`
+      : `<g class="gBarRow"><rect class="${cls}" x="${cx}" y="${y}" width="${w}" height="${h}" rx="1"><title>${esc(r.task_id)} ${esc(r.task_name)} · ${esc(r.zone_ref||'')} · ${esc(r.resource||'')} · ES ${es.toFixed(1)}일 → EF ${ef.toFixed(1)}일 · TF ${(Number(r.TF)||0).toFixed(1)}일${r.start_date?' · '+esc(r.start_date)+' ~ '+esc(r.end_date):''}</title>${dur<=1e-6?'</path>':'</rect>'}`;
+    if(w>=44&&dur>1e-6) s+=`<text class="gBarLbl" x="${X(es)+4}" y="${y+h-3}">${esc(String(r.duration_value))}${r.duration_unit==='hour'?'h':'d'}</text>`;
+    s+='</g>';
+  });
+  // 링크 화살표: 후행의 착수를 실제로 결정한(driving) 링크만 그린다 — 모든 링크를 그리면 선이 화면을 덮어 읽을 수 없다(전체는 아래 표의 predecessor_ids).
+  if(typeof rowLinks8==='function'){
+    const lagD=l=>(typeof linkLagHours==='function'?linkLagHours(l):0)/HOURS_PER_DAY;
+    rows.forEach((r,i)=>{ for(const l of rowLinks8(r,ids)){ const j=idx.get(l.id); if(j===undefined) continue; const p=rows[j];
+      const from=Number(l.type==='SS'?p.ES:l.type==='FF'?p.EF:p.EF), need=l.type==='FF'?Number(r.EF):Number(r.ES);
+      if(Math.abs(need-(from+lagD(l)))>1e-3) continue;
+      const crit=r.is_critical&&p.is_critical, x1=X(Number(l.type==='SS'?p.ES:p.EF)), y1=Y(j)+RH/2, x2=X(Number(r.ES)), y2=Y(i)+RH/2, xm=Math.max(x1+6,x2-6);
+      s+=`<path class="gArrow${crit?' crit':''}" d="M${x1},${y1} H${xm} V${y2} H${x2-2}"/><path class="gArrowHead${crit?' crit':''}" d="M${x2},${y2} l-6,-3.5 v7 z"/>`; } });
+  }
+  // 라벨 열(스크롤 시에도 읽히도록 마지막에 그려 막대 위에 놓는다)
+  s+=`<rect class="gLblBg" x="0" y="${HDR}" width="${LW}" height="${H-HDR}"/><line class="gLblLine" x1="${LW}" y1="0" x2="${LW}" y2="${H}"/>`;
+  s+=`<text class="gTick" x="${PAD}" y="${HDR-9}">작업 · 층/Zone · 자원</text>`;
+  const stripPrefix=(name,r)=>{ let n=name; for(const pre of [r.source_story,r.zone_ref]){ const t=String(pre||'').trim(); if(t&&n.startsWith(t)) n=n.slice(t.length).replace(/^[\s·:\-–]+/,''); } n=n.replace(/^Zone\s*[A-Za-z0-9]+\s*[·:\-–]?\s*/i,''); return n||name; };
+  rows.forEach((r,i)=>{ const name=String(r.task_name||''); const short=stripPrefix(name,r); const nm=short.length>22?short.slice(0,21)+'…':short; const z=String(r.zone_ref||'').replace(/^Zone\s*/i,'Z');
+    s+=`<text class="gLbl" x="${PAD}" y="${Y(i)+RH-7}">${esc(nm)}<title>${esc(r.task_id)} · ${esc(name)} · ${esc(r.zone_ref||'')} · ${esc(r.resource||'')}</title></text>`;
+    s+=`<text class="gLblSub" x="${LW-PAD}" y="${Y(i)+RH-7}" text-anchor="end">${esc(z)}</text>`; });
+  s+='</svg>';
+  wrap.innerHTML=s;
+}
 function renderGeneratedSchedule4(){
+  renderIfcGantt4();
   const b=document.getElementById('ifcScheduleBody4');
   b.innerHTML=IFC_GENERATED_ROWS4.length?IFC_GENERATED_ROWS4.map(r=>`<tr>
     <td><b>${escIfc4(r.task_id)}</b></td><td>${escIfc4(r.task_name)}</td>
