@@ -332,6 +332,8 @@ details.noteBox .noteBody p:last-child{margin-bottom:0;}
 .guideFold6[open]>summary::before{content:'− ';}
 .integrationGuide6 h2{margin-bottom:4px;}
 .toolFold5{border:1px solid var(--border-strong);background:var(--bg-1);margin-top:8px;}
+.toolFold5>.foldBody5{padding:0 12px 12px;}
+.toolFold5>.foldBody5>.card{margin-top:12px;}
 .toolFold5>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:11px 14px;font-family:var(--font-mono);font-size:12.5px;letter-spacing:.4px;user-select:none;}
 .toolFold5>summary::-webkit-details-marker{display:none;}
 .toolFold5>summary::before{content:'+';display:inline-block;width:14px;text-align:center;font-weight:700;}
@@ -1103,12 +1105,19 @@ main{max-width:1480px;margin:0 auto;padding:20px 22px 80px}
 .topflow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
 .flow{border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 11px;font-size:12.5px;color:var(--sub)}
 .flow.on{border-color:var(--border2);font-weight:700;color:var(--text)}
+button.flow{font:inherit;cursor:pointer}button.flow:hover{border-color:var(--border2)}
 .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
 @media(max-width:1050px){.grid2{grid-template-columns:1fr}}
 .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:18px;box-shadow:0 1px 2px rgba(16,18,22,.04)}
 .card h2{font-size:16.5px;margin:0 0 12px}
 .card h3{font-size:14px;margin:14px 0 8px}
 .desc{font-size:13px;color:var(--sub);margin:0 0 13px}
+.ckTable{border-collapse:collapse;width:100%;font-size:12.5px}.ckTable th,.ckTable td{padding:6px 6px;border-bottom:1px solid var(--border);text-align:center;white-space:nowrap}.ckTable th:first-child,.ckTable td:first-child{text-align:left}
+.ckTable td.pkg b{display:block}.ckTable td.pkg small{color:var(--sub)}
+.ck{width:30px;height:26px;border:1px solid var(--border);border-radius:6px;background:var(--panel2);cursor:pointer;font:inherit;font-weight:700;font-size:13px;padding:0}
+.ckTable th,.ckTable td{padding:5px 3px}.ckTable td.pkg{max-width:170px;overflow:hidden;text-overflow:ellipsis}
+.ck.ok{color:#2e7d32}.ck.warn{color:#b26a00;background:#fff7e6;border-color:#e0b46a}.ck.bad{color:#b71c1c;background:#fdecea;border-color:#e6a1a1}.ck.unk{border-style:dashed;opacity:.85}
+.ckDet{margin-top:10px;font-size:12.5px}.ckDet .row{margin:6px 0;align-items:center;gap:6px}.ckDet .row&gt;*{flex:0 0 auto}.ckDet .row input[data-f]{width:110px;padding:5px 7px;flex:0 0 auto}.ckDet .row input[data-f=note]{width:180px}.ckDet .lbl{flex:1 1 100%}.ckDet .src{color:var(--sub);flex:1 1 100%;white-space:normal;font-size:11.5px}
 details.descFold6{border:0;background:none;border-radius:0;padding:0;margin:0 0 10px}.descFold6&gt;summary{font-weight:500}.descFold6&gt;summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--sub);user-select:none;padding:2px 0}.descFold6&gt;summary::-webkit-details-marker{display:none}.descFold6&gt;summary::before{content:&#x27;+&#x27;;display:inline-block;width:14px;height:14px;line-height:13px;text-align:center;border:1px solid var(--border);font-size:11px}.descFold6[open]&gt;summary::before{content:&#x27;−&#x27;}.descFold6[open]&gt;summary{margin-bottom:6px}.descFold6&gt;p{margin-top:0}
 label{display:block;margin:10px 0 5px;color:var(--sub);font-weight:600;font-size:13px}
 input,select,textarea{font:inherit;color:var(--text)}
@@ -1202,7 +1211,7 @@ body{overflow:hidden}
 
 &lt;main&gt;
   &lt;div class=&quot;topflow&quot;&gt;
-    &lt;div class=&quot;flow on&quot;&gt;1 공정표&lt;/div&gt;&lt;div class=&quot;flow&quot;&gt;2 현장자료&lt;/div&gt;&lt;div class=&quot;flow&quot;&gt;3 현장·기상 자동화&lt;/div&gt;&lt;div class=&quot;flow&quot;&gt;4 리스크 탐지&lt;/div&gt;&lt;div class=&quot;flow&quot;&gt;5 레지스터 출력&lt;/div&gt;
+    &lt;button type=&quot;button&quot; class=&quot;flow on&quot; data-step=&quot;1&quot;&gt;1 공정표&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;flow&quot; data-step=&quot;2&quot;&gt;2 제약 체크리스트&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;flow&quot; data-step=&quot;3&quot;&gt;3 현장자료 CSV&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;flow&quot; data-step=&quot;4&quot;&gt;4 현장·기상&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;flow&quot; data-step=&quot;5&quot;&gt;5 자동탐지 · 레지스터&lt;/button&gt;
   &lt;/div&gt;
 
   &lt;div class=&quot;grid2&quot;&gt;
@@ -1224,7 +1233,20 @@ body{overflow:hidden}
       &lt;/div&gt;
 
       &lt;div class=&quot;card&quot;&gt;
-        &lt;h2&gt;2. 현장자료 파일 입력&lt;/h2&gt;
+        &lt;h2&gt;2. 제약 체크리스트 — 패키지별 준비 상태&lt;/h2&gt;
+        &lt;p class=&quot;desc&quot;&gt;공정표를 층 › 공종 패키지로 묶어 8가지 제약(자재·인력·장비·도면/검측·선행공정·기상·인허가/민원·안전)의 준비 상태를 표시합니다. 셀을 눌러 &lt;b&gt;✓ 준비됨 → △ 불확실 → ✗ 미확보&lt;/b&gt; 순으로 바뀌며, △/✗ 만 리스크가 됩니다. 3·4번의 CSV·기상 자동조회는 이 표를 미리 채워 주고(점선 = 미확인), 사람이 확인해야 반영됩니다.&lt;/p&gt;
+        &lt;div class=&quot;row&quot; style=&quot;margin-bottom:8px&quot;&gt;
+          &lt;button class=&quot;primary fit&quot; id=&quot;ckConfirmBtn&quot;&gt;리스크 확정 → 3번 탭 전달&lt;/button&gt;
+          &lt;button class=&quot;ghost fit&quot; id=&quot;ckAcceptAllBtn&quot;&gt;자동 채움 모두 확인&lt;/button&gt;
+          &lt;button class=&quot;ghost fit&quot; id=&quot;ckResetBtn&quot;&gt;모두 ✓ 로 초기화&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;status&quot; id=&quot;ckStatus&quot;&gt;공정표를 불러오면 패키지가 생성됩니다.&lt;/div&gt;
+        &lt;div class=&quot;scroll&quot; style=&quot;max-height:420px&quot;&gt;&lt;table class=&quot;ckTable&quot; id=&quot;ckTable&quot;&gt;&lt;/table&gt;&lt;/div&gt;
+        &lt;div id=&quot;ckDetail&quot;&gt;&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;card&quot;&gt;
+        &lt;h2&gt;3. 현장자료 파일 입력 (보조 — 있으면 체크리스트를 자동으로 채움)&lt;/h2&gt;
         &lt;p class=&quot;desc&quot;&gt;CSV · JSON · TXT · XLSX · XLS 파일을 여러 개 넣을 수 있습니다. 파일명·헤더·내용을 이용해 자료 범주를 자동 분류합니다. 실제 파일이 없어도 &lt;b&gt;랜덤 리스크 테스트 자료&lt;/b&gt;를 현재 공정표에 맞춰 즉시 투입할 수 있습니다.&lt;/p&gt;
         &lt;input type=&quot;file&quot; id=&quot;evidenceInput&quot; multiple accept=&quot;.csv,.json,.txt,.xlsx,.xls,text/csv,application/json,text/plain&quot;&gt;
 
@@ -1253,7 +1275,7 @@ body{overflow:hidden}
       &lt;/div&gt;
 
       &lt;div class=&quot;card&quot;&gt;
-        &lt;h2&gt;3. 현장 위치 · 공정 날짜 · 기상 자동화&lt;/h2&gt;
+        &lt;h2&gt;4. 현장 위치 · 공정 날짜 · 기상 자동화&lt;/h2&gt;
         &lt;p class=&quot;desc&quot;&gt;
           업로드한 공정표/현장자료에서 &lt;b&gt;현장주소·현장 위도·현장 경도&lt;/b&gt;를 먼저 찾습니다.
           좌표가 있으면 그대로 사용하고, 주소만 있으면 주소를 자동 지오코딩해 좌표로 변환합니다.
@@ -1323,7 +1345,7 @@ body{overflow:hidden}
       &lt;/div&gt;
 
       &lt;div class=&quot;card&quot;&gt;
-        &lt;h2&gt;4. 리스크 자동 산출&lt;/h2&gt;
+        &lt;h2&gt;5. CSV·기상 자동탐지 → 체크리스트 반영&lt;/h2&gt;
         &lt;p class=&quot;desc&quot;&gt;위험점수는 계산하지 않습니다. 입력자료와 자동 기상자료에서 조건 위반이 확인된 경우에만 8종 리스크를 생성합니다.&lt;/p&gt;
 
         &lt;div class=&quot;fieldGroup&quot;&gt;
@@ -1475,6 +1497,9 @@ const RISK_DEFS = {
     rule:&#x27;해당 작업 또는 구역에 영향을 주는 유효 변경사항 존재&#x27;
   }
 };
+RISK_DEFS.predecessor_delay={label:&#x27;선행공정 지연·재시공&#x27;,evidence:&#x27;제약 체크리스트(선행공정)&#x27;,rule:&#x27;선행 패키지 미완료·품질 재시공으로 착수 불가&#x27;};
+RISK_DEFS.permit_civil={label:&#x27;인허가·민원 지연&#x27;,evidence:&#x27;제약 체크리스트(인허가·민원)&#x27;,rule:&#x27;허가·승인 미완, 민원으로 작업 제한&#x27;};
+RISK_DEFS.safety_stop={label:&#x27;안전 작업중지&#x27;,evidence:&#x27;제약 체크리스트(안전)&#x27;,rule:&#x27;안전조치 미비·점검·사고로 작업중지&#x27;};
 const RISK_KEYS = Object.keys(RISK_DEFS);
 
 const EVIDENCE_TO_RISKS = {
@@ -1823,6 +1848,7 @@ function renderWeatherRules(){
     }).join(&#x27;&#x27;)}&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;`;
 }
 async function autoDeriveContext(){
+  ckBuildPackages();renderChecklist();
   deriveWeatherRules();
   await autoResolveSiteLocation();
   updateScheduleDateSummary();
@@ -2323,6 +2349,115 @@ function detectRiskFromRow(task,row,source,rowNo,rowCategory){
   for(const fn of fns){const r=fn(task,row,source,rowNo,rowCategory);if(r)out.push(r);}
   return out;
 }
+/* ============================================================
+   제약 체크리스트 (Last Planner 식) — 패키지(층›공종) × 8항목
+============================================================ */
+const CK_ITEMS=[
+  {k:&#x27;material&#x27;,label:&#x27;자재&#x27;,types:[&#x27;material_rebar&#x27;,&#x27;material_ready_mix&#x27;]},
+  {k:&#x27;labor&#x27;,label:&#x27;인력&#x27;,types:[&#x27;labor_shortage&#x27;]},
+  {k:&#x27;equipment&#x27;,label:&#x27;장비&#x27;,types:[&#x27;equipment_fail&#x27;]},
+  {k:&#x27;design&#x27;,label:&#x27;도면·검측&#x27;,types:[&#x27;inspection_delay&#x27;,&#x27;design_change&#x27;]},
+  {k:&#x27;predecessor&#x27;,label:&#x27;선행공정&#x27;,types:[&#x27;predecessor_delay&#x27;]},
+  {k:&#x27;weather&#x27;,label:&#x27;기상&#x27;,types:[&#x27;weather_stop&#x27;,&#x27;concrete_curing&#x27;]},
+  {k:&#x27;permit&#x27;,label:&#x27;인허가·민원&#x27;,types:[&#x27;permit_civil&#x27;]},
+  {k:&#x27;safety&#x27;,label:&#x27;안전&#x27;,types:[&#x27;safety_stop&#x27;]}
+];
+const CK_TRADE={IFCWALL:&#x27;벽체 골조&#x27;,IFCSLAB:&#x27;슬래브 골조&#x27;,IFCROOF:&#x27;지붕공사&#x27;,&#x27;IFCWINDOW/IFCDOOR&#x27;:&#x27;창호·개구부&#x27;,IFCCOLUMN:&#x27;기둥 골조&#x27;,IFCBEAM:&#x27;보 골조&#x27;,IFCSTAIR:&#x27;계단&#x27;,MILESTONE:null};
+let CHECKLIST={};   // key → {story,trade,taskIds,items:{k:{state:&#x27;ok|warn|bad&#x27;,confirmed,delay_days,owner,note,source}}}
+function ckPackageOf(t){
+  const story=(t.source_story||String(t.zone_ref||&#x27;&#x27;).split(&#x27;-&#x27;)[0]||&#x27;&#x27;).trim();
+  const trade=CK_TRADE[t.ifc_element_type];
+  if(t.ifc_element_type===&#x27;MILESTONE&#x27;)return null;
+  if(trade)return {key:`${story} › ${trade}`,story,trade};
+  if(scheduleTasks.length&lt;=15)return {key:`${t.task_id} ${t.task_name}`,story:t.zone_ref||&#x27;&#x27;,trade:t.task_name};
+  const s=`${t.task_name}`;
+  const byName=/철근|거푸집|타설|양생|골조/.test(s)?&#x27;골조&#x27;:/설비|배관|전기/.test(s)?&#x27;설비&#x27;:/검측|검사/.test(s)?&#x27;검측&#x27;:/마감|도장|도배|타일/.test(s)?&#x27;마감&#x27;:/토공|굴착|터파기/.test(s)?&#x27;토공&#x27;:/가설|비계/.test(s)?&#x27;가설&#x27;:&#x27;기타&#x27;;
+  return {key:`${t.zone_ref||&#x27;전체&#x27;} › ${byName}`,story:t.zone_ref||&#x27;전체&#x27;,trade:byName};
+}
+function ckBuildPackages(){
+  const next={};
+  for(const t of scheduleTasks){
+    const p=ckPackageOf(t);if(!p)continue;
+    const prev=CHECKLIST[p.key];
+    const pk=next[p.key]||(next[p.key]={key:p.key,story:p.story,trade:p.trade,taskIds:[],items:prev?prev.items:Object.fromEntries(CK_ITEMS.map(i=&gt;[i.k,{state:&#x27;ok&#x27;,confirmed:true,delay_days:&#x27;&#x27;,owner:&#x27;&#x27;,note:&#x27;&#x27;,source:&#x27;&#x27;}]))});
+    pk.taskIds.push(t.task_id);
+  }
+  CHECKLIST=next;
+}
+function ckItemForRiskType(type){return CK_ITEMS.find(i=&gt;i.types.includes(type))?.k||null;}
+/* CSV·기상 자동탐지 결과로 미리 채운다 — 확인 전(confirmed=false)에는 리스크로 나가지 않는다 */
+function ckPrefill(risks){
+  ckBuildPackages();
+  const byTask=new Map();for(const t of scheduleTasks)byTask.set(t.task_id,t);
+  for(const r of risks){
+    const t=byTask.get(r.task_id);if(!t)continue;const p=ckPackageOf(t);if(!p||!CHECKLIST[p.key])continue;
+    const k=ckItemForRiskType(r.risk_type);if(!k)continue;
+    const it=CHECKLIST[p.key].items[k];
+    const st=r.status===&#x27;ACTIVE&#x27;?&#x27;bad&#x27;:&#x27;warn&#x27;;
+    if(it.confirmed&amp;&amp;it.state!==&#x27;ok&#x27;)continue;              // 사람이 이미 정한 값은 덮지 않는다
+    if(it.state===&#x27;bad&#x27;&amp;&amp;st===&#x27;warn&#x27;)continue;
+    it.state=st;it.confirmed=false;
+    (it._src||(it._src=new Map()));const sk=`${r.risk_label}: ${r.cause}`;const cur=it._src.get(sk)||{file:r.source_file||&#x27;&#x27;,n:0};cur.n++;it._src.set(sk,cur);
+  }
+  for(const pk of Object.values(CHECKLIST))for(const it of Object.values(pk.items))if(it._src){it.source=[...it._src.entries()].slice(0,3).map(([k,v])=&gt;`${k} (${v.file}${v.n&gt;1?&#x27; · &#x27;+v.n+&#x27;행&#x27;:&#x27;&#x27;})`).join(&#x27; / &#x27;);delete it._src;}
+  renderChecklist();
+}
+function ckRiskTypeFor(pk,k,it){
+  const names=pk.taskIds.map(id=&gt;scheduleTasks.find(t=&gt;t.task_id===id)?.task_name||&#x27;&#x27;).join(&#x27; &#x27;);
+  if(k===&#x27;material&#x27;)return /철근|배근/.test(names)?&#x27;material_rebar&#x27;:/콘크리트|타설|레미콘/.test(names)?&#x27;material_ready_mix&#x27;:&#x27;material_rebar&#x27;;
+  if(k===&#x27;design&#x27;)return /설계|도면|변경/.test(it.note||&#x27;&#x27;)?&#x27;design_change&#x27;:&#x27;inspection_delay&#x27;;
+  if(k===&#x27;weather&#x27;)return /타설|양생|콘크리트/.test(names)?&#x27;concrete_curing&#x27;:&#x27;weather_stop&#x27;;
+  return CK_ITEMS.find(i=&gt;i.k===k).types[0];
+}
+function risksFromChecklist(){
+  const out=[];
+  for(const pk of Object.values(CHECKLIST)){
+    for(const [k,it] of Object.entries(pk.items)){
+      if(it.state===&#x27;ok&#x27;||!it.confirmed)continue;
+      const rep=scheduleTasks.find(t=&gt;t.task_id===pk.taskIds[0]);if(!rep)continue;
+      const label=CK_ITEMS.find(i=&gt;i.k===k).label;
+      const r=makeRisk(rep,ckRiskTypeFor(pk,k,it),it.state===&#x27;bad&#x27;?&#x27;ACTIVE&#x27;:&#x27;FORECAST&#x27;,
+        `[${pk.key}] ${label} ${it.state===&#x27;bad&#x27;?&#x27;미확보&#x27;:&#x27;불확실&#x27;}${it.note?&#x27; · &#x27;+it.note:&#x27;&#x27;}${it.delay_days?` · 예상 지연 ${it.delay_days}일`:&#x27;&#x27;}${it.owner?` · 담당 ${it.owner}`:&#x27;&#x27;}`,
+        &#x27;CHECKLIST&#x27;,null,{package:pk.key,item:k,delay_days:Number(it.delay_days)||null,owner:it.owner||&#x27;&#x27;,auto_source:it.source||&#x27;&#x27;});
+      r.package=pk.key;r.target_task_ids=pk.taskIds.slice();out.push(r);
+    }
+  }
+  return out;
+}
+function ckCommit(){
+  TASK_RISKS=dedupeRisks(risksFromChecklist());ASSUMPTIONS=assumptionsForTasks();refreshOutput();
+  const n=TASK_RISKS.length,pend=Object.values(CHECKLIST).reduce((a,p)=&gt;a+Object.values(p.items).filter(i=&gt;!i.confirmed).length,0);
+  $(&#x27;ckStatus&#x27;).innerHTML=`&lt;span class=&quot;ok&quot;&gt;리스크 ${n}건 확정&lt;/span&gt; · 패키지 ${Object.keys(CHECKLIST).length}개${pend?` · &lt;span class=&quot;warn&quot;&gt;미확인 자동 채움 ${pend}건은 제외됨&lt;/span&gt;`:&#x27;&#x27;}`;
+  notifyParentRisksSA();
+}
+function renderChecklist(){
+  const tbl=$(&#x27;ckTable&#x27;),det=$(&#x27;ckDetail&#x27;);if(!tbl)return;
+  const pks=Object.values(CHECKLIST);
+  if(!pks.length){tbl.innerHTML=&#x27;&#x27;;det.innerHTML=&#x27;&#x27;;$(&#x27;ckStatus&#x27;).textContent=&#x27;공정표를 불러오면 패키지가 생성됩니다.&#x27;;return;}
+  const glyph={ok:&#x27;✓&#x27;,warn:&#x27;△&#x27;,bad:&#x27;✗&#x27;};
+  { const flagged=pks.reduce((a,p)=&gt;a+Object.values(p.items).filter(i=&gt;i.state!==&#x27;ok&#x27;).length,0), pend=pks.reduce((a,p)=&gt;a+Object.values(p.items).filter(i=&gt;!i.confirmed).length,0);
+    if(!/확정/.test($(&#x27;ckStatus&#x27;).textContent)) $(&#x27;ckStatus&#x27;).innerHTML=`패키지 ${pks.length}개 · △/✗ ${flagged}건${pend?` · &lt;span class=&quot;warn&quot;&gt;미확인(점선) ${pend}건 — 눌러서 확인&lt;/span&gt;`:&#x27;&#x27;}`; }
+  tbl.innerHTML=`&lt;thead&gt;&lt;tr&gt;&lt;th&gt;패키지 (층 › 공종)&lt;/th&gt;${CK_ITEMS.map(i=&gt;`&lt;th&gt;${i.label}&lt;/th&gt;`).join(&#x27;&#x27;)}&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;${pks.map(pk=&gt;`&lt;tr&gt;&lt;td class=&quot;pkg&quot;&gt;&lt;b&gt;${esc(pk.key)}&lt;/b&gt;&lt;small&gt;${pk.taskIds.length}개 작업&lt;/small&gt;&lt;/td&gt;${CK_ITEMS.map(i=&gt;{const it=pk.items[i.k];return `&lt;td&gt;&lt;button type=&quot;button&quot; class=&quot;ck ${it.state}${it.confirmed?&#x27;&#x27;:&#x27; unk&#x27;}&quot; data-pk=&quot;${esc(pk.key)}&quot; data-k=&quot;${i.k}&quot; title=&quot;${esc(it.source||(it.confirmed?&#x27;확인됨&#x27;:&#x27;미확인&#x27;))}&quot;&gt;${glyph[it.state]}&lt;/button&gt;&lt;/td&gt;`;}).join(&#x27;&#x27;)}&lt;/tr&gt;`).join(&#x27;&#x27;)}&lt;/tbody&gt;`;
+  tbl.querySelectorAll(&#x27;button.ck&#x27;).forEach(b=&gt;b.addEventListener(&#x27;click&#x27;,()=&gt;{
+    const it=CHECKLIST[b.dataset.pk].items[b.dataset.k];
+    it.state=it.confirmed?({ok:&#x27;warn&#x27;,warn:&#x27;bad&#x27;,bad:&#x27;ok&#x27;})[it.state]:it.state;   // 미확인이면 첫 클릭은 &#x27;확인&#x27;만
+    it.confirmed=true;renderChecklist();queueCkCommit();
+  }));
+  const rows=[];
+  for(const pk of pks)for(const i of CK_ITEMS){const it=pk.items[i.k];if(it.state===&#x27;ok&#x27;)continue;
+    rows.push(`&lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;lbl&quot;&gt;&lt;b&gt;${esc(pk.key)}&lt;/b&gt; · ${i.label} ${it.state===&#x27;bad&#x27;?&#x27;✗ 미확보&#x27;:&#x27;△ 불확실&#x27;}${it.confirmed?&#x27;&#x27;:&#x27; &lt;span class=&quot;warn&quot;&gt;(미확인)&lt;/span&gt;&#x27;}&lt;/span&gt;
+      &lt;input type=&quot;number&quot; min=&quot;0&quot; step=&quot;0.5&quot; placeholder=&quot;예상 지연(일)&quot; value=&quot;${esc(it.delay_days)}&quot; data-pk=&quot;${esc(pk.key)}&quot; data-k=&quot;${i.k}&quot; data-f=&quot;delay_days&quot;&gt;
+      &lt;input type=&quot;text&quot; placeholder=&quot;담당자&quot; value=&quot;${esc(it.owner)}&quot; data-pk=&quot;${esc(pk.key)}&quot; data-k=&quot;${i.k}&quot; data-f=&quot;owner&quot;&gt;
+      &lt;input type=&quot;text&quot; placeholder=&quot;메모(사유)&quot; value=&quot;${esc(it.note)}&quot; style=&quot;width:200px&quot; data-pk=&quot;${esc(pk.key)}&quot; data-k=&quot;${i.k}&quot; data-f=&quot;note&quot;&gt;
+      &lt;span class=&quot;src&quot;&gt;${esc(it.source||&#x27;&#x27;)}&lt;/span&gt;&lt;/div&gt;`);}
+  det.innerHTML=rows.length?`&lt;div class=&quot;ckDet&quot;&gt;&lt;b&gt;△/✗ 항목 — 예상 지연일·담당자&lt;/b&gt;${rows.join(&#x27;&#x27;)}&lt;/div&gt;`:&#x27;&#x27;;
+  det.querySelectorAll(&#x27;input[data-f]&#x27;).forEach(inp=&gt;inp.addEventListener(&#x27;change&#x27;,()=&gt;{CHECKLIST[inp.dataset.pk].items[inp.dataset.k][inp.dataset.f]=inp.value;queueCkCommit();}));
+}
+let _ckTimer=null;function queueCkCommit(){clearTimeout(_ckTimer);_ckTimer=setTimeout(ckCommit,250);}
+$(&#x27;ckConfirmBtn&#x27;).addEventListener(&#x27;click&#x27;,ckCommit);
+$(&#x27;ckAcceptAllBtn&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{for(const pk of Object.values(CHECKLIST))for(const it of Object.values(pk.items))it.confirmed=true;renderChecklist();ckCommit();});
+$(&#x27;ckResetBtn&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{for(const pk of Object.values(CHECKLIST))for(const it of Object.values(pk.items))Object.assign(it,{state:&#x27;ok&#x27;,confirmed:true,delay_days:&#x27;&#x27;,owner:&#x27;&#x27;,note:&#x27;&#x27;,source:&#x27;&#x27;});renderChecklist();ckCommit();});
+
 function dedupeRisks(risks){
   const seen=new Set(),out=[];
   for(const r of risks){
@@ -2435,6 +2570,7 @@ $(&#x27;scheduleInput&#x27;).addEventListener(&#x27;change&#x27;,async e=&gt;{
       task_id:String(r.task_id??&#x27;&#x27;).trim(),task_name:String(r.task_name??&#x27;&#x27;).trim(),
       predecessor_ids:String(r.predecessor_ids??&#x27;&#x27;).trim(),duration_value:r.duration_value,duration_unit:r.duration_unit,
       start_date:r.start_date||&#x27;&#x27;,end_date:r.end_date||&#x27;&#x27;,zone_ref:r.zone_ref||&#x27;&#x27;,resource:r.resource||&#x27;&#x27;,
+      ifc_element_type:r.ifc_element_type||&#x27;&#x27;,source_story:r.source_story||&#x27;&#x27;,
       delay_category:r.delay_category||&#x27;&#x27;,risk_categories:r.risk_categories||&#x27;&#x27;,
       site_address:pick(r,&#x27;site_address&#x27;)||&#x27;&#x27;,site_lat:pick(r,&#x27;site_lat&#x27;)||&#x27;&#x27;,site_lon:pick(r,&#x27;site_lon&#x27;)||&#x27;&#x27;
     })).filter(x=&gt;x.task_id);
@@ -2498,11 +2634,12 @@ $(&#x27;detectBtn&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
     });
     MAPPING.push({file:set.file,category:set.category,rows:set.rows.length,matched,unmatched});
   }
-  TASK_RISKS=dedupeRisks(risks);
-  ASSUMPTIONS=assumptionsForTasks();
-  refreshOutput();
-  $(&#x27;detectStatus&#x27;).innerHTML=`&lt;span class=&quot;ok&quot;&gt;탐지 완료 — 리스크 ${TASK_RISKS.length}건, 영향 작업 ${new Set(TASK_RISKS.map(r=&gt;r.task_id)).size}개.&lt;/span&gt;`;
-  notifyParentRisksSA();
+  const detected=dedupeRisks(risks);
+  ckPrefill(detected);
+  const pend=Object.values(CHECKLIST).reduce((a,p)=&gt;a+Object.values(p.items).filter(i=&gt;!i.confirmed).length,0);
+  $(&#x27;detectStatus&#x27;).innerHTML=`&lt;span class=&quot;ok&quot;&gt;자동탐지 ${detected.length}건 → 2. 제약 체크리스트에 ${pend}개 항목을 미확인(점선)으로 표시했습니다.&lt;/span&gt; 체크리스트에서 확인하면 리스크로 확정됩니다.`;
+  ckCommit();
+  document.querySelector(&#x27;.topflow .flow[data-step=&quot;2&quot;]&#x27;)?.click();
 });
 
 
@@ -2624,7 +2761,7 @@ renderRiskDefs();renderWeatherSummary();deriveWeatherRules();updateScheduleDateS
 function initStepAccordions(){
   const numberedCards=[...document.querySelectorAll(&#x27;main .card&#x27;)].filter(card=&gt;{
     const h2=card.querySelector(&#x27;:scope &gt; h2&#x27;);
-    return h2 &amp;&amp; /^\s*[1-4]\./.test(h2.textContent||&#x27;&#x27;);
+    return h2 &amp;&amp; /^\s*[1-5]\./.test(h2.textContent||&#x27;&#x27;);
   });
 
   numberedCards.forEach((card,idx)=&gt;{
@@ -2683,6 +2820,14 @@ function initStepAccordions(){
   });
 }
 initStepAccordions();
+/* 상단 1~5 칩: 클릭하면 해당 단계 카드를 펼치고 스크롤한다(5 = 하단 레지스터). 진행 표시(.on)는 클릭한 단계로 옮긴다. */
+document.querySelectorAll(&#x27;.topflow .flow[data-step]&#x27;).forEach(btn=&gt;btn.addEventListener(&#x27;click&#x27;,()=&gt;{
+  const n=btn.dataset.step;
+  document.querySelectorAll(&#x27;.topflow .flow&#x27;).forEach(b=&gt;b.classList.toggle(&#x27;on&#x27;,b===btn));
+  let target=null;
+  { target=[...document.querySelectorAll(&#x27;main .card.stepCard&#x27;)].find(c=&gt;new RegExp(&#x27;^\\s*&#x27;+n+&#x27;\\.&#x27;).test((c.querySelector(&#x27;:scope &gt; h2 .stepTitleText&#x27;)||{}).textContent||&#x27;&#x27;)); if(target&amp;&amp;!target.classList.contains(&#x27;open&#x27;)) target.querySelector(&#x27;:scope &gt; h2&#x27;).click(); }
+  if(target) target.scrollIntoView({behavior:&#x27;smooth&#x27;,block:&#x27;start&#x27;});
+}));
 
 
 /* ============================================================
@@ -2708,6 +2853,8 @@ async function loadScheduleCsvExternalSA(text, sourceLabel=&#x27;부모 SA&#x27;
       end_date:r.end_date||&#x27;&#x27;,
       zone_ref:r.zone_ref||&#x27;&#x27;,
       resource:r.resource||&#x27;&#x27;,
+      ifc_element_type:r.ifc_element_type||&#x27;&#x27;,
+      source_story:r.source_story||&#x27;&#x27;,
       delay_category:r.delay_category||&#x27;&#x27;,
       risk_categories:r.risk_categories||&#x27;&#x27;,
       site_address:pick(r,&#x27;site_address&#x27;)||&#x27;&#x27;,
@@ -14252,7 +14399,7 @@ function detectorRisksToSimulationRegister1(payload){
     const src=[x.source_file,x.source_row?`${x.source_row}행`:null].filter(Boolean).join(' ');
     return {
       id,
-      name:`${x.risk_label||x.risk_type||'리스크'} — ${x.task_name||x.task_id||''}`,
+      name:`${x.risk_label||x.risk_type||'리스크'} — ${x.package||x.task_name||x.task_id||''}`,
       allRiskSourceKey:JSON.stringify([String(x.task_id||''),String(x.risk_type||''),String(x.source_file||''),String(x.source_row||''),String(x.cause||'')]),
       probability:'',
       impact:'mult',
@@ -14260,7 +14407,7 @@ function detectorRisksToSimulationRegister1(payload){
       mult_mode:'',
       mult_max:'',
       targetMode:'tasks',
-      targetValue:String(x.task_id||''),
+      targetValue:Array.isArray(x.target_task_ids)&&x.target_task_ids.length?x.target_task_ids.join(';'):String(x.task_id||''),
       prov:'expert',
       enabled:true,
       note:`[V5 자동탐지] ${x.status||''} · ${x.cause||''}${src?` · 근거 ${src}`:''} · 자동 수치는 일반화 초안이며 산정 근거 카드에서 출처와 수동 보호 상태를 확인하십시오.`
@@ -14677,7 +14824,7 @@ function refreshIFCGuide6(){
   }else if(!rows){
     el.innerHTML=`<b>현재:</b> IFC 부재 ${q}개 분석 완료. → 생산성 값을 확인한 뒤 <b>IFC 공정표 생성</b>을 누르십시오. 아직 1번/3번 공정표는 바뀌지 않았습니다.`;
   }else{
-    el.innerHTML=`<b>현재:</b> IFC에서 공정행 ${rows.length}개 생성 완료. → 표를 검토한 뒤 <b>② 현장자료·리스크 탐지에 적용</b>을 눌러야 기준공정표와 3번 시뮬레이션 공정표가 교체됩니다.`;
+    el.innerHTML=`<b>현재:</b> IFC에서 공정행 ${rows}개 생성 완료. → 표를 검토한 뒤 <b>② 현장자료·리스크 탐지에 적용</b>을 눌러야 기준공정표와 3번 시뮬레이션 공정표가 교체됩니다.`;
   }
 }
 
@@ -14746,6 +14893,35 @@ function foldLongText6(root, minLen){
 })();
 
 document.querySelectorAll('.gLvl4 [data-glvl]').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('.gLvl4 [data-glvl]').forEach(x=>x.classList.toggle('active',x===b)); if(typeof ifcGanttSetLevel4==='function') ifcGanttSetLevel4(Number(b.dataset.glvl)); }));
+
+/* [1번 탭 정리] 기본 화면 = 모델 선택 → 생성 버튼 → 요약 → WBS 간트. 분석 근거·조건 카드 6개와 후보 비교·설정은 접이식으로.
+   요소는 옮기기만 하고 id·핸들러는 그대로. */
+(function(){
+  const tab=document.getElementById('tab4'); if(!tab) return;
+  const cards=[...tab.querySelectorAll(':scope > .card')];
+  const byTitle=re=>cards.find(c=>re.test((c.querySelector(':scope > h2')||{}).textContent||''));
+  const c1=byTitle(/IFC 모델 선택/), c2=byTitle(/부재 해석/), c4=byTitle(/공정표 틀 최적화/);
+  if(!c1||!c4) return;
+  // §4 내부 순서: 버튼·상태 → 요약 → 간트·범례 → (접기) 최적화 설정·후보 비교·검증·표
+  const q=id=>c4.querySelector('#'+id), opt=c4.querySelector(':scope > .ifcOpt8');
+  const h2=c4.querySelector(':scope > h2'), desc=h2&&h2.nextElementSibling&&h2.nextElementSibling.classList.contains('descFold6')?h2.nextElementSibling:null;
+  const order=[c4.querySelector(':scope > .ifcActions4'), q('ifcGenerateStatus4'), q('ifcGenSummary7'), q('ifcGanttWrap4'), c4.querySelector(':scope > .legend')].filter(Boolean);
+  const anchor=desc||h2;
+  order.reduce((prev,el)=>{ prev.after(el); return el; }, anchor);
+  const det=document.createElement('details'); det.className='toolFold5'; det.style.marginTop='12px';
+  det.innerHTML='<summary>최적화 설정 · 후보 비교 · 검증 · 표<span class="st">병행·자원 상한 조정은 여기서</span></summary><div class="foldBody5"></div>';
+  const body=det.querySelector('.foldBody5');
+  [opt, q('ifcOptMetrics8'), q('ifcCandidateWrap8'), q('ifcCompatibility8'), ...[...c4.querySelectorAll(':scope > details.noteBox')]].filter(Boolean).forEach(el=>body.appendChild(el));
+  c4.appendChild(det);
+  // §4 를 §1 바로 뒤로, 분석 근거 카드들은 한 묶음으로 접는다
+  c1.after(c4);
+  const fold=document.createElement('details'); fold.className='toolFold5'; fold.id='ifcAnalysisFold6';
+  fold.innerHTML='<summary>분석 근거 · 조건<span class="st">부재 해석 · 물량 · 자동 산정 조건 · 검토 객체 · 산정 검증 · 전문가 설정</span></summary><div class="foldBody5"></div>';
+  const fb=fold.querySelector('.foldBody5');
+  [c2, document.getElementById('a12Analysis'), document.getElementById('a12Settings'), document.getElementById('a12Review'), document.getElementById('a12Outcome'), document.getElementById('a12Legacy')].filter(Boolean).forEach(el=>fb.appendChild(el));
+  c4.after(fold);
+})();
+
 /* Open-Meteo 예보 요약 — 3번 탭 상태(SA_WEATHER15.config().data)만 읽는다. 값이 없으면 null. */
 function openMeteoSummary5(){
   try{
@@ -15986,16 +16162,22 @@ host.addEventListener('click',e=>{const b=e.target.closest('button[data-fold15]'
 const blank=v=>v===''||v===null||v===undefined;
 const copy=v=>JSON.parse(JSON.stringify(v));
 const $=id=>document.getElementById(id);
+/* 유형별 기본 분포표 — p: 입력 공정기간 중 발생확률, days: 지연 작업일 [최소,대표,최대] 삼각분포.
+   src: 분류·상대 빈도의 근거 문헌. 수치 자체는 SA 가정값이며 현장 실적이 쌓이면 교체한다(화면에 항상 '가정·출처'로 표시). */
+const SRC_LIT='문헌 빈도: 조태제·최종수(2011) 아파트 골조공사 공기지연 요인, Assaf & Al-Hejji(2006) IJPM · 수치: SA 가정값(현장 실적으로 교체)';
 const templates={
- equipment_fail:{label:'장비 고장·예약',p:.35,days:[.5,1,2]},
- weather_stop:{label:'기상 작업중지',p:.35,days:[.5,1,3]},
- concrete_curing:{label:'양생 지연',p:.35,days:[1,2,5]},
- design_change:{label:'설계 변경',p:.15,days:[1,3,7]},
- inspection_delay:{label:'검측·승인',p:.35,days:[.5,2,5]},
- material_rebar:{label:'철근 조달',p:.35,days:[1,2,5]},
- material_ready_mix:{label:'레미콘 조달',p:.35,days:[.25,.5,1]},
- labor_shortage:{label:'인력 부족',p:.35,impact:'mult',multipliers:[1.05,1.15,1.3],days:[.5,1,3]},
- generic:{label:'기타·분류 확인 필요',p:.35,days:[.5,1,3]}
+ equipment_fail:{label:'장비 고장·예약',p:.35,days:[.5,1,2],src:SRC_LIT},
+ weather_stop:{label:'기상 작업중지',p:.35,days:[.5,1,3],src:'기상: Open-Meteo 예보 구간이 있으면 그 시간이 우선 · 수치: SA 가정값'},
+ concrete_curing:{label:'양생 지연',p:.35,days:[1,2,5],src:'KCS 14 20 40 한중콘크리트 양생 기준(4℃) · 일수: SA 가정값'},
+ design_change:{label:'설계 변경',p:.15,days:[1,3,7],src:SRC_LIT},
+ inspection_delay:{label:'검측·승인',p:.35,days:[.5,2,5],src:SRC_LIT+' (도면 검토·자재 승인 지연이 골조 지연 상위 요인)'},
+ material_rebar:{label:'철근 조달',p:.35,days:[1,2,5],src:SRC_LIT},
+ material_ready_mix:{label:'레미콘 조달',p:.35,days:[.25,.5,1],src:SRC_LIT},
+ labor_shortage:{label:'인력 부족',p:.35,impact:'mult',multipliers:[1.05,1.15,1.3],days:[.5,1,3],src:SRC_LIT+' (하도급 자원 한계)'},
+ predecessor_delay:{label:'선행공정 지연·재시공',p:.3,days:[1,3,7],src:'Last Planner 제약 항목 · 수치: SA 가정값'},
+ permit_civil:{label:'인허가·민원 지연',p:.2,days:[2,5,15],src:'Assaf & Al-Hejji(2006) 상위 요인(발주자 승인·허가) · 수치: SA 가정값'},
+ safety_stop:{label:'안전 작업중지',p:.15,days:[.5,1,3],src:'산업안전보건법 작업중지 · 수치: SA 가정값'},
+ generic:{label:'기타·분류 확인 필요',p:.35,days:[.5,1,3],src:'분류 미확정 · SA 가정값'}
 };
 const state={enabled:true,situations:{}};
 function key(d){return JSON.stringify([String(d.task_id||''),String(d.risk_type||''),String(d.source_file||''),String(d.source_row||''),String(d.cause||'')]);}
@@ -16013,6 +16195,7 @@ function calendar(){
 }
 function evidenceDuration(d){
  const e=d?.evidence||{},cal=calendar();
+ if(Number.isFinite(+e.delay_days)&&+e.delay_days>0)return {known:true,hours:+e.delay_days*8,basis:`제약 체크리스트 예상 지연 ${+e.delay_days}일 (담당자 입력)`};
  for(const field of ['expected_delivery','available_from','expected_approval']){
   const a=new Date(e.required_time),b=new Date(e[field]);
   if(!e.required_time||!e[field]||!Number.isFinite(+a)||!Number.isFinite(+b))continue;
@@ -16057,8 +16240,8 @@ function fill(r,d){
  if(meta.locks.impact&&!blank(r.mult_mode))delete proposal.impact;
  for(const [f,v]of Object.entries(proposal))if(!meta.locks[f]){r[f]=v;meta.last[f]=v;}
  meta.initialized=true;meta.kind=kind;meta.label=t.label;meta.status='estimated';
- meta.probabilityBasis=confirmed?'ACTIVE 상태로 이미 발생한 조건(p=1)':'일반화 시나리오 사전값 · 통계로 보정되지 않음 · 입력 공정기간 중 발생확률';
- meta.basis=impact==='mult'?'생산성 영향 배수 · 최소/대표/최대 삼각분포 · 현장 통계 아님':dur.known?dur.basis:'유형별 일반화 영향기간 · 최소/대표/최대 작업일 · 현장 통계 아님';
+ meta.probabilityBasis=(confirmed?'ACTIVE(✗ 미확보)로 이미 발생한 조건(p=1)':'일반화 사전값 · 입력 공정기간 중 발생확률')+' · 출처: '+(t.src||'SA 가정값');
+ meta.basis=(impact==='mult'?'생산성 영향 배수 · 최소/대표/최대 삼각분포':dur.known?dur.basis:'유형별 기본 분포표 · 최소/대표/최대 작업일')+' · 출처: '+(dur.known?'담당자 입력':(t.src||'SA 가정값'));
  meta.gate=dur.gate||'';meta.estimatedAt=new Date().toISOString();
  meta.useGate=!!meta.gate&&!['impact',...range].some(f=>meta.locks[f]);
  grades(r);
@@ -16530,6 +16713,63 @@ window.SA_V12={state,step,run,onInput,dirty,runFromEditor:()=>{step(3);return ru
 onInput();step(1);
 })();
 
+</script>
+<script id="scenarioCompare6">
+/* [3번 탭] 시나리오 비교 — 같은 공정표·같은 엔진(SA_ADAPTIVE13_ENGINE)으로 조건만 바꾼 5개 안을 나란히 본다.
+   확률 분포(몬테카를로 상세)는 ③④에 그대로 있고, 여기는 의사결정용 요약. */
+(function(){
+  const host=document.querySelector('#saV12Hub [data-v12-page="1"]'); if(!host) return;
+  const card=document.createElement('div'); card.className='card'; card.id='scnCard6';
+  card.innerHTML=`<h3>시나리오 비교 — 조건만 바꿔 준공일을 나란히 봅니다</h3>
+    <p>회의에서 나오는 질문 순서대로: 체크한 리스크가 다 터지면? 다 해소되면? 우기로 N일 서면? 병목 작업조를 하나 더 붙이면? 같은 공정표·같은 달력·같은 엔진으로 계산하며, 리스크 확률·기간은 2번 탭 체크리스트와 유형별 기본 분포표(출처 표기)를 그대로 씁니다.</p>
+    <div class="v12grid"><label>우기 작업중지 (일, 지금부터)<input id="scnRainDays" type="number" min="1" max="60" value="10"></label><label>시행 수 (시나리오당)<input id="scnIters" type="number" min="10" max="300" value="60"></label><label>작업조 +1 대상 자원<select id="scnRes"></select></label></div>
+    <div class="v12buttons"><button type="button" class="v12primary" id="scnRun">5개 시나리오 실행</button></div>
+    <div id="scnStatus" class="ad13muted"></div><div id="scnOut"></div>`;
+  host.insertBefore(card, host.querySelector('.card'));
+  const $=id=>document.getElementById(id), clone=x=>JSON.parse(JSON.stringify(x)), wait=()=>new Promise(r=>setTimeout(r,0));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function fillRes(){ const A=window.SA_ADAPTIVE13; const s=A&&A.state.input; const sel=$('scnRes'); if(!s) return;
+    const use={}; for(const t of s.tasks) for(const r of (t.resources||[])) use[r]=(use[r]||0)+1;
+    const list=(s.resources||[]).map(r=>({id:r.id,cap:r.capacity,n:use[r.id]||0})).sort((a,b)=>b.n-a.n);
+    sel.innerHTML=list.length?list.map(r=>`<option value="${esc(r.id)}">${esc(r.id)} · 용량 ${r.cap} · 작업 ${r.n}개</option>`).join(''):'<option value="">(자원 없음)</option>'; }
+  window.addEventListener('sa-adaptive-render',()=>{ if($('scnRes')&&!$('scnRes').options.length) fillRes(); });
+  $('scnRes').addEventListener('focus',fillRes);
+  async function run(){
+    const A=window.SA_ADAPTIVE13, E=A&&A.engine, s0=A&&A.state.input, st=$('scnStatus'), out=$('scnOut');
+    if(!s0||!s0.tasks.length){ st.textContent='먼저 "자동 수집·연결"(또는 동작 예제)로 공정표를 가져오세요.'; return; }
+    const v=E.validate(s0); if(v.errors.length){ st.textContent='입력 오류: '+v.errors[0]; return; }
+    fillRes();
+    const N=Math.max(10,Math.min(300,Number($('scnIters').value)||60)), d=Math.max(1,Number($('scnRainDays').value)||10), resId=$('scnRes').value;
+    // ③ 통합 계산과 같은 전처리(최소한만): 미확인 도면·검사 → 충족 가정, 발생 방식은 화면 설정, 해소된 사건 제외, 진행 중 사건은 확정(p=1)
+    const opt=(window.SA_V12&&window.SA_V12.options)?window.SA_V12.options():{}, unknownPolicy=opt.unknownPolicy||'assume_ready';
+    const prep=s=>{ s.settings={...s.settings,occurrence:opt.occurrence||s.settings.occurrence||'probability'}; for(const t of s.tasks) for(const f of ['design','inspection']) if(t[f]==='unknown'&&unknownPolicy==='assume_ready') t[f]='ready';
+      for(const e of s.events){ if(e.status12==='resolved') e.enabled=false; else if(e.status12==='active'){ e.probability=1; e.start=e.observe=s.settings.asOf; } } return s; };
+    const cap=(s0.resources.find(r=>r.id===resId)||{}).capacity;
+    const scns=[
+      {name:'기준안 — 체크한 리스크를 확률대로',f:s=>s},
+      {name:'최악 — 체크한 리스크 전부 발생',f:s=>{ s.events.forEach(e=>{ if(e.enabled!==false) e.probability=1; }); return s; }},
+      {name:'최선 — 리스크 전부 해소 (지연 0)',f:s=>{ s.events.forEach(e=>{ if(e.enabled!==false){ e.probability=1; e.duration=[0,0,0]; } }); return s; }},   /* 비활성화가 아니라 지연 0 — 납품형 사건은 사건 자체가 입고를 뜻하므로 끄면 자재가 영영 안 온다 */
+      {name:`우기 작업중지 ${d}일 (지금부터, 미완료 작업 전부)`,f:s=>{ s.events.push({id:'SCN_RAIN',name:`우기 작업중지 ${d}일`,enabled:true,type:'WEATHER_BLOCK',status12:'forecast',durationBasis12:'remaining',uncertainty12:'estimated',probability:1,start:s.settings.asOf,observe:s.settings.asOf,duration:[d*8,d*8,d*8],targets:s.tasks.filter(t=>t.status!=='completed').map(t=>t.id),resource:'',material:'',quantity:0,commonCause:'',note:'시나리오 비교용 가정'}); return s; }},
+      {name:resId?`작업조 +1 — ${resId} 용량 ${cap}→${cap+1}`:'작업조 +1 — (자원 없음, 기준안과 동일)',f:s=>{ const r=s.resources.find(r=>r.id===resId); if(r) r.capacity+=1; return s; }}
+    ];
+    $('scnRun').disabled=true; const rows=[]; const cal=E.calendar(s0.settings);
+    try{
+      for(const [k,sc] of scns.entries()){
+        const s=sc.f(prep(clone(s0))); const ref=E.baseline(s); const trials=[];
+        for(let i=0;i<N;i++){ const r=E.simulate(s,E.makeWorld(s,i),[],{detailed:false,reference:ref}); const {rows:_r,trace,history,materialLedger,reference,affected,inventory,...small}=r; trials.push(small); /* E.stats 가 recovery·conflicts 등 전체 필드를 읽는다 */ if(i%10===9){ st.textContent=`${k+1}/5 ${sc.name} · ${i+1}/${N}`; await wait(); } }
+        rows.push({name:sc.name,stats:E.stats(trials,s.settings.deadline)});
+      }
+    }catch(e){ st.textContent='계산 실패: '+(e&&e.message||e); $('scnRun').disabled=false; return; }
+    $('scnRun').disabled=false;
+    const base=rows[0].stats, f=h=>h===null||!isFinite(h)?'미완료':(cal.stamp?cal.stamp(h).slice(0,10):(h/8).toFixed(1)+'일'), dd=h=>(h/8).toFixed(1);
+    const maxP80=Math.max(...rows.map(r=>isFinite(r.stats.p80)?r.stats.p80:0),1);
+    out.innerHTML=`<div class="v12scroll"><table><thead><tr><th>시나리오</th><th>준공 P50</th><th>준공 P80</th><th>기준 대비 P80</th><th>완료율</th><th>평균 비용</th><th style="min-width:220px">P80 (작업일)</th></tr></thead><tbody>${rows.map((r,i)=>{const s=r.stats, delta=isFinite(s.p80)&&isFinite(base.p80)&&s.completionRate>0?(s.p80-base.p80)/8:null;
+      return `<tr><td>${esc(r.name)}</td><td>${f(s.p50)}</td><td><b>${f(s.p80)}</b></td><td>${delta===null?'-':(delta>0?'+':'')+delta.toFixed(1)+'일'}</td><td>${Math.round(s.completionRate*100)}%</td><td>${Math.round(s.avgCost).toLocaleString()}원</td><td><div style="background:#e3e6eb;height:10px;border-radius:3px;"><div style="width:${isFinite(s.p80)?Math.round(100*s.p80/maxP80):100}%;height:10px;border-radius:3px;background:${i===0?'#303946':i===1?'#7F1D16':i===2?'#55A870':'#8A9099'};"></div></div><small>${isFinite(s.p80)?dd(s.p80)+'일':'-'}</small></td></tr>`;}).join('')}</tbody></table></div>
+      <p class="ad13muted">시행 ${N}회/시나리오 · 준공일은 작업달력(1일 8시간) 기준 · 최악=모든 사건 확률 1, 최선=모든 사건 지연 0, 우기=WEATHER_BLOCK 사건 추가, 작업조 +1=자원 용량 +1. 수치는 2번 탭 체크리스트·기본 분포표(가정·출처 표기)에 따릅니다.</p>`;
+    st.textContent=`완료 — 기준안 P80 ${f(base.p80)} · 최악 ${f(rows[1].stats.p80)} · 최선 ${f(rows[2].stats.p80)}`+((opt.occurrence||s0.settings.occurrence)==='all'?' · 주의: 분석 설정이 "모든 사건 발생"이라 기준안 = 최악입니다(① 현재 공정표와 분석 기준에서 확률 발생으로 바꾸면 달라집니다)':'');
+  }
+  $('scnRun').addEventListener('click',run);
+})();
 </script>
 </body>
 </html>
