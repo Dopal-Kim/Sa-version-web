@@ -260,6 +260,7 @@ table.cmp tr.best td:first-child::before{content:'최적 ';font-weight:700;}
 /* 상태등: 켜짐=채운 정사각, 꺼짐=빈 정사각 (색이 아니라 형태로 구분 — 흑백 인쇄에서도 읽힘) */
 #viewToolbar3 .tbSt{width:8px;height:8px;border:1px solid currentColor;margin-left:2px;}
 #viewToolbar3 .tbToggle.active,#viewToolbar3 .tbCheck:has(input:checked){background:var(--ink,#16181C);color:#fff;}
+#viewToolbar3 .tbGroup[hidden]{display:none;}
 #viewToolbar3 .tbToggle.active .tbSt,#viewToolbar3 .tbCheck:has(input:checked) .tbSt{background:currentColor;}
 #viewToolbar3 .tbCheck input{position:absolute;opacity:0;width:0;height:0;margin:0;}
 #viewToolbar3 .tbCheck:focus-within,#viewToolbar3 .tbGroup > button:focus-visible{outline:2px solid var(--accent-primary);outline-offset:-2px;}
@@ -2398,7 +2399,7 @@ function ckBuildPackages(){
   for(const t of scheduleTasks){
     const p=ckPackageOf(t);if(!p)continue;
     const prev=CHECKLIST[p.key];
-    const pk=next[p.key]||(next[p.key]={key:p.key,story:p.story,trade:p.trade,taskIds:[],items:prev?prev.items:Object.fromEntries(CK_ITEMS.map(i=&gt;[i.k,{state:&#x27;ok&#x27;,confirmed:true,delay_days:&#x27;&#x27;,owner:&#x27;&#x27;,note:&#x27;&#x27;,source:&#x27;&#x27;}]))});
+    const pk=next[p.key]||(next[p.key]={key:p.key,story:p.story,trade:p.trade,taskIds:[],progress:prev?prev.progress:null,items:prev?prev.items:Object.fromEntries(CK_ITEMS.map(i=&gt;[i.k,{state:&#x27;ok&#x27;,confirmed:true,delay_days:&#x27;&#x27;,owner:&#x27;&#x27;,note:&#x27;&#x27;,source:&#x27;&#x27;}]))});
     pk.taskIds.push(t.task_id);
   }
   CHECKLIST=next;
@@ -2456,7 +2457,8 @@ function renderChecklist(){
   const glyph={ok:&#x27;✓&#x27;,warn:&#x27;△&#x27;,bad:&#x27;✗&#x27;};
   { const flagged=pks.reduce((a,p)=&gt;a+Object.values(p.items).filter(i=&gt;i.state!==&#x27;ok&#x27;).length,0), pend=pks.reduce((a,p)=&gt;a+Object.values(p.items).filter(i=&gt;!i.confirmed).length,0);
     if(!/확정/.test($(&#x27;ckStatus&#x27;).textContent)) $(&#x27;ckStatus&#x27;).innerHTML=`패키지 ${pks.length}개 · △/✗ ${flagged}건${pend?` · &lt;span class=&quot;warn&quot;&gt;미확인(점선) ${pend}건 — 눌러서 확인&lt;/span&gt;`:&#x27;&#x27;}`; }
-  tbl.innerHTML=`&lt;thead&gt;&lt;tr&gt;&lt;th&gt;패키지 (층 › 공종)&lt;/th&gt;${CK_ITEMS.map(i=&gt;`&lt;th&gt;${i.label}&lt;/th&gt;`).join(&#x27;&#x27;)}&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;${pks.map(pk=&gt;`&lt;tr&gt;&lt;td class=&quot;pkg&quot;&gt;&lt;b&gt;${esc(pk.key)}&lt;/b&gt;&lt;small&gt;${pk.taskIds.length}개 작업&lt;/small&gt;&lt;/td&gt;${CK_ITEMS.map(i=&gt;{const it=pk.items[i.k];return `&lt;td&gt;&lt;button type=&quot;button&quot; class=&quot;ck ${it.state}${it.confirmed?&#x27;&#x27;:&#x27; unk&#x27;}&quot; data-pk=&quot;${esc(pk.key)}&quot; data-k=&quot;${i.k}&quot; title=&quot;${esc(it.source||(it.confirmed?&#x27;확인됨&#x27;:&#x27;미확인&#x27;))}&quot;&gt;${glyph[it.state]}&lt;/button&gt;&lt;/td&gt;`;}).join(&#x27;&#x27;)}&lt;/tr&gt;`).join(&#x27;&#x27;)}&lt;/tbody&gt;`;
+  tbl.innerHTML=`&lt;thead&gt;&lt;tr&gt;&lt;th&gt;패키지 (층 › 공종)&lt;/th&gt;${CK_ITEMS.map(i=&gt;`&lt;th&gt;${i.label}&lt;/th&gt;`).join(&#x27;&#x27;)}&lt;th title=&quot;패키지 진척률 — 4번 탭 4D에서 계획 대비 실적 색으로 표시&quot;&gt;진척%&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;${pks.map(pk=&gt;`&lt;tr&gt;&lt;td class=&quot;pkg&quot;&gt;&lt;b&gt;${esc(pk.key)}&lt;/b&gt;&lt;small&gt;${pk.taskIds.length}개 작업&lt;/small&gt;&lt;/td&gt;${CK_ITEMS.map(i=&gt;{const it=pk.items[i.k];return `&lt;td&gt;&lt;button type=&quot;button&quot; class=&quot;ck ${it.state}${it.confirmed?&#x27;&#x27;:&#x27; unk&#x27;}&quot; data-pk=&quot;${esc(pk.key)}&quot; data-k=&quot;${i.k}&quot; title=&quot;${esc(it.source||(it.confirmed?&#x27;확인됨&#x27;:&#x27;미확인&#x27;))}&quot;&gt;${glyph[it.state]}&lt;/button&gt;&lt;/td&gt;`;}).join(&#x27;&#x27;)}&lt;td&gt;&lt;input type=&quot;number&quot; class=&quot;ckProg&quot; min=&quot;0&quot; max=&quot;100&quot; step=&quot;5&quot; placeholder=&quot;-&quot; value=&quot;${pk.progress==null?&#x27;&#x27;:pk.progress}&quot; data-pk=&quot;${esc(pk.key)}&quot; style=&quot;width:52px;padding:4px 5px;text-align:right&quot;&gt;&lt;/td&gt;&lt;/tr&gt;`).join(&#x27;&#x27;)}&lt;/tbody&gt;`;
+  tbl.querySelectorAll(&#x27;input.ckProg&#x27;).forEach(inp=&gt;inp.addEventListener(&#x27;change&#x27;,()=&gt;{const v=inp.value===&#x27;&#x27;?null:Math.max(0,Math.min(100,Number(inp.value)));CHECKLIST[inp.dataset.pk].progress=v;queueParentContextSA();}));
   tbl.querySelectorAll(&#x27;button.ck&#x27;).forEach(b=&gt;b.addEventListener(&#x27;click&#x27;,()=&gt;{
     const it=CHECKLIST[b.dataset.pk].items[b.dataset.k];
     it.state=it.confirmed?({ok:&#x27;warn&#x27;,warn:&#x27;bad&#x27;,bad:&#x27;ok&#x27;})[it.state]:it.state;   // 미확인이면 첫 클릭은 &#x27;확인&#x27;만
@@ -2962,6 +2964,7 @@ function buildParentContextSA(){
     evidence_summary:evidenceSummary,
     weather_rules:{...(WEATHER_RULES||{})},
     weather_fetch:WEATHER_FETCH_META?{...WEATHER_FETCH_META}:null,
+    package_progress:Object.fromEntries(Object.values(CHECKLIST||{}).filter(p=&gt;p.progress!=null).map(p=&gt;[p.key,{progress:p.progress,taskIds:p.taskIds.slice()}])),
     weather_task_summary:(WEATHER_TASK_SUMMARY||[]).map(x=&gt;({...x})),
     task_risks:(TASK_RISKS||[]).map(x=&gt;({...x})),
     assumptions:(ASSUMPTIONS||[]).map(x=&gt;({...x})),
@@ -3701,6 +3704,19 @@ function foldLongText6(root, minLen){
             <button id="equipAccessBtn3" type="button" class="tbToggle active" title="장비 진입로 — 배치 위치에서 가장 가까운 실측 도로 지점까지의 진입 경로를 화살표로 표시합니다 (실 환경 모드, 도로 데이터 필요)">
               <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v6H3z"/><path d="M6 13v8M18 13v8M7 7l6 6M13 7l6 6"/></svg><span class="tbTx">진입로</span><span class="tbSt" aria-hidden="true"></span></button>
           </div>
+          <div class="tbGroup" aria-label="렌더">
+            <button id="shadowBtn3" type="button" class="tbToggle active" title="태양 그림자 — 방향광 그림자맵. 느리면 끄세요">
+              <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="7" r="3.5"/><path d="M4 21l6-8 4 3 6-6"/></svg><span class="tbTx">그림자</span><span class="tbSt" aria-hidden="true"></span></button>
+          </div>
+          <div class="tbGroup" aria-label="시점 프리셋">
+            <div class="tbLabel" title="카메라 프리셋 — 0.6초 이동"><svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="3.5"/></svg><span class="tbTx">시점</span></div>
+            <div class="subtabs" role="group" aria-label="카메라 프리셋">
+              <button type="button" data-cam="bird" title="조감(등각 45°)">조감</button>
+              <button type="button" data-cam="front" title="정면 낮은 시점">정면</button>
+              <button type="button" data-cam="side" title="측면">측면</button>
+              <button type="button" data-cam="top" title="평면(위에서)">평면</button>
+            </div>
+          </div>
           <div class="tbGroup" aria-label="초기화">
             <button id="resetCamBtn3" type="button" title="시점 초기화 — 카메라 회전·이동·배율을 기본 등각 시점으로 되돌립니다">
               <svg class="tbIc" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="tbTx">시점 초기화</span></button>
@@ -3730,8 +3746,49 @@ function foldLongText6(root, minLen){
           <svg id="progRing3" viewBox="0 0 44 44" width="44" height="44" aria-hidden="true"><circle class="ringBg" cx="22" cy="22" r="18"/><circle class="ringFg" cx="22" cy="22" r="18"/></svg>
           <span id="timeLabel3" style="color:var(--text-primary);font-weight:700;font-size:20px;">0 %</span>
           <span id="phaseNow3" class="phaseNow"></span>
+          <span style="margin-left:auto;display:flex;gap:4px;">
+            <button class="ghost" id="exportPngBtn3" type="button" style="padding:5px 9px;font-size:12px;" title="현재 화면을 PNG로 저장">PNG</button>
+            <button class="ghost" id="exportScenesBtn3" type="button" style="padding:5px 9px;font-size:12px;" title="발표용 3장면(시작·중간·완료) PNG 자동 저장">3장면</button>
+            <button class="ghost" id="exportWebmBtn3" type="button" style="padding:5px 9px;font-size:12px;" title="처음부터 끝까지 한 번 재생하며 WebM 영상으로 녹화">영상 녹화</button>
+          </span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px;">
+          <label for="timeBasisSel3" style="margin:0;font-size:12.5px;">재생 기준</label>
+          <select id="timeBasisSel3" style="width:auto;"><option value="seq">시공 시퀀스 (%)</option><option value="date">공정표 날짜</option></select>
+          <select id="toneSel3" style="width:auto;display:none;" title="공정표 날짜 기준에서 부재 원본 재질 표현"><option value="mono">모노크롬</option><option value="color">컬러 재질 (클라우드랩식)</option></select>
+          <span id="timeBasisNote3" class="hint" style="margin:0;flex:1;min-width:0;">1번 탭에서 최적 공정표를 생성하면 날짜 기준을 쓸 수 있습니다.</span>
+        </div>
+        <div id="sched4dLegend3" class="hint" style="display:none;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0 0;font-family:var(--font-mono);font-size:11px;">
+          <span><i style="display:inline-block;width:10px;height:10px;background:#9AA0A6;opacity:.35;vertical-align:-1px;margin-right:4px;"></i>미착수</span>
+          <span><i style="display:inline-block;width:10px;height:10px;background:#B9B4A8;vertical-align:-1px;margin-right:4px;"></i>원본 재질 (실적 없음)</span>
+          <span><i style="display:inline-block;width:10px;height:10px;background:#1F6FB2;vertical-align:-1px;margin-right:4px;"></i>계획 초과</span>
+          <span><i style="display:inline-block;width:10px;height:10px;background:#1B7F3B;vertical-align:-1px;margin-right:4px;"></i>정상</span>
+          <span><i style="display:inline-block;width:10px;height:10px;background:#C0271F;vertical-align:-1px;margin-right:4px;"></i>지연</span>
+          <span>· 부재 클릭 = 실적 입력 · 공정표에 없는 부재는 같은 층·종류 작업으로 2차 매핑, 그래도 없으면 원본 고정</span>
+          <span id="sched4dUnmapped3"></span>
+        </div>
+        <div id="p3Row3" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;font-size:12.5px;">
+          <label style="margin:0;display:flex;gap:4px;align-items:center;white-space:nowrap;" title="날짜(공정표 날짜 모드면 그 날짜, 아니면 오늘)·시각·현장 좌표로 태양 위치를 계산해 그림자 방향에 반영"><input type="checkbox" id="sunLinkChk3" checked> 태양 위치</label>
+          <input type="range" id="sunHour3" min="6" max="18" step="0.5" value="14" style="width:110px;margin:0;" title="시각(KST)">
+          <span id="sunNote3" class="hint" style="margin:0;white-space:nowrap;"></span>
+          <span style="margin-left:6px;white-space:nowrap;">단면</span>
+          <div class="subtabs" id="storySeg3" role="group" aria-label="층 격리"></div>
+          <input type="range" id="cutSlider3" min="0" max="100" value="100" style="width:110px;margin:0;" title="절단 높이 — 이 높이 위는 잘라냄(주변 건물 포함)">
+          <span id="cutNote3" class="hint" style="margin:0;white-space:nowrap;"></span>
+        </div>
+        <div id="sched4dActualRow3" style="display:none;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px;">
+          <span style="font-size:12.5px;">실적</span>
+          <button class="ghost" id="sched4dImportSimBtn3" type="button" style="padding:5px 9px;font-size:12px;">3번 탭 실적 가져오기</button>
+          <label class="ghost" style="padding:5px 9px;font-size:12px;cursor:pointer;border:1px solid var(--border);border-radius:6px;">실적 CSV<input type="file" id="sched4dCsv3" accept=".csv" style="display:none;"></label>
+          <button class="ghost" id="sched4dClearBtn3" type="button" style="padding:5px 9px;font-size:12px;">실적 지우기</button>
+          <span id="sched4dActualNote3" class="hint" style="margin:0;">실적 없음 — 부재를 클릭해 입력하거나 CSV(task_id,status,actual_start,actual_finish,progress_percent)를 올리세요</span>
         </div>
         <input type="range" id="timeSlider3" min="0" max="100" value="0" step="0.5" style="width:100%;margin-top:8px;">
+        <div id="sched4dCost3" style="display:none;margin-top:6px;">
+          <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;"><b>5D 원가 S-curve</b><span id="sched4dCostRead3" class="hint" style="margin:0;"></span></div>
+          <svg id="sched4dCostSvg3" viewBox="0 0 600 90" preserveAspectRatio="none" style="width:100%;height:90px;display:block;border:1px solid var(--border);background:var(--bg-2);"></svg>
+          <div class="hint" style="margin:3px 0 0;font-size:11px;">계획(PV)=1번 탭 공정표의 cost_fixed + cost_per_day×기간을 작업 진행에 비례 누적 · 획득가치(EV)=실적 진척률 기준(실적 없는 작업은 계획대로 간주) · <b>실적 원가(AC, 점선)는 테스트 기능</b>: 실적 CSV에 <code>actual_cost</code> 열(작업 전액)이 있을 때만 실적 진척률에 비례해 누적 — 회계 연동이 아닌 검증용 가정 <button class="ghost" id="sched4dFakeCsvBtn3" type="button" style="padding:2px 7px;font-size:11px;border-style:dashed;">가상 실적 CSV 받기 (테스트용)</button></div>
+        </div>
           <p class="hint" id="progressAxisNote3" style="max-width:none;margin-top:6px;">진행 축은 <b>모델링된 시공 시퀀스의 진행률(0~100 %)</b>입니다 — 일정(공정표)에서 계산한 값이 아니며, 일정을 불러와도 이 재생은 일정과 연동되지 않습니다.</p>
       </div>
       <details class="noteBox" style="margin-top:12px;"><summary>빠른 미리보기 안내 · 데이터 출처</summary><div class="noteBody">
@@ -3860,7 +3917,7 @@ function foldLongText6(root, minLen){
     <ul class="checklist">
       <li>시공 순서는 IFC의 층 고도값 + 부재종류(슬래브/벽체/계단/개구부)로 추정 — 실제 WBS/공정코드와의 1:1 매핑은 추후 작업.</li>
       <li>단계별 공기 배분 비중은 경험적 가정치이며, 실제 현장 공정표 입력 시 교체됩니다.</li>
-      <li>지형: 실제 주변 지반/지형 측량 데이터가 없어 <b>고저차 없는 평탄한 기준 지면</b>만 그립니다 — 산맥·해안가 같은 임의 지형 생성은 지어낸 값이므로 제거했습니다. 실측 표고 데이터가 들어오면 그때 실제 지형으로 교체합니다. 우측 상단 아이콘으로 그리드/실 환경(회색조 음영 매스) 조회 전환 가능.</li>
+      <li>지형: 주소를 검색하면 <b>Open-Meteo Elevation(Copernicus DEM 90m)</b>에서 반경 500m·20m 격자 고도를 받아 부지 중심을 0으로 한 상대 지형으로 그립니다(5m 등고선). 90m 해상도 DEM을 20m로 보간한 값이라 절토·성토·옹벽 같은 부지 조성 상태는 반영되지 않으며, 조회에 실패하면 평탄 지면으로 둡니다(지형을 지어내지 않음). 도로는 정점만 지형에 얹으므로 긴 구간이 사면을 뚫고 지나갈 수 있습니다. 우측 상단 아이콘으로 그리드/실 환경 조회 전환, 그림자 토글, 시점 프리셋 사용 가능.</li>
       <li>실 환경 모드의 거주 블록 외곽선(황금색 점선)은 주변 건물(OSM 건물 폴리곤)을 서로 20m 이내 거리 기준으로 자동 군집화한 <b>해석적 표시</b>일 뿐, 실제 지적/필지 경계(cadastral boundary) 측량 데이터가 아닙니다 — "이 구역은 하나의 거주 블록으로 보임" 정도의 추정으로만 참고하십시오. 조회 반경이 1km로 넓어진 뒤로는 <b>부지 반경 300m 안쪽 건물에만</b> 이 외곽선을 그립니다(1km 전체에 20m 규칙을 적용하면 도시 전역이 하나로 이어져 아무 구분도 되지 않기 때문입니다).</li>
       <li>주변 건물 표현은 거리에 따라 다릅니다 — 부지 반경 <b>300m 안쪽만 벽면까지 압출한 입체 매스</b>로 그리고, 그 바깥은 지붕 높이의 <b>평면 footprint</b>로 단순화하며, 반경 300m 밖의 바닥면적 60m² 미만 건물은 이 축척에서 1픽셀 미만이라 그리지 않습니다. 도로도 반경 300m 안쪽만 포장면·갓길·중심선을 갖춘 리본으로, 바깥은 단순 선으로 그립니다. 실제로 몇 개가 어떤 방식으로 그려졌는지는 "주변 환경 반영" 패널에 숫자로 표시됩니다.</li>
       <li>벽체는 거푸집 설치 → 콘크리트 양생 → 마감의 3단계로 단순화해 표현하며, 시공 중은 초록, 완공은 파랑, 지연/문제 발생은 단계 목록의 "지연 표시" 버튼으로 수동 표시해 빨강으로 강조합니다.</li>
@@ -8037,8 +8094,14 @@ function roadDistAt3(x,y){
    실 환경 모드 모두 평탄한 기준 지면(REAL_ENV_FLAT_Z3) 하나만 쓴다. 지형을 지어내지 않는
    대신 접지고를 한 상수로 고정해, groundZAt3()을 부르는 모든 하위 함수가 자동으로 평탄해진다. */
 const REAL_ENV_FLAT_Z3 = 0; // mm — 공통 접지고(부지 기준고 0으로 고정)
+/* [P2 지형] Open-Meteo Elevation(Copernicus DEM 90m)로 받은 격자 고도. 부지 중심 고도를 0으로 두고 상대 높이(mm)만 쓴다.
+   실 환경 조회(commitRealEnvJson3) 뒤 비동기로 채워지며, 못 받으면 null → 평탄 유지(지형을 지어내지 않음). */
+let TERRAIN3 = null; // { x0, y0, step(mm), n, z: Float32Array(n*n) mm, source }
 function groundZAt3(x,y){
-  return REAL_ENV_FLAT_Z3;
+  const T = TERRAIN3; if(!T) return REAL_ENV_FLAT_Z3;
+  const fx = Math.max(0, Math.min(T.n - 1.001, (x - T.x0)/T.step)), fy = Math.max(0, Math.min(T.n - 1.001, (y - T.y0)/T.step));
+  const i = Math.floor(fx), j = Math.floor(fy), u = fx - i, v = fy - j, z = (a,b) => T.z[b*T.n + a];
+  return (z(i,j)*(1-u) + z(i+1,j)*u)*(1-v) + (z(i,j+1)*(1-u) + z(i+1,j+1)*u)*v;
 }
 
 /* ---- 지면 격자 선 색: 측량 고도가 없어 고도별 그라디언트를 쓰지 않고 중립 회색 한 가지만 쓴다 ---- */
@@ -8065,6 +8128,10 @@ function resizeOffline(){
   render3(currentProgress3);
 }
 window.addEventListener('resize', resizeOffline);
+/* [4D 일정 연계] 공정표 날짜 기준 재생 상태. 채우기는 아래 sched4d6 스크립트에서. on=false 면 기존 시퀀스 % 재생 그대로. */
+window.sched4dCaption3 = ''; window.SCHED4D = { on:false, version:0, tasks:[], byGuid:new Map(), byStoryType:new Map(), start:null, days:0, actual:new Map(), tone:'mono' };
+function sched4dOn(){ return !!(window.SCHED4D && window.SCHED4D.on); }
+function axisMax3(){ return sched4dOn() ? Math.max(1, window.SCHED4D.days) : TOTAL_PROGRESS3; }
 const COL_PRE3 = '#9AA0A6';        // 회색 — 시공 전(무채색)
 const COL_WIP3 = '#1B7F3B';        // 초록 — 시공 중
 const COL_DONE_TOP3 = '#5FA3D6';  // 파랑(밝은 면) — 시공 완료
@@ -8332,6 +8399,7 @@ function drawSiteLogistics3(P, pct){
 
 let currentProgress3 = 0;
 let envMode3 = 'grid';
+let SHADOWS3 = true; // [P2] 태양 그림자(툴바 토글)
 let logisticsVisible3 = true; // 인력·장비 동선 표시 on/off
 
 /* __GL3_BEGIN__ */
@@ -8373,12 +8441,14 @@ function createGL3(){
   const glCanvas = document.createElement('canvas');
   const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true, alpha: true, preserveDrawingBuffer: false });
   renderer.setClearColor(0x000000, 0);
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
   const scene = new THREE.Scene();
   // 물리 단위 조명(r155+): Lambert 는 irradiance/π 를 반사하므로 예전 계수(0.62, 0.5)에 π 를 곱한다
   scene.add(new THREE.AmbientLight(0xffffff, 0.62 * Math.PI));
   const sun = new THREE.DirectionalLight(0xffffff, 0.5 * Math.PI);
   sun.position.set(SUN_DIR3[0]*1e6, SUN_DIR3[1]*1e6, SUN_DIR3[2]*1e6); sun.target.position.set(0,0,0);
+  sun.shadow.mapSize.set(1536, 1536); sun.shadow.bias = -0.0005; sun.shadow.normalBias = 60;
   scene.add(sun); scene.add(sun.target);
   const ortho = new THREE.OrthographicCamera(-1,1,1,-1,0,2e7); ortho.up.set(0,0,1);
   const persp = new THREE.PerspectiveCamera(60, 1, 60, 4e6); persp.up.set(0,0,1);
@@ -8400,7 +8470,7 @@ function createGL3(){
     x.stroke();
     const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t;
   };
-  return { THREE, glCanvas, renderer, scene, ortho, persp, bldGroup, envGroup,
+  return { THREE, glCanvas, renderer, scene, ortho, persp, bldGroup, envGroup, sun,
            hatchTex, brickTex: stripeTex(4, 1, 0.30), woodTex: stripeTex(1, 4, 0.24),
            matCache: new Map(), lineMatCache: new Map(), elems: [], modelKey: null, envKey: null, w: 0, h: 0 };
 }
@@ -8530,7 +8600,8 @@ function buildBuildingGL3(){
         faces = prismFaces(bottom, bottom.map(q => [q[0],q[1],z1])); zr = [z0, z1];
       }
       if(!faces || !faces.length) continue;
-      const bk = bucket(`wall|${s.name}|${wobj.materialClass || ''}`, { isWall: true, story: s.name, kind: 'wall', materialClass: wobj.materialClass, sample: wobj });
+      const tk = sched4dOn() ? sched4dTaskOf3(wobj.guid, s.name, 'wall') : null;
+      const bk = bucket(tk ? `task|${tk.key}|wall|${wobj.materialClass || ''}` : `wall|${s.name}|${wobj.materialClass || ''}`, { isWall: true, story: s.name, kind: 'wall', materialClass: wobj.materialClass, sample: wobj, task: tk });
       const e = { isWall: true, story: s.name, kind: 'wall', obj: wobj, faces, group: bk };
       bk.members.push(e); bk.faces.push(...faces); GL3.elems.push(e);
       // 거푸집(타설 전) 실루엣 — 예전 drawFormwork3: 축선을 따라 수직 스터드 + 웨일러 점선 3줄
@@ -8544,7 +8615,8 @@ function buildBuildingGL3(){
     for(const sd of list){
       if(!sd.geom) continue;
       const faces = geomFaces(sd.geom); if(!faces || !faces.length) continue;
-      const bk = bucket(`solid|${groupKey}|${sd.kind}`, { isWall: false, story: groupKey, kind: sd.kind });
+      const tk = sched4dOn() ? sched4dTaskOf3(sd.guid, groupKey, sd.kind) : null;
+      const bk = bucket(tk ? `task|${tk.key}|solid|${sd.kind}|${sd.materialClass || ''}` : `solid|${groupKey}|${sd.kind}`, { isWall: false, story: groupKey, kind: sd.kind, materialClass: sd.materialClass, task: tk });
       const e = { isWall: false, story: groupKey, kind: sd.kind, obj: sd, faces, group: bk };
       bk.members.push(e); bk.faces.push(...faces); GL3.elems.push(e);
     }
@@ -8572,7 +8644,7 @@ function buildBuildingGL3(){
   }
   GL3.modelKey = modelKey3();
 }
-function modelKey3(){ return [EMBED_DATA, wallsByStory3, solidsByStory3, stories3]; }
+function modelKey3(){ return [EMBED_DATA, wallsByStory3, solidsByStory3, stories3, sched4dOn() ? window.SCHED4D.version : 0]; }
 function modelKeySame3(k){ const n = modelKey3(); return !!k && k.every((v,i) => v === n[i]); }
 /* ---- 매 프레임: 요소별 시공 상태 → 재질/가시성 ---- */
 function wallRealVis3(wobj, pct){ // 예전 drawWallReal3 의 색 규칙
@@ -8601,6 +8673,7 @@ function applyElemVis3(e, vis){
   const map = vis.map || (vis.curing ? 'hatch' : '');
   const alpha = vis.alpha == null ? 1 : vis.alpha;
   e.mesh.visible = e.meshTop.visible = e.edges.visible = true;
+  e.mesh.castShadow = e.meshTop.castShadow = alpha > 0.5; e.mesh.receiveShadow = e.meshTop.receiveShadow = !!vis.lit;   // 반투명(미착수·거푸집)은 그림자 없음
   e.mesh.material = meshMat3(side, alpha, { map, lit: !!vis.lit });
   e.meshTop.material = meshMat3(top, alpha, { map, lit: !!vis.lit });
   e.edges.material = lineMat3(vis.stroke || 'rgba(22,24,28,0.3)', 1);
@@ -8609,8 +8682,10 @@ function updateBuildingStates3(pct){
   const real = envMode3 === 'real';
   for(const bk of GL3.groups){
     let vis;
-    if(bk.isWall) vis = real ? wallRealVis3(bk.sample, pct) : phaseVisual3(bk.story, 1, pct, true);
+    if(sched4dOn()) vis = sched4dVis3(bk, pct);
+    else if(bk.isWall) vis = real ? wallRealVis3(bk.sample, pct) : phaseVisual3(bk.story, 1, pct, true);
     else vis = solidGroupVis3(bk.story, bk.kind, pct);
+    if(ISOLATE_STORY3 && bk.story !== ISOLATE_STORY3) vis = null;   // [P3] 층 격리
     applyElemVis3(bk, vis);
     for(const e of bk.members) e.vis = vis;
   }
@@ -8623,7 +8698,7 @@ function envKey3(){
   const t = trafficViewActive3();
   return [envMode3, BLD3_SIZE, currentRealEnvExtentMM3, siteCX3(), siteCY3(), SITE_PLACEMENT_ROTATION3, REAL_ROADS3.length,
           REAL_NEIGHBOR_BUILDINGS3.length, REAL_AREAS3.length, REAL_ENV_DETAIL_RADIUS_MM3, t ? 'T' + (TRAFFIC_DATA3.records.length) + (TRAFFIC_DATA3.fetchedAt||'') : 'x',
-          GL3.roadsRef === REAL_ROADS3 ? 'r' : 'R', GL3.bldRef === REAL_NEIGHBOR_BUILDINGS3 ? 'b' : 'B'].join('|');
+          GL3.roadsRef === REAL_ROADS3 ? 'r' : 'R', GL3.bldRef === REAL_NEIGHBOR_BUILDINGS3 ? 'b' : 'B', TERRAIN3 ? 'T' + TERRAIN3.n : 't', SHADOWS3 ? 's' : 'S'].join('|');
 }
 function addMergedMesh3(group, parts, material){ // parts: [{faces, color:[r,g,b]}] → 정점색 메시 하나
   const THREE = GL3.THREE;
@@ -8679,8 +8754,26 @@ function buildEnvGL3(){
     // 실측 도로 리본(그리드 모드에서도 표시 — 예전 drawSiteRoads3)
     addRoadRibbonsGL3(G, flatZ + 6);
   }else{
-    const gp = new THREE.Mesh(new THREE.PlaneGeometry(span*2, span*2), meshMat3(REAL_ENV_GROUND_COLOR3, 1));
-    gp.position.set(BLD3_CX, BLD3_CY, flatZ); G.add(gp);
+    if(TERRAIN3){ // [P2 지형] 고도 격자를 정점 높이로 — 격자 밖은 가장자리 값으로 이어지는 평판
+      const T = TERRAIN3, segs = Math.min(160, Math.max(8, Math.round(span*3/T.step)));
+      const geo = new THREE.PlaneGeometry(span*3, span*3, segs, segs), pa = geo.attributes.position;
+      for(let k=0;k<pa.count;k++){ const x = BLD3_CX + pa.getX(k), y = BLD3_CY + pa.getY(k); pa.setZ(k, groundZAt3(x, y)); }
+      geo.computeVertexNormals();
+      const gc = parseCssColor3(REAL_ENV_GROUND_COLOR3);
+      const gp = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: gc.hex, side: THREE.DoubleSide }));
+      gp.position.set(BLD3_CX, BLD3_CY, 0); gp.receiveShadow = true; G.add(gp);
+      // 등고선(5m 간격) — 지형이 있다는 사실을 조용히 드러내는 최소 표기
+      const cs = [], lv = 5000; for(let j=0;j<T.n-1;j++) for(let i=0;i<T.n-1;i++){
+        const q = [[i,j],[i+1,j],[i+1,j+1],[i,j+1]].map(([a,b]) => [T.x0+a*T.step, T.y0+b*T.step, T.z[b*T.n+a]]);
+        const zmin = Math.min(...q.map(v=>v[2])), zmax = Math.max(...q.map(v=>v[2]));
+        for(let L = Math.ceil(zmin/lv)*lv; L <= zmax; L += lv){ const pts = [];
+          for(let e=0;e<4;e++){ const a = q[e], b = q[(e+1)%4]; if((a[2]-L)*(b[2]-L) < 0){ const t = (L-a[2])/(b[2]-a[2]); pts.push([a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, L+20]); } }
+          if(pts.length >= 2) cs.push([...pts[0], ...pts[1]]); } }
+      if(cs.length){ const cl = new THREE.LineSegments(lineSegGeometry3(cs), lineMat3('rgba(22,24,28,0.18)', 1)); cl.frustumCulled = false; G.add(cl); }
+    }else{
+      const gp = new THREE.Mesh(new THREE.PlaneGeometry(span*2, span*2), meshMat3(REAL_ENV_GROUND_COLOR3, 1));
+      gp.position.set(BLD3_CX, BLD3_CY, flatZ); G.add(gp);
+    }
     // 녹지·수역(예전 drawRealEnvAreas3): 채움 0.5 + 원색 윤곽
     for(const kind of ['park','water']){
       const col = kind === 'park' ? REAL_ENV_PARK_COLOR3 : REAL_ENV_WATER_COLOR3;
@@ -8712,7 +8805,7 @@ function buildEnvGL3(){
       nearParts.push({ faces: sides, color: bc });
       nearParts.push({ faces: polygonFaces3(pts, z1), color: bc.map(v => v*0.82) });
     }
-    addMergedMesh3(G, nearParts, vcMat(1));
+    const nearMesh = addMergedMesh3(G, nearParts, vcMat(1)); if(nearMesh){ nearMesh.castShadow = nearMesh.receiveShadow = true; }
     if(roofEdges.length){ const re = new THREE.LineSegments(lineSegGeometry3(roofEdges), lineMat3(REAL_ENV_BUILDING_EDGE3, 1)); re.frustumCulled = false; G.add(re); }
     for(const c of farB.cells) for(const b of c.items) farParts.push({ faces: polygonFaces3(b.polygon, groundZAt3(b.cx, b.cy) + b.heightMM), color: bc.map(v => v*0.88) });
     addMergedMesh3(G, farParts, vcMat(1));
@@ -8721,6 +8814,17 @@ function buildEnvGL3(){
     REAL_ENV_RENDER_STATS3.buildingsFlat = farB.flat;
     REAL_ENV_RENDER_STATS3.buildingsSkipped = farB.skipped;
   }
+  // [P2 그림자] 그림자 받는 투명 판(두 모드 공통) + 태양 그림자 카메라를 부지 주변에 맞춘다
+  if(SHADOWS3){
+    const cx = siteCX3(), cy = siteCY3(), rad = Math.max(BLD3_SIZE*1.6, 60000);
+    if(TERRAIN3){ const segs = 40, geo = new THREE.PlaneGeometry(rad*2, rad*2, segs, segs), pa = geo.attributes.position;
+      for(let k=0;k<pa.count;k++) pa.setZ(k, groundZAt3(cx + pa.getX(k), cy + pa.getY(k)) + 8);
+      const sc = new THREE.Mesh(geo, new THREE.ShadowMaterial({ opacity: 0.22, transparent: true, depthWrite: false })); sc.position.set(cx, cy, 0); sc.receiveShadow = true; G.add(sc);
+    }else{ const sc = new THREE.Mesh(new THREE.PlaneGeometry(rad*2, rad*2), new THREE.ShadowMaterial({ opacity: 0.22, transparent: true, depthWrite: false })); sc.position.set(cx, cy, flatZ + 8); sc.receiveShadow = true; G.add(sc); }
+    const sh = GL3.sun.shadow; GL3.sun.castShadow = true;
+    sh.camera.left = sh.camera.bottom = -rad; sh.camera.right = sh.camera.top = rad; sh.camera.near = rad*0.5; sh.camera.far = rad*6; sh.camera.updateProjectionMatrix();
+  }else GL3.sun.castShadow = false;
+  placeSun3();
   GL3.roadsRef = REAL_ROADS3; GL3.bldRef = REAL_NEIGHBOR_BUILDINGS3;
   GL3.envKey = envKey3();
 }
@@ -8731,13 +8835,14 @@ function addRoadRibbonsGL3(G, z){
   _realEnvRoadChunksCache3 = null;
   const data = getRealEnvRoadChunks3(z);
   const parts = [], curbs = [], centers = [], centerColors = new Map(), far = [];
+  const lift = z - groundZAt3(BLD3_CX, BLD3_CY), gz = (x, y, d) => TERRAIN3 ? groundZAt3(x, y) + lift + d : z + d;   // [P2 지형] 정점만 지형에 얹는다(ponytail: 긴 구간은 지면을 뚫을 수 있음, 분할은 필요해지면)
   for(const ch of data.chunks){
     const c = parseCssColor3(ch.fillColor);
-    parts.push({ faces: [ch.quad], color: [(c.hex>>16)&255, (c.hex>>8)&255, c.hex&255] });
-    curbs.push([ch.curbA[0],ch.curbA[1],z+1, ch.curbA2[0],ch.curbA2[1],z+1], [ch.curbB[0],ch.curbB[1],z+1, ch.curbB2[0],ch.curbB2[1],z+1]);
+    parts.push({ faces: [ch.quad.map(p => [p[0], p[1], gz(p[0], p[1], 0)])], color: [(c.hex>>16)&255, (c.hex>>8)&255, c.hex&255] });
+    curbs.push([ch.curbA[0],ch.curbA[1],gz(ch.curbA[0],ch.curbA[1],1), ch.curbA2[0],ch.curbA2[1],gz(ch.curbA2[0],ch.curbA2[1],1)], [ch.curbB[0],ch.curbB[1],gz(ch.curbB[0],ch.curbB[1],1), ch.curbB2[0],ch.curbB2[1],gz(ch.curbB2[0],ch.curbB2[1],1)]);
     if(ch.centerline){
       let arr = centerColors.get(ch.centerline); if(!arr){ arr = []; centerColors.set(ch.centerline, arr); }
-      arr.push([ch.centerA[0],ch.centerA[1],z+2, ch.centerB[0],ch.centerB[1],z+2]);
+      arr.push([ch.centerA[0],ch.centerA[1],gz(ch.centerA[0],ch.centerA[1],2), ch.centerB[0],ch.centerB[1],gz(ch.centerB[0],ch.centerB[1],2)]);
     }
   }
   addMergedMesh3(G, parts, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide })); // 도로색(혼잡도 등급 포함)은 정확히
@@ -8746,7 +8851,7 @@ function addRoadRibbonsGL3(G, z){
     const l = new THREE.LineSegments(lineSegGeometry3(segs), lineMat3(col, 1, [1000, 1000])); l.computeLineDistances(); l.frustumCulled = false; G.add(l);
   }
   const farByColor = new Map();
-  for(const cell of data.farCells){ let arr = farByColor.get(cell.color); if(!arr){ arr = []; farByColor.set(cell.color, arr); } for(const s of cell.segs) arr.push([s[0],s[1],z, s[2],s[3],z]); }
+  for(const cell of data.farCells){ let arr = farByColor.get(cell.color); if(!arr){ arr = []; farByColor.set(cell.color, arr); } for(const s of cell.segs) arr.push([s[0],s[1],gz(s[0],s[1],0), s[2],s[3],gz(s[2],s[3],0)]); }
   for(const [col, segs] of farByColor){ const l = new THREE.LineSegments(lineSegGeometry3(segs), lineMat3(col, 1)); l.frustumCulled = false; G.add(l); }
   REAL_ENV_RENDER_STATS3.roadsTotal = REAL_ROADS3.length;
   REAL_ENV_RENDER_STATS3.roadSegsNear = data.chunks.length;
@@ -8783,10 +8888,24 @@ function renderGL3(pct, w, h){
   const dpr = devicePixelRatio || 1;
   if(GL3.w !== w || GL3.h !== h || GL3.dpr !== dpr){ GL3.renderer.setPixelRatio(dpr); GL3.renderer.setSize(w, h, false); GL3.w = w; GL3.h = h; GL3.dpr = dpr; }
   const cam = updateCameraGL3(w, h);
+  // [P3 단면] 전역 클리핑 평면: 부지 접지 + 절단 높이 위를 잘라낸다(주변 건물도 같이 잘림 = 단면도와 같은 규칙)
+  if(CUT_Z_MM3 !== null){ const zc = groundZAt3(siteCX3(), siteCY3()) + CUT_Z_MM3; if(!GL3.cutPlane) GL3.cutPlane = new GL3.THREE.Plane(new GL3.THREE.Vector3(0,0,-1), 0); GL3.cutPlane.constant = zc; GL3.renderer.clippingPlanes = [GL3.cutPlane]; }
+  else if(GL3.renderer.clippingPlanes.length) GL3.renderer.clippingPlanes = [];
+  // [P2 하늘·안개] 실 환경 모드에서만: 원근/1인칭이면 거리 안개(지평선 쪽이 하늘색으로 녹음), 직교는 안개 없음
+  const skyOn = envMode3 === 'real' && !trafficViewActive3();
+  const wantFog = skyOn && (cam3.viewMode === 'firstPerson' || PROJECTION3 === 'persp');
+  if(wantFog){ if(!GL3.scene.fog) GL3.scene.fog = new GL3.THREE.FogExp2(0xE3E9EF, 0.35/1e6); } else GL3.scene.fog = null;
+  if(skyOn){ const g = ctx3.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#C9D8E6'); g.addColorStop(0.55, '#E3E9EF'); g.addColorStop(1, '#EEF1F4'); ctx3.fillStyle = g; ctx3.fillRect(0, 0, w, h); }
   GL3.renderer.render(GL3.scene, cam);
   ctx3.drawImage(GL3.glCanvas, 0, 0, w, h);
 }
 function invalidateEnvGL3(){ if(GL3) GL3.envKey = null; }
+/* [P3] 태양 위치만 갱신(환경 재구축 없이) — 그림자 카메라 거리는 buildEnvGL3 의 rad 와 같은 식 */
+function placeSun3(){
+  if(!GL3) return;
+  const cx = siteCX3(), cy = siteCY3(), rad = Math.max(BLD3_SIZE*1.6, 60000), gz = groundZAt3(cx, cy);
+  GL3.sun.target.position.set(cx, cy, gz); GL3.sun.position.set(cx + SUN_DIR3[0]*rad*3, cy + SUN_DIR3[1]*rad*3, gz + SUN_DIR3[2]*rad*3);
+}
 /* __GL3_END__ */
 function renderScene3(pct){
   const w = canvas3.width/devicePixelRatio, hh = canvas3.height/devicePixelRatio;
@@ -8804,7 +8923,7 @@ function renderScene3(pct){
   // ---- 2D 주석(항상 형상 위) ----
   const dz = groundZAt3(siteCX3(), siteCY3());
   const real = envMode3 === 'real';
-  if(!(real && trafficViewActive3())){
+  if(!(real && trafficViewActive3()) && !sched4dOn()){
     stories3.forEach(s => {
       const ws = wallsByStory3.get(s.name) || [];
       if(!(isDelayed3(s.name, 1) && ws.length)) return;
@@ -8825,13 +8944,18 @@ function renderScene3(pct){
 
 function render3(pct){
   currentProgress3 = pct;
+  if(typeof sunTick3 === 'function') sunTick3();
   renderScene3(pct);
-  document.getElementById('timeLabel3').textContent = pctLabel3(pct);
-  renderPhaseList3(pct);
+  document.getElementById('timeLabel3').textContent = sched4dOn() ? sched4dLabel3(pct) : pctLabel3(pct);
+  if(sched4dOn()) sched4dRenderList3(pct); else renderPhaseList3(pct);
+  if(typeof sched4dRenderCost3 === 'function') sched4dRenderCost3(pct);
 }
 
 /* ---- 실 환경 조회 모드 (평탄화된 회색조 음영 매스) ---- */
-const SUN_DIR3 = (() => { const v=[0.55,-0.55,0.62]; const l=Math.hypot(...v); return v.map(x=>x/l); })();
+const SUN_DIR_DEFAULT3 = (() => { const v=[0.55,-0.55,0.62]; const l=Math.hypot(...v); return v.map(x=>x/l); })();
+let SUN_DIR3 = SUN_DIR_DEFAULT3.slice(); // [P3] 태양 연동이 켜지면 날짜·시각·좌표로 갱신
+let ISOLATE_STORY3 = null;                 // [P3] 층 격리(null=전체)
+let CUT_Z_MM3 = null;                      // [P3] 단면 절단 높이(부지 접지 기준 mm, null=없음)
 
 
 /* ============================================================
@@ -10590,6 +10714,35 @@ async function applyRealEnvContext3(lat, lng, opts){
       ` [내장 파일: ${BUNDLED_STATUS3} / 이번 조회 키: ${overpassCacheKey3(lat, lng, 1000).slice(OVERPASS_CACHE_PREFIX3.length)}]`, 15000);
   }
 }
+/* [P2 지형] Open-Meteo Elevation API — 키 없음·CORS 허용·요청당 좌표 100개. 반경 500m · 20m 격자(51×51=2,601점, 27요청).
+   실패하면 TERRAIN3 = null 로 평탄 유지하고 캡션에 이유를 적는다. 같은 좌표 재조회는 건너뛴다. */
+let _terrainKey3 = null;
+async function fetchTerrain3(lat, lng){
+  const key = lat.toFixed(5) + ',' + lng.toFixed(5); if(_terrainKey3 === key) return; _terrainKey3 = key;
+  const R = 500000, STEP = 20000, n = Math.round(2*R/STEP) + 1;
+  const x0 = BLD3_CX - R, y0 = BLD3_CY - R, pts = [];
+  for(let j=0;j<n;j++) for(let i=0;i<n;i++) pts.push(localToLatLng3(x0 + i*STEP, y0 + j*STEP, lat, lng));
+  const z = new Float32Array(n*n);
+  try{
+    for(let s=0; s<pts.length; s+=100){
+      const chunk = pts.slice(s, s+100);
+      const r = await fetch(`https://api.open-meteo.com/v1/elevation?latitude=${chunk.map(p=>p.lat.toFixed(6)).join(',')}&longitude=${chunk.map(p=>p.lng.toFixed(6)).join(',')}`);
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      const e = (await r.json()).elevation; if(!Array.isArray(e) || e.length !== chunk.length) throw new Error('응답 형식 오류');
+      for(let k=0;k<e.length;k++) z[s+k] = Number(e[k]) * 1000;
+    }
+    if(_terrainKey3 !== key) return;
+    const c = Math.floor(n/2), z0 = z[c*n + c]; let mn = Infinity, mx = -Infinity;
+    for(let k=0;k<z.length;k++){ z[k] -= z0; mn = Math.min(mn, z[k]); mx = Math.max(mx, z[k]); }
+    TERRAIN3 = { x0, y0, step: STEP, n, z, source: 'Open-Meteo Elevation (Copernicus DEM 90m)', minM: mn/1000, maxM: mx/1000, baseM: z0/1000 };
+    setRealEnvCaption3(`지형 반영 — 반경 500m 고도 ${TERRAIN3.minM.toFixed(0)}~${TERRAIN3.maxM.toFixed(0)}m (부지 기준, 해발 ${TERRAIN3.baseM.toFixed(0)}m · Open-Meteo Elevation)`, 8000);
+  }catch(err){
+    TERRAIN3 = null; _terrainKey3 = null;
+    setRealEnvCaption3('지형 고도 조회 실패 — 평탄 지면으로 표시합니다 (' + (err.message || err) + ')', 8000);
+  }
+  invalidateEnvGL3(); render3(currentProgress3);
+  if(typeof updateRealEnvRenderNote3 === 'function') updateRealEnvRenderNote3();
+}
 /* [데이터 주입 인터페이스] 지도 API(V-World/국토부/카카오 등)·파일·직접 입력 어디서 왔든
    아래 형식이면 그대로 반영된다. 좌표는 WGS84 위경도, 원점(lat,lng)은 대상 부지 중심.
      window.setRealEnvContext3({
@@ -10621,6 +10774,7 @@ function commitRealEnvJson3(json, lat, lng, cacheInfo){
     REAL_NEIGHBOR_BUILDINGS3 = buildings;
     REAL_AREAS3 = areas;
     SITE_ORIGIN_LATLNG3 = { lat, lng };
+    fetchTerrain3(lat, lng);
     invalidateRealEnvRoadChunks3(); // REAL_ROADS3가 교체됐으므로 캐시된 통합 도로 청크를 무효화
     setEnvMode3('real'); // 데이터가 적재됐으니 토글도 ON(빈 응답이면 grid 유지) — 아래 render3에서 반영
     currentRealEnvExtentMM3 = computeRealEnvExtentMM3();
@@ -10865,8 +11019,9 @@ document.getElementById('playBtn3').addEventListener('click', () => {
   if(playing3){
     playTimer3 = setInterval(() => {
       const slider = document.getElementById('timeSlider3');
-      let v = Number(slider.value) + Math.max(0.3, TOTAL_PROGRESS3/300);
-      if(v > TOTAL_PROGRESS3){ v = TOTAL_PROGRESS3; playing3=false; btn.textContent='재생'; clearInterval(playTimer3); }
+      const mx = axisMax3();
+      let v = Number(slider.value) + Math.max(sched4dOn() ? 0.1 : 0.3, mx/300);
+      if(v > mx){ v = mx; playing3=false; btn.textContent='재생'; clearInterval(playTimer3); if(typeof onPlayEnd3 === 'function') onPlayEnd3(); }
       slider.value = String(v);
       render3(v);
     }, 60);
@@ -11188,6 +11343,42 @@ function fpMoveTick3(){
 requestAnimationFrame(fpMoveTick3);
 
 document.getElementById('resetCamBtn3').addEventListener('click', resetCamera3);
+/* [P5] 산출물: PNG · 3장면 · WebM 녹화(재생 1회) — canvas3 는 GL 합성 결과를 들고 있으므로 그대로 캡처 */
+let onPlayEnd3 = null;
+function dlBlob3(blob, name){ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+function stamp3(){ return sched4dOn() ? sched4dLabel3(currentProgress3).split(' ')[0] : pctLabel3(currentProgress3).replace(/\s/g,''); }
+document.getElementById('exportPngBtn3').addEventListener('click', () => { render3(currentProgress3); canvas3.toBlob(b => dlBlob3(b, `4D_${stamp3()}.png`), 'image/png'); });
+document.getElementById('exportScenesBtn3').addEventListener('click', async () => {
+  const keep = currentProgress3, mx = axisMax3(), slider = document.getElementById('timeSlider3');
+  for(const f of [0, 0.5, 1]){ const v = mx*f; slider.value = String(v); render3(v); await new Promise(r => setTimeout(r, 120)); await new Promise(r => canvas3.toBlob(b => { dlBlob3(b, `4D_${stamp3()}.png`); r(); }, 'image/png')); }
+  slider.value = String(keep); render3(keep);
+});
+document.getElementById('exportWebmBtn3').addEventListener('click', function(){
+  if(!window.MediaRecorder || !canvas3.captureStream){ alert('이 브라우저는 캔버스 녹화를 지원하지 않습니다.'); return; }
+  const btn = this, slider = document.getElementById('timeSlider3'), playBtn = document.getElementById('playBtn3');
+  if(playing3) playBtn.click();
+  slider.value = '0'; render3(0);
+  const stream = canvas3.captureStream(30), chunks = [];
+  const mime = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+  const rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 6e6 } : undefined);
+  rec.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
+  rec.onstop = () => { dlBlob3(new Blob(chunks, { type: 'video/webm' }), `4D_재생_${new Date().toISOString().slice(0,10)}.webm`); btn.textContent = '영상 녹화'; btn.disabled = false; onPlayEnd3 = null; };
+  btn.textContent = '녹화 중…'; btn.disabled = true;
+  onPlayEnd3 = () => setTimeout(() => rec.stop(), 300);
+  rec.start(200); playBtn.click();
+});
+/* [P2] 그림자 토글 · 카메라 프리셋(0.6s 이징) */
+document.getElementById('shadowBtn3').addEventListener('click', function(){ SHADOWS3 = !SHADOWS3; this.classList.toggle('active', SHADOWS3); invalidateEnvGL3(); render3(currentProgress3); });
+const CAM_PRESETS3 = { bird: { theta: Math.PI/4, phi: 0.62 }, front: { theta: 0, phi: 0.28 }, side: { theta: Math.PI/2, phi: 0.28 }, top: { theta: Math.PI/4, phi: 1.5 } };
+let _camTween3 = 0;
+function tweenCamera3(to, ms){
+  if(cam3.viewMode === 'firstPerson') setViewMode3('orbit');
+  const from = { theta: cam3.theta, phi: cam3.phi }, t0 = performance.now(), id = ++_camTween3;
+  let dth = to.theta - from.theta; dth = Math.atan2(Math.sin(dth), Math.cos(dth));
+  (function step(now){ if(id !== _camTween3) return; const u = Math.min(1, (now - t0)/ms), e = 1 - Math.pow(1 - u, 3);
+    cam3.theta = from.theta + dth*e; cam3.phi = from.phi + (to.phi - from.phi)*e; render3(currentProgress3); if(u < 1) requestAnimationFrame(step); })(t0);
+}
+document.querySelectorAll('#viewToolbar3 [data-cam]').forEach(b => b.addEventListener('click', () => tweenCamera3(CAM_PRESETS3[b.dataset.cam], 600)));
 document.getElementById('projectStartDate').addEventListener('change', (e) => setProjectStartDate(e.target.value));
 /* [P7-G] 비작업일 설정 → 달력 환산만 갱신 */
 function applyCalendarInputs(){
@@ -11467,6 +11658,7 @@ function rebuildModel3(newData){
   setPlacementPicking3(false);
   delayedPhases3.clear();
   fpPos3 = null; fpHeightOffset3 = 0;
+  ISOLATE_STORY3 = null; if(typeof p3RefreshStories3 === 'function') p3RefreshStories3();
   setEnvMode3('real'); // 이미 적재된 실측 데이터가 있으면 ON 유지, 없으면 grid
   const fpBtn = document.getElementById('fpToggleBtn3');
   cam3.viewMode = 'orbit'; savedOrbitAngles3 = null; savedFPAngles3 = null;
@@ -13190,6 +13382,9 @@ function refreshSiteOverview3(){
       try{
         if(typeof realEnvCaptionOverride3 !== 'undefined' && realEnvCaptionOverride3 && ts < realEnvCaptionOverride3.until){
           capText.textContent = realEnvCaptionOverride3.text;
+        }else if(typeof sched4dOn === 'function' && sched4dOn()){
+          const modeTxt = (typeof envMode3 !== 'undefined' && envMode3 === 'real') ? '실환경 모드' : '그리드 모드';
+          capText.textContent = `${sched4dLabel3(currentProgress3)} · 공정표 날짜 기준 · ${sched4dCaption3 || ''} · ${modeTxt}`;
         }else if(typeof phaseTimings3 !== 'undefined' && phaseTimings3 && phaseTimings3.length){
           const pct = currentProgress3;
           const modeTxt = (typeof envMode3 !== 'undefined' && envMode3 === 'real') ? '실환경 모드' : '그리드 모드';
@@ -13215,7 +13410,7 @@ function refreshSiteOverview3(){
           const n = (typeof GL3 !== 'undefined' && GL3) ? GL3.elems.length : 0;
           hud.innerHTML = `<span>AZ</span> <b>${String(az).padStart(3,'0')}°</b> <span>EL</span> <b>${String(el).padStart(2,'0')}°</b> <span>·</span> <b>${proj}</b>` +
             (mmPerPx ? ` <span>·</span> <b>${mmPerPx.toLocaleString()}</b><span>mm/px</span>` : '') +
-            `<br><span>ELEM</span> <b>${n}</b> <span>·</span> <span>PROG</span> <b>${pctLabel3(currentProgress3)}</b>` +
+            `<br><span>ELEM</span> <b>${n}</b> <span>·</span> <span>${sched4dOn() ? 'DAY' : 'PROG'}</span> <b>${sched4dOn() ? 'D+'+Math.floor(currentProgress3) : pctLabel3(currentProgress3)}</b>` +
             (typeof envMode3 !== 'undefined' && envMode3 === 'real' ? ` <span>·</span> <b>REAL</b>` : ` <span>·</span> <b>GRID</b>`);
         }
       }catch(e){}
@@ -13506,10 +13701,11 @@ refreshTab1Progress();
   (function tick(){
     try{
       if(ring && typeof currentProgress3 !== 'undefined'){
-        const f = Math.max(0, Math.min(1, currentProgress3/(TOTAL_PROGRESS3||100)));
+        const f = Math.max(0, Math.min(1, currentProgress3/((typeof axisMax3==='function'?axisMax3():TOTAL_PROGRESS3)||100)));
         ring.style.strokeDashoffset = (C*(1-f)).toFixed(2);
       }
-      if(phaseNow && typeof phaseTimings3 !== 'undefined' && phaseTimings3 && phaseTimings3.length){
+      if(phaseNow && typeof sched4dOn === 'function' && sched4dOn()){ phaseNow.textContent = window.sched4dCaption3 || ''; }
+      else if(phaseNow && typeof phaseTimings3 !== 'undefined' && phaseTimings3 && phaseTimings3.length){
         const pct = currentProgress3;
         const a = phaseTimings3.find(t => pct >= t.startP && pct < t.endP);
         phaseNow.textContent = a ? `${a.storyName} · ${PHASE_LABEL3[a.phase]}` : (pct >= TOTAL_PROGRESS3 ? '전체 완료' : '');
@@ -14225,6 +14421,7 @@ function buildIfcSchedule4(){
     IFC_OPT_REPORT8={best,compat,candidates:IFC_OPT_CANDIDATES8};
 
     renderGeneratedSchedule4();renderCandidates8(best);renderOptimizationMetrics8(best,compat);
+    if(typeof sched4dRefresh3==='function') try{ sched4dRefresh3(true); }catch(e){ console.error(e); }
     const sum=generatedScheduleSummary7(IFC_GENERATED_ROWS4);
     /* summary 함수는 최종 network를 다시 읽으므로 Optimized Baseline과 동일해야 함 */
     if(document.getElementById('ifcSumDays7'))document.getElementById('ifcSumDays7').textContent=best.resourceDays.toFixed(1)+'일';
@@ -14419,7 +14616,7 @@ function renderGeneratedSchedule4(){
   });
   ['ifcProdForm4','ifcProdRebar4','ifcRebarRatio4','ifcProdConcrete4','ifcCuringDays4','ifcMepDays4','ifcInspectionDays4','ifcProdGeneric4','ifcProdRoof4','ifcCrewForm4','ifcCrewRebar4','ifcCrewConcrete4','ifcUnknownRc4',
     'ifcOptMode8','ifcOptMaxZones8','ifcOptZonePenalty8','ifcProjectStart8','ifcCapRebar8','ifcCapForm8','ifcCapConcrete8','ifcCapMep8','ifcCapInspect8'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{
-    if(IFC_SCHED_DATA4){analyzeIfcQuantities4(IFC_SCHED_DATA4);renderIfcQuantities4();IFC_GENERATED_ROWS4=[];IFC_GENERATED_CSV4='';renderGeneratedSchedule4();document.getElementById('ifcDownloadSchedule4').disabled=true;document.getElementById('ifcApplySchedule4').disabled=true;document.getElementById('ifcGenerateStatus4').textContent='생산성/최적화 조건이 바뀌었습니다 — 최적 공정표를 다시 생성하십시오.';const sm=document.getElementById('ifcGenSummary7');if(sm)sm.style.display='none';const om=document.getElementById('ifcOptMetrics8');if(om)om.style.display='none';const cw=document.getElementById('ifcCandidateWrap8');if(cw)cw.style.display='none';const cc=document.getElementById('ifcCompatibility8');if(cc){cc.className='ifcCompat8';cc.textContent='조건이 바뀌어 이전 최적화 결과가 무효화되었습니다. 다시 생성·검증하십시오.';}}
+    if(IFC_SCHED_DATA4){analyzeIfcQuantities4(IFC_SCHED_DATA4);renderIfcQuantities4();IFC_GENERATED_ROWS4=[];IFC_GENERATED_CSV4='';renderGeneratedSchedule4();document.getElementById('ifcDownloadSchedule4').disabled=true;document.getElementById('ifcApplySchedule4').disabled=true;document.getElementById('ifcGenerateStatus4').textContent='생산성/최적화 조건이 바뀌었습니다 — 최적 공정표를 다시 생성하십시오.';const sm=document.getElementById('ifcGenSummary7');if(sm)sm.style.display='none';const om=document.getElementById('ifcOptMetrics8');if(om)om.style.display='none';const cw=document.getElementById('ifcCandidateWrap8');if(cw)cw.style.display='none';const cc=document.getElementById('ifcCompatibility8');if(cc){cc.className='ifcCompat8';cc.textContent='조건이 바뀌어 이전 최적화 결과가 무효화되었습니다. 다시 생성·검증하십시오.';}if(typeof sched4dRefresh3==='function')sched4dRefresh3(false);}
   }));
 })();
 
@@ -14488,6 +14685,7 @@ window.addEventListener('message',(e)=>{
   const d=e.data||{};
   if(d.type==='SA_INPUT_CONTEXT'){
     applyInputContext5(d.payload||{});
+    if(d.payload&&d.payload.package_progress&&typeof sched4dApplyPackageProgress3==='function') try{ sched4dApplyPackageProgress3(d.payload.package_progress); }catch(e){}
     return;
   }
   if(d.type==='SA_RISK_HEIGHT'){
@@ -16860,6 +17058,310 @@ onInput();step(1);
 /* 결과 WBS 간트 */
 #rc13Wbs{overflow:auto;max-height:560px;border:1px solid #dde1e7;border-radius:8px;margin:10px 0;background:#fff}
 </style>
+
+<script id="sched4d6">
+/* ============================================================
+   [4D 일정 연계] P0: 공정표 날짜 기준 재생 · 부재↔작업 매핑  /  P1: 실적(체크리스트 진척률·실적 CSV·3번 탭·부재 클릭) → 계획 대비 청/녹/적
+   데이터 근거: 1번 탭 최적 공정표 행의 quantity_source_ids(IFC GUID 목록) ↔ 뷰어 walls/solids[].guid.
+   매핑 실패 시 (층, 부재종류)로 2차 매핑, 그래도 없으면 '일정 없음'(원본 재질).
+   색 규칙(클라우드랩 페이지 명시): 원본 / 계획 대비 초과 청색 / 정상 녹색 / 지연 적색. 실적이 없는 부재는 원본 재질로만 그린다.
+============================================================ */
+(function(){
+  const S = window.SCHED4D;
+  const TYPE_KIND = { IFCWALL:'wall', IFCSLAB:'slab', IFCROOF:'roof', 'IFCWINDOW/IFCDOOR':'opening', IFCSTAIR:'stair', IFCCOLUMN:'structure', IFCBEAM:'structure', IFCFOOTING:'slab' };
+  const DAY = 86400000, pad = n => String(n).padStart(2,'0');
+  const dstr = ms => { const d = new Date(ms); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`; };
+  const parseDay = v => { const m = String(v||'').match(/^(\d{4})-(\d{2})-(\d{2})/); if(!m || S.start === null) return null; return Math.round((Date.UTC(+m[1],+m[2]-1,+m[3]) - S.start)/DAY); };
+  const clamp01 = v => Math.max(0, Math.min(1, v));
+
+  /* ---- 구축: 1번 탭 최적 공정표 → 작업 목록 ---- */
+  function build(){
+    const rows = (typeof IFC_GENERATED_ROWS4 !== 'undefined' ? IFC_GENERATED_ROWS4 : []).filter(r => Number.isFinite(Number(r.ES)) && Number.isFinite(Number(r.EF)));
+    S.tasks = []; S.byGuid = new Map(); S.byStoryType = new Map();
+    if(!rows.length){ S.days = 0; return false; }
+    const raw = (document.getElementById('ifcProjectStart8')||{}).value || '';
+    const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const now = new Date(); S.start = m ? Date.UTC(+m[1],+m[2]-1,+m[3]) : Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    S.startAssumed = !m;
+    for(const r of rows){
+      const t = { task_id:r.task_id, name:r.task_name, ES:Number(r.ES), EF:Number(r.EF), story:String(r.source_story||String(r.zone_ref||'').split('-')[0]||''), zone:String(r.zone_ref||''), type:r.ifc_element_type, kind:TYPE_KIND[r.ifc_element_type]||null, guids:[], n:0 };
+      for(const g of String(r.quantity_source_ids||'').split(';').map(x=>x.trim()).filter(Boolean)){ t.guids.push(g); if(!S.byGuid.has(g)) S.byGuid.set(g, t); }
+      if(t.kind && t.story){ const k = t.story+'|'+t.kind; if(!S.byStoryType.has(k)) S.byStoryType.set(k, t); }
+      S.tasks.push(t);
+    }
+    S.tasks.sort((a,b)=>a.ES-b.ES||a.EF-b.EF);
+    S.days = Math.ceil(Math.max(...S.tasks.map(t=>t.EF)) + 1);
+    // 체인: 부재 집합(정렬한 GUID 목록)이 같은 작업들 = 한 부재를 순서대로 시공하는 세부 공정. 부재 색은 체인 전체로 판정한다.
+    // GUID가 없는 세부 공정(검측·양생 등)은 같은 층·존·종류에서 직전에 나온 체인에 붙인다 → 부재는 마지막 단계가 끝나야 '완료'.
+    S.chains = new Map(); S.chainByGuid = new Map(); S.chainByStoryType = new Map();
+    const lastChain = new Map();
+    for(const t of S.tasks){
+      const zk = `${t.story}|${t.zone}|${t.kind}`;
+      const key = t.guids.length ? t.guids.slice().sort().join(';') : (lastChain.get(zk) || { key: `nog|${zk}` }).key;
+      let c = S.chains.get(key); if(!c){ c = { key, task_id: t.task_id, name: '', tasks: [], guids: t.guids.slice(), story: t.story, kind: t.kind, ES: Infinity, EF: -Infinity }; S.chains.set(key, c); }
+      c.tasks.push(t); t.chain = c; c.ES = Math.min(c.ES, t.ES); c.EF = Math.max(c.EF, t.EF); lastChain.set(zk, c);
+    }
+    for(const c of S.chains.values()){
+      c.tasks.sort((a,b)=>a.ES-b.ES); c.name = String(c.tasks[0].name).replace(/\s*(철근 배근|거푸집 설치|검측|콘크리트 타설|양생|설치 설치|지붕 시공)\s*$/,'') + ` (${c.tasks.length}단계)`;
+      for(const g of c.guids) if(!S.chainByGuid.has(g)) S.chainByGuid.set(g, c);
+      if(c.kind && c.story){ const k = c.story+'|'+c.kind; if(!S.chainByStoryType.has(k)) S.chainByStoryType.set(k, c); }
+    }
+    return true;
+  }
+  window.sched4dTaskOf3 = function(guid, story, kind){
+    if(guid && S.chainByGuid.has(guid)) return S.chainByGuid.get(guid);
+    return S.chainByStoryType.get(String(story)+'|'+kind) || null;
+  };
+
+  /* ---- 실적 ---- */
+  // S.actual: task_id → { status, actual_start(day), actual_finish(day), progress(0..1|null), source }
+  function actualProgress(t, day){
+    const a = S.actual.get(t.task_id); if(!a) return null;
+    if(a.status === 'completed' || (a.actual_finish !== null && a.actual_finish !== undefined && day >= a.actual_finish)) return 1;
+    if(a.progress !== null && a.progress !== undefined) return clamp01(a.progress);
+    if(a.actual_start !== null && a.actual_start !== undefined){ if(day < a.actual_start) return 0; const dur = Math.max(0.25, t.EF - t.ES); return clamp01((day - a.actual_start)/dur); }
+    return null;
+  }
+  function stateAt(t, day){   // t = 작업 또는 체인(tasks 배열 보유)
+    const list = t.tasks || [t]; let wsum = 0, psum = 0, asum = 0, hasA = false;
+    for(const x of list){ const w = Math.max(0.25, x.EF - x.ES); const pl = clamp01((day - x.ES)/w); const a = actualProgress(x, day); wsum += w; psum += pl*w; asum += (a === null ? pl : a)*w; if(a !== null) hasA = true; }
+    const planned = psum/wsum, ES = t.ES, EF = t.EF;
+    if(!hasA) return { cmp:null, planned, phase: day < ES ? 'pre' : day < EF ? 'wip' : 'done' };
+    const actual = asum/wsum, diff = actual - planned;
+    return { cmp: diff > 0.05 ? 'ahead' : diff < -0.05 ? 'late' : 'ok', planned, actual, phase: actual >= 0.999 ? 'done' : actual > 0 ? 'wip' : (day < ES ? 'pre' : 'wip') };
+  }
+  const CMP_COLOR = { ahead:'#1F6FB2', ok:'#1B7F3B', late:'#C0271F' };
+  function baseColor(bk){   // 모노크롬: 재료 구분 없이 중립 회색 하나(교통 보기와 같은 색) / 컬러: 재료색
+    const cls = bk.materialClass || (bk.kind === 'opening' ? 'glass' : 'concrete');
+    return S.tone === 'color' ? (MATERIAL_BASE_COLOR3[cls] || MATERIAL_BASE_COLOR3.concrete) : TRAFFIC_NEUTRAL_MATERIAL3;
+  }
+  window.sched4dVis3 = function(bk, day){
+    const t = bk.task, b = baseColor(bk), fill = `rgb(${b[0]},${b[1]},${b[2]})`, m = v => Math.min(255, Math.round(v*1.08)), top = `rgb(${m(b[0])},${m(b[1])},${m(b[2])})`;
+    const glass = S.tone === 'color' && (bk.materialClass === 'glass' || bk.kind === 'opening');
+    const map = S.tone === 'color' && bk.isWall ? (bk.materialClass === 'brick' ? 'brick' : bk.materialClass === 'wood' ? 'wood' : '') : '';
+    if(!t) return { fill, topFill: top, alpha: glass ? 0.55 : 1, stroke: 'rgba(22,24,28,0.35)', lit: true, map };     // 일정 없음: 원본
+    const st = stateAt(t, day);
+    if(st.phase === 'pre') return { fill: COL_PRE3, alpha: 0.10, stroke: 'rgba(20,22,26,0.22)' };
+    if(st.cmp === null){
+      if(st.phase === 'wip') return bk.isWall ? { formwork: true, alpha: 0.12, stroke: '#16181C' } : { fill, topFill: top, alpha: 0.45, stroke: 'rgba(22,24,28,0.35)', lit: true };
+      return { fill, topFill: top, alpha: glass ? 0.55 : 1, stroke: 'rgba(22,24,28,0.35)', lit: true, map };          // 계획상 완료·실적 없음: 원본
+    }
+    const c = CMP_COLOR[st.cmp], pulse = st.phase === 'wip' ? pulseValue3(420) : 1;
+    return { fill: c, alpha: st.phase === 'wip' ? lerp3(0.55, 0.9, pulse) : 0.92, stroke: 'rgba(22,24,28,0.45)', lit: true };
+  };
+  window.sched4dLabel3 = function(day){ return S.start === null ? day.toFixed(1)+'일' : `${dstr(S.start + Math.floor(day)*DAY)} · D+${Math.floor(day)}`; };
+
+  /* ---- 우측 목록: 작업 상태 ---- */
+  window.sched4dRenderList3 = function(day){
+    const el = document.getElementById('phaseList3'); if(!el) return;
+    const cnt = { pre:0, wip:0, done:0, ahead:0, ok:0, late:0 };
+    const rows = [...S.chains.values()].map(t => { const st = stateAt(t, day); cnt[st.phase]++; if(st.cmp) cnt[st.cmp]++; return { t, st }; });
+    const lbl = { pre:'미착수', wip:'진행 중', done:'완료' }, cmpL = { ahead:'계획 초과', ok:'정상', late:'지연' };
+    window.sched4dCaption3 = `진행 ${cnt.wip} · 완료 ${cnt.done}/${rows.length}${cnt.late ? ` · 지연 ${cnt.late}` : ''}`;
+    // 일정 없는 부재(생성기 검토 목록: 비RC 벽·계단·지붕 등) — 화면에 원본으로 고정된다는 사실을 숫자로 드러낸다
+    if(typeof GL3 !== 'undefined' && GL3 && GL3.groups){ const kinds = {}; let n = 0; for(const bk of GL3.groups) if(!bk.task){ const k = { wall:'벽', slab:'바닥', roof:'지붕', opening:'개구부', stair:'계단', structure:'기둥·보' }[bk.kind] || bk.kind; kinds[k] = (kinds[k]||0) + bk.members.length; n += bk.members.length; }
+      const el2 = document.getElementById('sched4dUnmapped3'); if(el2) el2.textContent = n ? `· 일정 없는 부재 ${n}개 (원본 고정: ${Object.entries(kinds).map(([k,v])=>`${k} ${v}`).join(', ')}) — 1번 탭 생성기가 RC 구조·개구부·지붕만 공정화, 나머지는 "검토 목록"` : ''; }
+    let html = `<div class="badgeRow" style="font-family:var(--font-mono);font-size:11px;"><span>미착수 ${cnt.pre} · 진행 ${cnt.wip} · 완료 ${cnt.done}</span><span><span style="color:#1F6FB2">초과 ${cnt.ahead}</span> · <span style="color:#1B7F3B">정상 ${cnt.ok}</span> · <span style="color:#C0271F">지연 ${cnt.late}</span></span></div>`;
+    const active = rows.filter(r => r.st.phase === 'wip'), shown = active.length ? active : rows.filter(r => r.st.phase !== 'done').slice(0, 8);
+    for(const { t, st } of shown.slice(0, 40)){
+      const cls = st.phase === 'done' ? 'done' : st.phase === 'wip' ? 'active' : 'pending';
+      html += `<div class="phaseRow ${cls}${st.cmp === 'late' ? ' delayed' : ''}" data-task="${escIfc4(t.key)}" style="cursor:pointer;" title="클릭: 실적 입력">
+        <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;">${escIfc4(String(t.name).replace(/^.*?(벽체|슬래브|지붕|기둥|보|계단|개구부|창호|개수)/,'$1'))}</span>
+        <span style="white-space:nowrap;font-family:var(--font-mono);font-size:11px;">D+${Math.round(t.ES)}~${Math.round(t.EF)} · ${st.cmp ? `<span style="color:${CMP_COLOR[st.cmp]}">${cmpL[st.cmp]}</span>` : lbl[st.phase]}</span></div>`;
+    }
+    el.innerHTML = html;
+    el.querySelectorAll('[data-task]').forEach(r => r.addEventListener('click', () => openActualPopup(r.dataset.task)));
+  };
+
+  /* ---- 실적 입력 ① 부재/목록 클릭 팝업 ---- */
+  let popup = null;
+  function openActualPopup(chainKey, x, y){
+    const c = S.chains.get(chainKey); if(!c) return;
+    if(!popup){ popup = document.createElement('div'); popup.id = 'sched4dPopup3'; popup.style.cssText = 'position:absolute;z-index:30;background:var(--bg-1);border:1px solid var(--border-strong);padding:10px 12px;font-size:12.5px;min-width:340px;max-width:420px;box-shadow:0 6px 18px rgba(16,18,22,.18);'; canvas3.parentElement.style.position = canvas3.parentElement.style.position || 'relative'; canvas3.parentElement.appendChild(popup); }
+    const dv = d => (d === null || d === undefined || S.start === null) ? '' : dstr(S.start + d*DAY);
+    popup.innerHTML = `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><b style="font-size:13px;">${escIfc4(c.name)}</b><button type="button" class="ghost" data-x style="padding:2px 7px;">✕</button></div>
+      <div class="hint" style="margin:4px 0 8px;max-width:none;">${escIfc4(c.story)} · 계획 ${dv(c.ES)} ~ ${dv(c.EF)} · 부재 ${c.guids.length}개 · 세부 작업별로 상태·진척률을 넣으면 계획 대비 색이 바뀝니다</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr><th style="text-align:left;padding:3px;">세부 작업</th><th style="padding:3px;">계획</th><th style="padding:3px;">상태</th><th style="padding:3px;">진척%</th><th style="padding:3px;">실제 완료</th></tr></thead><tbody>${c.tasks.map(t => { const a = S.actual.get(t.task_id) || {}; return `<tr data-task="${escIfc4(t.task_id)}"><td style="padding:3px;white-space:nowrap;">${escIfc4(String(t.name).replace(c.name.replace(/ \(\d+단계\)$/,''),'').trim()||t.name)}</td><td style="padding:3px;white-space:nowrap;font-family:var(--font-mono);font-size:10.5px;">D+${Math.round(t.ES)}~${Math.round(t.EF)}</td>
+        <td style="padding:3px;"><select data-f="status" style="width:auto;padding:3px;"><option value="">-</option><option value="not_started"${a.status==='not_started'?' selected':''}>미착수</option><option value="in_progress"${a.status==='in_progress'?' selected':''}>진행</option><option value="completed"${a.status==='completed'?' selected':''}>완료</option></select></td>
+        <td style="padding:3px;"><input type="number" min="0" max="100" step="5" data-f="progress" value="${a.progress==null?'':Math.round(a.progress*100)}" style="width:56px;padding:3px;"></td>
+        <td style="padding:3px;"><input type="date" data-f="actual_finish" value="${dv(a.actual_finish)}" style="padding:3px;width:130px;"></td></tr>`; }).join('')}</tbody></table>
+      <div style="display:flex;gap:6px;margin-top:8px;"><button type="button" class="primary" data-save style="flex:1;padding:6px;">저장</button><button type="button" class="ghost" data-all style="padding:6px 10px;" title="모든 세부 작업 완료로">전체 완료</button><button type="button" class="ghost" data-del style="padding:6px 10px;">실적 삭제</button></div>`;
+    const rect = canvas3.getBoundingClientRect();
+    popup.style.left = Math.max(8, Math.min(rect.width - 360, (x ?? rect.width/2) - 170)) + 'px'; popup.style.top = Math.max(8, Math.min(rect.height - 260, (y ?? 80) + 12)) + 'px'; popup.style.display = 'block';
+    popup.querySelector('[data-x]').onclick = () => popup.style.display = 'none';
+    popup.querySelector('[data-del]').onclick = () => { c.tasks.forEach(t => S.actual.delete(t.task_id)); popup.style.display = 'none'; afterActualChange(); };
+    popup.querySelector('[data-all]').onclick = () => { c.tasks.forEach(t => S.actual.set(t.task_id, { status:'completed', actual_start:null, actual_finish:null, progress:1, source:'부재 클릭' })); popup.style.display = 'none'; afterActualChange(); };
+    popup.querySelector('[data-save]').onclick = () => {
+      popup.querySelectorAll('tr[data-task]').forEach(tr => { const g = f => tr.querySelector(`[data-f=${f}]`).value; const status = g('status') || null, prog = g('progress'), fin = parseDay(g('actual_finish'));
+        if(!status && prog === '' && fin === null){ S.actual.delete(tr.dataset.task); return; }
+        const rec = { status, actual_start: null, actual_finish: fin, progress: prog === '' ? null : clamp01(Number(prog)/100), source: '부재 클릭' };
+        if(rec.status === 'completed' && rec.progress === null) rec.progress = 1; if(rec.status === 'not_started' && rec.progress === null) rec.progress = 0;
+        S.actual.set(tr.dataset.task, rec); });
+      popup.style.display = 'none'; afterActualChange();
+    };
+  }
+  // 캔버스 클릭 → 레이캐스트 → 작업 버킷
+  let down = null;
+  canvas3.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
+  canvas3.addEventListener('pointerup', e => {
+    if(!S.on || !down || !GL3 || placementPicking3 || boreholeMarkerPicking3) return;
+    if(Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+    const rect = canvas3.getBoundingClientRect(), w = rect.width, h = rect.height;
+    const cam = updateCameraGL3(w, h), THREE = GL3.THREE;
+    const nd = new THREE.Vector2(((e.clientX - rect.left)/w)*2 - 1, -(((e.clientY - rect.top)/h)*2 - 1));
+    const rc = new THREE.Raycaster(); rc.setFromCamera(nd, cam);
+    const meshes = []; for(const bk of GL3.groups){ if(bk.task && bk.mesh.visible){ bk.mesh.userData.bk = bk; bk.meshTop.userData.bk = bk; meshes.push(bk.mesh, bk.meshTop); } }
+    const hit = rc.intersectObjects(meshes, false)[0];
+    if(hit) openActualPopup(hit.object.userData.bk.task.key, e.clientX - rect.left, e.clientY - rect.top);
+  });
+
+  /* ---- 실적 입력 ② CSV (3번 탭 양식: task_id,status,actual_start,actual_finish,progress_percent …) ---- */
+  function importCsvText(text, source){
+    const lines = String(text).replace(/^﻿/, '').split(/\r?\n/).filter(l => l.trim()); if(lines.length < 2) return 0;
+    const cols = lines[0].split(',').map(x => x.trim().toLowerCase()), ix = k => cols.indexOf(k);
+    const iId = ix('task_id'), iSt = ix('status'), iAs = ix('actual_start'), iAf = ix('actual_finish'), iP = ix('progress_percent') >= 0 ? ix('progress_percent') : ix('progress'), iC = ix('actual_cost');   // actual_cost: 테스트용 실적 원가(AC)
+    if(iId < 0) throw new Error('task_id 열이 없습니다');
+    let n = 0;
+    for(const line of lines.slice(1)){ const c = line.split(','); const id = (c[iId]||'').trim(); if(!id || !S.tasks.some(t => t.task_id === id)) continue;
+      const p = iP >= 0 && c[iP] !== undefined && c[iP].trim() !== '' ? Number(c[iP]) : null;
+      const ac = iC >= 0 && c[iC] !== undefined && c[iC].trim() !== '' ? Number(c[iC]) : null;
+      S.actual.set(id, { status: iSt >= 0 ? (c[iSt]||'').trim() || null : null, actual_start: iAs >= 0 ? parseDay(c[iAs]) : null, actual_finish: iAf >= 0 ? parseDay(c[iAf]) : null, progress: p === null || !Number.isFinite(p) ? null : clamp01(p > 1 ? p/100 : p), actual_cost: Number.isFinite(ac) ? ac : null, source }); n++; }
+    return n;
+  }
+  /* ---- 실적 입력 ③ 3번 탭 입력(작업 status·progress·실제 착수/완료) ---- */
+  function importFromSim(){
+    const A = window.SA_ADAPTIVE13, inp = A && A.state.input; if(!inp || !inp.tasks.length) return 0;
+    let n = 0;
+    for(const t of inp.tasks){ if(!S.tasks.some(x => x.task_id === t.id)) continue; if(!t.status || t.status === 'not_started' && !t.actualStart && !t.progress) continue;
+      S.actual.set(t.id, { status: t.status || null, actual_start: t.actualStartDate13 ? parseDay(t.actualStartDate13) : (Number.isFinite(t.actualStart) ? Math.floor(t.actualStart/8) : null), actual_finish: t.actualFinishDate13 ? parseDay(t.actualFinishDate13) : (Number.isFinite(t.actualFinish) ? Math.floor(t.actualFinish/8) : null), progress: Number.isFinite(Number(t.progress)) && t.progress > 0 ? clamp01(Number(t.progress)) : (t.status === 'completed' ? 1 : null), source: '3번 탭' }); n++; }
+    return n;
+  }
+  /* ---- 실적 입력 ④ 2번 탭 체크리스트 패키지 진척률 (컨텍스트 payload.package_progress) ---- */
+  window.sched4dApplyPackageProgress3 = function(pp){
+    if(!pp || !S.tasks.length) return;
+    for(const [key, v] of Object.entries(pp)){ const p = Number(v.progress); if(!Number.isFinite(p)) continue;
+      for(const id of (v.taskIds||[])){ if(!S.tasks.some(t => t.task_id === id)) continue; const cur = S.actual.get(id); if(cur && cur.source === '부재 클릭') continue;   // 직접 입력이 우선
+        S.actual.set(id, { status: p >= 100 ? 'completed' : p > 0 ? 'in_progress' : 'not_started', actual_start: null, actual_finish: null, progress: clamp01(p/100), source: '체크리스트' }); } }
+    afterActualChange();
+  };
+  function afterActualChange(){
+    const note = document.getElementById('sched4dActualNote3');
+    const src = {}; for(const a of S.actual.values()) src[a.source] = (src[a.source]||0)+1;
+    if(note) note.textContent = S.actual.size ? `실적 ${S.actual.size}개 작업 — ${Object.entries(src).map(([k,v])=>`${k} ${v}`).join(' · ')}` : '실적 없음 — 부재를 클릭해 입력하거나 CSV(task_id,status,actual_start,actual_finish,progress_percent)를 올리세요';
+    if(S.on) render3(currentProgress3);
+  }
+
+  /* ---- [P4] 5D 원가: 1번 탭 적용 공정표(TASKS)의 원가 열 ↔ task_id ---- */
+  function taskCost(t){ const r = (typeof TASKS !== 'undefined' ? TASKS : []).find(x => x.task_id === t.task_id); if(!r) return 0; return (Number(r.cost_fixed)||0) + (Number(r.cost_per_day)||0) * Math.max(0, t.EF - t.ES); }
+  function costAt(day, actual){ let v = 0; for(const t of S.tasks){ const c = t._cost; if(!c) continue; const w = Math.max(0.25, t.EF - t.ES), pl = clamp01((day - t.ES)/w); const a = actual ? actualProgress(t, day) : null; v += c * (a === null ? pl : a); } return v; }
+  // [테스트용] AC(실적 원가): 실적 CSV의 actual_cost(작업 전액)를 그 작업의 실적 진척률에 비례해 누적 — 실제 회계 자료가 아니라 검증용 가정
+  function acAt(day){ let v = 0, n = 0; for(const t of S.tasks){ const a = S.actual.get(t.task_id); if(!a || a.actual_cost === null || a.actual_cost === undefined) continue; n++; const f = actualProgress(t, day); v += a.actual_cost * (f === null ? 0 : f); } return { v, n }; }
+  const won = v => v >= 1e8 ? (v/1e8).toFixed(2) + '억' : v >= 1e4 ? Math.round(v/1e4).toLocaleString() + '만' : Math.round(v).toLocaleString();
+  window.sched4dRenderCost3 = function(day){
+    const box = document.getElementById('sched4dCost3'), svg = document.getElementById('sched4dCostSvg3'), read = document.getElementById('sched4dCostRead3'); if(!box) return;
+    if(!S.on){ box.style.display = 'none'; return; }
+    let total = 0, n = 0; for(const t of S.tasks){ t._cost = taskCost(t); if(t._cost > 0){ total += t._cost; n++; } }
+    box.style.display = '';
+    if(!total){ svg.innerHTML = ''; read.textContent = '1번 탭 공정표에 cost_fixed·cost_per_day 값이 없어 곡선을 그리지 않습니다 (1번 탭 표에서 입력 후 "1번 적용")'; return; }
+    const W = 600, H = 90, px = d => 8 + (W-16) * d / Math.max(1, S.days), py = v => H - 6 - (H-14) * v / total;
+    const pv = [], ev = []; for(let d = 0; d <= S.days; d += 0.5){ pv.push(`${px(d).toFixed(1)},${py(costAt(d, false)).toFixed(1)}`); if(d <= day) ev.push(`${px(d).toFixed(1)},${py(costAt(d, true)).toFixed(1)}`); }
+    const PV = costAt(day, false), EV = costAt(day, true), diff = EV - PV, AC = acAt(day);
+    const ac = []; if(AC.n) for(let d = 0; d <= day; d += 0.5) ac.push(`${px(d).toFixed(1)},${py(Math.min(total, acAt(d).v)).toFixed(1)}`);
+    svg.innerHTML = `<polyline points="${pv.join(' ')}" fill="none" stroke="#9AA0A6" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+      <polyline points="${ev.join(' ')}" fill="none" stroke="${diff < -0.02*total ? '#C0271F' : diff > 0.02*total ? '#1F6FB2' : '#1B7F3B'}" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      ${ac.length ? `<polyline points="${ac.join(' ')}" fill="none" stroke="#16181C" stroke-width="1.5" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/>` : ''}
+      <line x1="${px(day).toFixed(1)}" y1="4" x2="${px(day).toFixed(1)}" y2="${H-4}" stroke="#16181C" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>`;
+    read.textContent = `총 ${won(total)}원(원가 입력 ${n}/${S.tasks.length}) · ${dstr(S.start + Math.floor(day)*DAY)} 누적 계획 ${won(PV)}원 · 획득가치 ${won(EV)}원 · 차이 ${diff >= 0 ? '+' : '−'}${won(Math.abs(diff))}원 (${(100*diff/total).toFixed(1)}%p)` + (AC.n ? ` · [테스트] 실적 원가 ${won(AC.v)}원(${AC.n}개 작업, 원가차이 CV ${EV - AC.v >= 0 ? '+' : '−'}${won(Math.abs(EV - AC.v))}원)` : '');
+  };
+
+  /* ---- 모드 전환 · UI ---- */
+  const sel = document.getElementById('timeBasisSel3'), note = document.getElementById('timeBasisNote3'), slider = document.getElementById('timeSlider3'), row = document.getElementById('sched4dActualRow3'), axisNote = document.getElementById('progressAxisNote3'), toneSel = document.getElementById('toneSel3'), legend = document.getElementById('sched4dLegend3');
+  function setMode(on){
+    if(on && !build()){ on = false; }
+    S.on = on; S.version++;
+    if(sel) sel.value = on ? 'date' : 'seq';
+    if(row) row.style.display = on ? 'flex' : 'none';
+    if(legend) legend.style.display = on ? 'flex' : 'none';
+    if(toneSel) toneSel.style.display = on ? '' : 'none';
+    if(axisNote) axisNote.style.display = on ? 'none' : '';
+    if(on){ slider.max = String(S.days); slider.step = '0.25'; slider.value = '0';
+      const mapped = S.chainByGuid.size;
+      note.textContent = `공정표 ${S.tasks.length}개 작업(${S.chains.size}개 부재 묶음) · ${S.days}일 · 시작일 ${dstr(S.start)}${S.startAssumed ? ' (1번 탭 시작일 미입력 → 오늘로 가정)' : ''} · 부재 매핑 ${mapped}개`;
+    } else { slider.max = String(TOTAL_PROGRESS3); slider.step = '0.5'; slider.value = '0'; note.textContent = S.tasks.length || build() ? '공정표 날짜 기준으로 바꿀 수 있습니다.' : '1번 탭에서 최적 공정표를 생성하면 날짜 기준을 쓸 수 있습니다.'; }
+    render3(0);
+  }
+  window.sched4dRefresh3 = function(auto){ const had = S.on; if(build()){ if(auto || had) setMode(true); else note.textContent = '공정표 날짜 기준으로 바꿀 수 있습니다.'; } else if(had) setMode(false); };
+  if(sel) sel.addEventListener('change', () => setMode(sel.value === 'date'));
+  document.getElementById('sched4dImportSimBtn3').addEventListener('click', () => { const n = importFromSim(); afterActualChange(); if(!n){ const el = document.getElementById('sched4dActualNote3'); el.textContent += ' · 3번 탭에 실적(상태·진척률·실제 착수/완료)이 입력된 작업이 없습니다.'; } });
+  document.getElementById('sched4dCsv3').addEventListener('change', async e => { const f = e.target.files[0]; if(!f) return; try{ const n = importCsvText(await f.text(), 'CSV'); afterActualChange(); if(!n) document.getElementById('sched4dActualNote3').textContent += ' · CSV에서 현재 공정표의 task_id 와 맞는 행이 없습니다.'; }catch(err){ document.getElementById('sched4dActualNote3').textContent = 'CSV 오류: ' + err.message; } e.target.value = ''; });
+  document.getElementById('sched4dClearBtn3').addEventListener('click', () => { S.actual.clear(); afterActualChange(); });
+  /* [테스트용] 가상 실적 CSV — 현재 공정표 앞쪽 40% 작업에 완료/진행/미착수를 섞고 actual_cost = 계획 원가 × 0.85~1.25(결정적 난수). 원가 열이 없으면 actual_cost 는 빈칸 */
+  document.getElementById('sched4dFakeCsvBtn3').addEventListener('click', () => {
+    if(!S.tasks.length && !build()){ alert('먼저 1번 탭에서 최적 공정표를 생성하세요.'); return; }
+    const cut = Math.max(1, Math.round(S.tasks.length * 0.4)), lines = ['task_id,status,actual_start,actual_finish,progress_percent,actual_cost'];
+    let seed = 7; const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    S.tasks.slice(0, cut).forEach((t, i) => { const c = taskCost(t), st = i < cut*0.6 ? 'completed' : i < cut*0.85 ? 'in_progress' : 'not_started';
+      const p = st === 'completed' ? 100 : st === 'in_progress' ? Math.round(30 + rnd()*50) : 0, fin = st === 'completed' ? dstr(S.start + Math.round(t.EF + (rnd() < 0.3 ? 1 : 0))*DAY) : '';
+      lines.push([t.task_id, st, st === 'not_started' ? '' : dstr(S.start + Math.round(t.ES)*DAY), fin, p, c ? Math.round(c * (0.85 + rnd()*0.4)) : ''].join(',')); });
+    const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '가상_실적_테스트용.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  });
+  window.sched4dSetTone3 = function(tone){ S.tone = tone; if(toneSel) toneSel.value = tone; if(S.on) render3(currentProgress3); };
+  if(toneSel) toneSel.addEventListener('change', () => sched4dSetTone3(toneSel.value));
+})();
+</script>
+<script id="p3sun6">
+/* [P3 경관·내부] 태양 위치(날짜·시각·좌표) → 그림자 방향 / 층 격리 / 단면 절단 / 1인칭 층 이동 */
+(function(){
+  const D2R = Math.PI/180, TZ = 9; // 시각은 KST 기준(국내 현장 가정 — 해외 현장이면 여기만 바꾼다)
+  /* NOAA 근사식: 적위·균시차 → 시각각 → 고도·방위(북=0, 시계방향). 오차 <1° 수준, 그림자 방향 표시용으로 충분 */
+  function solarPosition(dateUTCms, hourLocal, lat, lng){
+    const d = new Date(dateUTCms), N = Math.floor((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0))/86400000);
+    const B = (360/365)*(N - 81)*D2R, decl = 23.44*D2R*Math.sin(B), eot = 9.87*Math.sin(2*B) - 7.53*Math.cos(B) - 1.5*Math.sin(B);
+    const solarTime = hourLocal + (4*(lng - 15*TZ) + eot)/60, H = 15*(solarTime - 12)*D2R, phi = lat*D2R;
+    const alt = Math.asin(Math.sin(phi)*Math.sin(decl) + Math.cos(phi)*Math.cos(decl)*Math.cos(H));
+    const az = Math.atan2(-Math.sin(H)*Math.cos(decl), Math.cos(phi)*Math.sin(decl) - Math.sin(phi)*Math.cos(decl)*Math.cos(H));
+    return { alt, az: (az + 2*Math.PI) % (2*Math.PI) };
+  }
+  window.solarPosition3 = solarPosition;
+  const chk = document.getElementById('sunLinkChk3'), hour = document.getElementById('sunHour3'), note = document.getElementById('sunNote3');
+  let lastKey = '';
+  function sunDate(){ const S = window.SCHED4D; if(S && S.on && S.start !== null) return S.start + Math.floor(currentProgress3)*86400000; const n = new Date(); return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()); }
+  window.sunTick3 = function(){
+    if(!chk.checked){ if(lastKey !== 'off'){ lastKey = 'off'; SUN_DIR3 = SUN_DIR_DEFAULT3.slice(); placeSun3(); note.textContent = '고정 조명'; } return; }
+    const ll = (typeof SITE_ORIGIN_LATLNG3 !== 'undefined' && SITE_ORIGIN_LATLNG3) || { lat: 37.5665, lng: 126.978 }, dt = sunDate(), h = Number(hour.value);
+    const key = `${dt}|${h}|${ll.lat}|${ll.lng}`; if(key === lastKey) return; lastKey = key;
+    const sp = solarPosition(dt, h, ll.lat, ll.lng), day = sp.alt > 0.5*D2R;
+    SUN_DIR3 = day ? [Math.cos(sp.alt)*Math.sin(sp.az), Math.cos(sp.alt)*Math.cos(sp.az), Math.sin(sp.alt)] : SUN_DIR_DEFAULT3.slice();
+    placeSun3();
+    const ds = new Date(dt).toISOString().slice(5,10).replace('-','/'), hh = String(Math.floor(h)).padStart(2,'0') + ':' + (h%1 ? '30' : '00');
+    note.textContent = `${ds} ${hh} · 고도 ${(sp.alt/D2R).toFixed(0)}° 방위 ${(sp.az/D2R).toFixed(0)}°${day ? '' : ' (일출 전/일몰 후 — 고정 조명)'}${(typeof SITE_ORIGIN_LATLNG3 !== 'undefined' && SITE_ORIGIN_LATLNG3) ? '' : ' · 서울 좌표 가정'}`;
+  };
+  chk.addEventListener('change', () => render3(currentProgress3));
+  hour.addEventListener('input', () => render3(currentProgress3));
+
+  /* 층 격리 + 단면 높이 */
+  const seg = document.getElementById('storySeg3'), cut = document.getElementById('cutSlider3'), cutNote = document.getElementById('cutNote3');
+  function bldTopMM(){ let top = 0; for(const s of stories3) top = Math.max(top, s.elevation + storyHeight3(s)); return top + 3000; }
+  function buildSeg(){
+    const names = ['전체', ...stories3.map(s => s.name)];
+    seg.innerHTML = names.map(n => `<button type="button" data-story="${n === '전체' ? '' : escIfc4(n)}" class="${(n === '전체' ? null : n) === ISOLATE_STORY3 ? 'active' : ''}" style="padding:3px 8px;font-size:11.5px;">${escIfc4(n)}</button>`).join('');
+    seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      ISOLATE_STORY3 = b.dataset.story || null; buildSeg();
+      if(ISOLATE_STORY3 && cam3.viewMode === 'firstPerson'){ const st = stories3.find(x => x.name === ISOLATE_STORY3); if(st){ fpHeightOffset3 = st.elevation; fpPos3 = { x: siteCX3(), y: siteCY3(), z: groundZAt3(siteCX3(), siteCY3()) + FP_EYE_HEIGHT3 + fpHeightOffset3 }; } }   // 1인칭이면 그 층 안으로 이동
+      render3(currentProgress3);
+    }));
+  }
+  cut.addEventListener('input', () => {
+    const top = bldTopMM(), v = Number(cut.value);
+    CUT_Z_MM3 = v >= 100 ? null : top*v/100;
+    cutNote.textContent = CUT_Z_MM3 === null ? '절단 없음' : `+${(CUT_Z_MM3/1000).toFixed(1)}m 위 절단`;
+    render3(currentProgress3);
+  });
+  cutNote.textContent = '절단 없음';
+  buildSeg();
+  window.p3RefreshStories3 = buildSeg;
+})();
+</script>
 <script id="scenarioCompare6">
 /* [3번 탭] 시나리오 비교 — 같은 공정표·같은 엔진(SA_ADAPTIVE13_ENGINE)으로 조건만 바꾼 5개 안을 나란히 본다.
    확률 분포(몬테카를로 상세)는 ③④에 그대로 있고, 여기는 의사결정용 요약. */
