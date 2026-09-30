@@ -819,9 +819,12 @@ body.clientMode #quickDemoBtn{display:inline-block !important;}
 .ifcGanttWrap4 .gHdrBg{fill:var(--bg-2);}
 .ifcGanttWrap4 .gLblBg{fill:var(--bg-1);}
 .ifcGanttWrap4 .gLblLine{stroke:var(--border-strong);stroke-width:1;}
+.ifcGanttWrap4 .gColHandle{fill:transparent;cursor:col-resize;}
+.ifcGanttWrap4 .gColHandle:hover{fill:rgba(16,18,22,.08);}
 .ifcGanttWrap4 .gLblStory{font-weight:700;}
 .ifcGanttWrap4 .gRowStory{fill:var(--bg-2);}
-.ifcGanttWrap4 .gSum{fill:var(--text-primary);}
+.ifcGanttWrap4 .gSum,.wbsGantt6 .gSum{fill:var(--text-primary);}
+.wbsGantt6 .gBase,.ifcGanttWrap4 .gBase{fill:none;stroke:var(--border-strong);stroke-width:1;stroke-dasharray:3,2;}
 .ifcGanttWrap4 .gSum.crit{fill:var(--critical);}
 .gLvl4 button{padding:3px 9px;font-size:12px;margin-left:4px;}
 table.ifcGenTable4{width:100%;border-collapse:collapse;font-size:12.5px;min-width:900px;}
@@ -1031,6 +1034,16 @@ body[data-a12-mode="auto"] #tab4 .ifcOptGrid8{display:none} .a12-date input{max-
 @media(max-width:900px){.v13context{grid-template-columns:1fr 1fr}.v13context>div:nth-child(2){border-right:0}.v13context>div:nth-child(-n+2){border-bottom:1px solid #e1e4e8}.v12head{flex-wrap:wrap}.v12 .v12grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}}
 @media(max-width:540px){.v13context{grid-template-columns:1fr}.v13context>div{border-right:0;border-bottom:1px solid #e1e4e8;padding:12px 14px}.v13context>div:last-child{border-bottom:0}.v13toolbar>button{flex:1 1 100%}.v13issue{align-items:flex-start}.v12 .v12grid{grid-template-columns:1fr}.v12 details.v13weather{padding:14px}.v13selected{align-items:flex-start}.v12head h2{font-size:22px}}
 </style>
+<style id="rc13Style">#rc13Root{--rc-line:#dce1e6;--rc-muted:#626d79;--rc-ink:#232b35;color:var(--rc-ink)}
+#rc13Root .card{padding:22px;margin:16px 0}#rc13Root h3{margin:0 0 9px;font-size:18px}#rc13Root h4{margin:0 0 10px;font-size:14px}#rc13Root p{line-height:1.7}#rc13Root [hidden]{display:none!important}
+.rc13heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.rc13heading>div{min-width:0}.rc13heading small{display:block;font-size:10px;font-weight:650;letter-spacing:.12em;color:#77818e;margin-bottom:8px}.rc13heading p{margin:0;font-size:12px}.rc13badge{display:inline-block;white-space:nowrap;padding:5px 9px;border:1px solid #cfd5dc;border-radius:6px;font-size:11px;background:#f4f6f8}
+.rc13selection{display:grid;grid-template-columns:minmax(190px,1.5fr) minmax(190px,1fr) auto;gap:12px;align-items:end;margin:19px 0 16px}.rc13selection label{margin:0}.rc13selection button{height:39px}.rc13fine{font-size:11.5px!important;color:var(--rc-muted);line-height:1.65}.rc13tabs{display:flex;gap:5px;overflow-x:auto;padding:7px 0 12px;border-bottom:1px solid var(--rc-line);margin-bottom:12px}.rc13tabs button{white-space:nowrap;background:#f5f6f8;border-color:transparent;padding:10px 16px}.rc13tabs button.active{background:#303946;color:white}.rc13kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.rc13kpis>div{border:1px solid var(--rc-line);border-radius:8px;padding:17px 15px;background:#f7f8fa}.rc13kpis small{font-size:11px;color:var(--rc-muted)}.rc13kpis b{display:block;font-size:18px;line-height:1.55;letter-spacing:-.3px;overflow-wrap:anywhere;margin:9px 0 6px}.rc13kpis span{display:block;font-size:11px;color:var(--rc-muted)}.rc13decision{font-size:16px;line-height:1.8;font-weight:500;margin:14px 0}.rc13empty{padding:26px 16px;background:#f6f7f9;border:1px dashed #cfd6df;border-radius:8px;color:#677280;text-align:center;font-size:13px}
+.rc13scroll{overflow:auto;max-height:650px;margin:14px 0}.rc13scroll th{position:sticky;top:0;z-index:1}.rc13scroll table{font-variant-numeric:tabular-nums}.rc13scroll td.rc13wrap{white-space:normal;min-width:180px;max-width:360px}.rc13scroll tbody tr.rc13selected{background:#eff2f5}.rc13scroll td small{display:block;font-size:10px;color:#697582}.rc13status{display:inline-block;font-size:10px;padding:3px 6px;border:1px solid #d9dee4;border-radius:4px;background:#f5f6f8}.rc13status.warn{color:#8a5a00;background:#fff8e9;border-color:#eadabb}.rc13status.good{color:#28633e;background:#f2f8f4;border-color:#cddfd2}.rc13status.bad{color:#993c37;background:#fff3f2;border-color:#e4c6c4}
+.rc13filters{display:grid;grid-template-columns:minmax(190px,1fr) minmax(190px,1.4fr) auto;gap:13px;align-items:end}.rc13filters label{margin:0}.rc13filters .rc13check{display:flex;flex-direction:row;gap:8px;align-items:center;min-height:39px;white-space:nowrap}.rc13strip{display:flex;gap:15px;flex-wrap:wrap;border:1px solid #dce1e6;padding:12px 14px;background:#f7f8fa;border-radius:7px;font-size:12px}.rc13strip b{font-size:15px;margin-right:3px}.rc13legend{display:flex;gap:17px;flex-wrap:wrap;font-size:11px;color:#626d79;margin:16px 0 6px}.rc13legend i{display:inline-block;width:17px;height:7px;margin-right:5px;border-radius:1px}.rc13base{background:#c4cbd3}.rc13revised{background:#485565}.rc13late{background:#a75c56}.rc13gantt{min-width:720px}.rc13grow{display:grid;grid-template-columns:190px 1fr;min-height:48px;border-bottom:1px solid #edf0f3}.rc13glabel{padding:7px 10px;font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;border-right:1px solid #eef0f2}.rc13glabel small{display:block;color:#6c7885;font-size:10px}.rc13gtrack{position:relative;background:repeating-linear-gradient(to right,#e8edf1 0,#e8edf1 1px,transparent 1px,transparent 20%);min-height:48px}.rc13gbar{position:absolute;height:9px;top:10px;min-width:2px;border-radius:2px}.rc13gbar.revised{top:28px}.rc13axis{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#6b7583;margin-left:190px;padding:6px 0 10px}.rc13axis span:last-child{text-align:right}.rc13pager{display:flex;align-items:center;gap:8px;justify-content:flex-end;margin:12px 0}.rc13pager span{margin-right:auto;font-size:12px;color:#626d79}.rc13detail{background:#f7f8fa;border:1px solid #dae0e7;border-radius:9px;padding:18px;margin-top:14px}.rc13detail dl{display:grid;grid-template-columns:100px 1fr;gap:8px 14px;font-size:12px;margin:10px 0}.rc13detail dt{color:#6a7481}.rc13detail dd{margin:0;overflow-wrap:anywhere}
+.rc13action{border:1px solid #dce1e6;border-radius:9px;padding:18px;margin:12px 0}.rc13action .rc13heading{margin-bottom:10px}.rc13action p{margin:6px 0}.rc13action dl{display:grid;grid-template-columns:110px 1fr;gap:8px 14px;font-size:12px}.rc13action dt{color:#697480}.rc13action dd{margin:0;overflow-wrap:anywhere}.rc13downloads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}.rc13downloads article{border:1px solid #dde2e8;border-radius:9px;padding:20px;display:flex;flex-direction:column;align-items:flex-start}.rc13downloads p{flex:1;margin:0 0 17px;font-size:12px}.rc13downloads button{width:100%;text-align:center}.rc13feedback{margin:14px 0;font-size:12px;white-space:pre-line}.rc13quality{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}.rc13quality>div{background:#f5f6f8;padding:13px;border-radius:6px;font-size:12px}.rc13quality small{display:block;color:#697582;margin-top:7px}.rc13scheduleerror{padding:16px;border-left:3px solid #a96550;background:#fff6ee;font-size:13px}.rc13readonly{opacity:.75}.rc13nowrap{white-space:nowrap}
+@media(max-width:1000px){.rc13kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.rc13selection{grid-template-columns:1fr 1fr}.rc13selection button{grid-column:1/-1}.rc13filters{grid-template-columns:1fr 1fr}.rc13quality{grid-template-columns:1fr}}
+@media(max-width:600px){#rc13Root .card{padding:16px}.rc13heading{flex-wrap:wrap}.rc13selection,.rc13filters,.rc13downloads{grid-template-columns:1fr}.rc13kpis b{font-size:15px}.rc13kpis>div{padding:12px}.rc13tabs button{font-size:12px;padding:9px 11px}.rc13action dl,.rc13detail dl{grid-template-columns:1fr;gap:4px}.rc13action dd,.rc13detail dd{margin-bottom:8px}}
+</style>
 </head>
 <body>
 
@@ -1112,6 +1125,7 @@ button.flow{font:inherit;cursor:pointer}button.flow:hover{border-color:var(--bor
 .card h2{font-size:16.5px;margin:0 0 12px}
 .card h3{font-size:14px;margin:14px 0 8px}
 .desc{font-size:13px;color:var(--sub);margin:0 0 13px}
+.testCard{border-style:dashed}.testBadge{display:inline-block;margin-left:8px;padding:2px 7px;border:1px solid #b26a00;color:#b26a00;border-radius:5px;font-size:11px;letter-spacing:.08em;vertical-align:middle}
 .ckTable{border-collapse:collapse;width:100%;font-size:12.5px}.ckTable th,.ckTable td{padding:6px 6px;border-bottom:1px solid var(--border);text-align:center;white-space:nowrap}.ckTable th:first-child,.ckTable td:first-child{text-align:left}
 .ckTable td.pkg b{display:block}.ckTable td.pkg small{color:var(--sub)}
 .ck{width:30px;height:26px;border:1px solid var(--border);border-radius:6px;background:var(--panel2);cursor:pointer;font:inherit;font-weight:700;font-size:13px;padding:0}
@@ -1245,13 +1259,11 @@ body{overflow:hidden}
         &lt;div id=&quot;ckDetail&quot;&gt;&lt;/div&gt;
       &lt;/div&gt;
 
-      &lt;div class=&quot;card&quot;&gt;
-        &lt;h2&gt;3. 현장자료 파일 입력 (보조 — 있으면 체크리스트를 자동으로 채움)&lt;/h2&gt;
-        &lt;p class=&quot;desc&quot;&gt;CSV · JSON · TXT · XLSX · XLS 파일을 여러 개 넣을 수 있습니다. 파일명·헤더·내용을 이용해 자료 범주를 자동 분류합니다. 실제 파일이 없어도 &lt;b&gt;랜덤 리스크 테스트 자료&lt;/b&gt;를 현재 공정표에 맞춰 즉시 투입할 수 있습니다.&lt;/p&gt;
-        &lt;input type=&quot;file&quot; id=&quot;evidenceInput&quot; multiple accept=&quot;.csv,.json,.txt,.xlsx,.xls,text/csv,application/json,text/plain&quot;&gt;
-
-        &lt;div class=&quot;fieldGroup&quot;&gt;
-          &lt;div class=&quot;fgTitle&quot;&gt;랜덤 리스크 테스트&lt;/div&gt;
+      &lt;div class=&quot;card testCard&quot;&gt;
+        &lt;h2&gt;2-α. 랜덤 리스크 자료 투입 &lt;span class=&quot;testBadge&quot;&gt;TEST&lt;/span&gt;&lt;/h2&gt;
+        &lt;p class=&quot;desc&quot;&gt;&lt;b&gt;테스트 전용.&lt;/b&gt; 실제 현장 자료가 아니라 무작위로 만든 가짜 자재·인력·장비·검측·설계·기상 자료입니다. 시연·기능 확인용으로만 쓰고, 실제 분석에서는 투입하지 마십시오. 투입 결과는 5번 자동탐지를 거쳐 2번 체크리스트에 &lt;b&gt;점선(미확인)&lt;/b&gt;으로만 들어가며, 사람이 확인하기 전에는 리스크가 되지 않습니다.&lt;/p&gt;
+        &lt;div&gt;
+          
           &lt;div class=&quot;row&quot;&gt;
             &lt;select id=&quot;randomRiskCount&quot; style=&quot;max-width:190px&quot;&gt;
               &lt;option value=&quot;1&quot;&gt;랜덤 1종&lt;/option&gt;
@@ -1266,9 +1278,16 @@ body{overflow:hidden}
           &lt;div class=&quot;status&quot; id=&quot;randomRiskStatus&quot;&gt;랜덤 자료 미투입&lt;/div&gt;
         &lt;/div&gt;
 
+        &lt;div class=&quot;row&quot; style=&quot;margin-top:8px&quot;&gt;&lt;button class=&quot;ghost fit&quot; id=&quot;downloadRandomRiskBtn&quot; disabled&gt;마지막 랜덤자료 CSV 다운로드&lt;/button&gt;&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;card&quot;&gt;
+        &lt;h2&gt;3. 현장자료 파일 입력 (보조 — 있으면 체크리스트를 자동으로 채움)&lt;/h2&gt;
+        &lt;p class=&quot;desc&quot;&gt;CSV · JSON · TXT · XLSX · XLS 파일을 여러 개 넣을 수 있습니다. 파일명·헤더·내용을 이용해 자료 범주를 자동 분류합니다. 실제 파일이 없어도 &lt;b&gt;랜덤 리스크 테스트 자료&lt;/b&gt;를 현재 공정표에 맞춰 즉시 투입할 수 있습니다.&lt;/p&gt;
+        &lt;input type=&quot;file&quot; id=&quot;evidenceInput&quot; multiple accept=&quot;.csv,.json,.txt,.xlsx,.xls,text/csv,application/json,text/plain&quot;&gt;
+
         &lt;div class=&quot;row&quot; style=&quot;margin-top:8px&quot;&gt;
           &lt;button class=&quot;ghost fit&quot; id=&quot;sampleEvidenceBtn&quot;&gt;고정 샘플 현장자료 다운로드&lt;/button&gt;
-          &lt;button class=&quot;ghost fit&quot; id=&quot;downloadRandomRiskBtn&quot; disabled&gt;마지막 랜덤자료 CSV 다운로드&lt;/button&gt;
         &lt;/div&gt;
         &lt;div class=&quot;status&quot; id=&quot;evidenceStatus&quot;&gt;현장자료가 없습니다.&lt;/div&gt;
         &lt;div id=&quot;fileList&quot;&gt;&lt;/div&gt;
@@ -2111,7 +2130,7 @@ function injectRandomRiskEvidence(){
   $(&#x27;downloadRandomRiskBtn&#x27;).disabled=!generated.length;
   $(&#x27;evidenceStatus&#x27;).innerHTML=`현장자료 &lt;b&gt;${evidenceSets.filter(x=&gt;!x.autoWeather).length}&lt;/b&gt;개 파일 · 랜덤 테스트 ${evidenceSets.filter(x=&gt;x.randomRisk).length}개`;
   $(&#x27;randomRiskStatus&#x27;).innerHTML=generated.length
-    ? `&lt;span class=&quot;ok&quot;&gt;랜덤 리스크 ${generated.length}종 투입 완료&lt;/span&gt; — ${generated.map(x=&gt;x.risk_type).join(&#x27;, &#x27;)}`
+    ? `&lt;span class=&quot;ok&quot;&gt;랜덤 리스크 ${generated.length}종 투입 완료(테스트)&lt;/span&gt; — ${generated.map(x=&gt;x.risk_type).join(&#x27;, &#x27;)} · 5번 자동탐지를 실행하면 체크리스트에 점선으로 표시됩니다`
     : &#x27;&lt;span class=&quot;warn&quot;&gt;생성할 수 있는 랜덤 리스크가 없습니다.&lt;/span&gt;&#x27;;
 }
 function clearRandomRiskEvidence(){
@@ -2761,13 +2780,13 @@ renderRiskDefs();renderWeatherSummary();deriveWeatherRules();updateScheduleDateS
 function initStepAccordions(){
   const numberedCards=[...document.querySelectorAll(&#x27;main .card&#x27;)].filter(card=&gt;{
     const h2=card.querySelector(&#x27;:scope &gt; h2&#x27;);
-    return h2 &amp;&amp; /^\s*[1-5]\./.test(h2.textContent||&#x27;&#x27;);
+    return h2 &amp;&amp; /^\s*[1-5](-α)?\./.test(h2.textContent||&#x27;&#x27;);
   });
 
   numberedCards.forEach((card,idx)=&gt;{
     if(card.classList.contains(&#x27;stepCard&#x27;))return;
     const h2=card.querySelector(&#x27;:scope &gt; h2&#x27;);
-    const originalText=h2.textContent.trim();
+    const originalText=h2.textContent.trim(), originalHtml=h2.innerHTML.trim();
 
     card.classList.add(&#x27;stepCard&#x27;);
     const body=document.createElement(&#x27;div&#x27;);
@@ -2784,7 +2803,7 @@ function initStepAccordions(){
 
     const title=document.createElement(&#x27;span&#x27;);
     title.className=&#x27;stepTitleText&#x27;;
-    title.textContent=originalText;
+    title.innerHTML=originalHtml;
 
     const mini=document.createElement(&#x27;span&#x27;);
     mini.className=&#x27;stepMini&#x27;;
@@ -3010,7 +3029,7 @@ function foldLongText6(root, minLen){
    <div class="flowNext6"><b>권장 순서:</b> 1번에서 기준 공정표 확정 → 2번에서 현장자료·리스크 탐지 → 이 탭 ① "자동 수집·연결" → ② 초안 검토 → ③ 실행 → ④ 결과 확인.</div>
  </div>
  <div id="v13Context" class="v13context"></div>
- <nav class="v12steps" aria-label="시뮬레이션 단계"><button data-v12-step="1">① 현재 상태</button><button data-v12-step="2">② 자동 초안</button><button data-v12-step="3">③ 통합 계산</button><button data-v12-step="4">④ 결과·검증</button></nav>
+ <nav class="v12steps" aria-label="시뮬레이션 단계"><button data-v12-step="1">① 현재 상태</button><button data-v12-step="2">② 자동 초안</button><button data-v12-step="3">③ 통합 계산</button><button data-v12-step="4">④ 결과·활용</button></nav>
  <div id="v12Notice" role="status" aria-live="polite"></div>
  <section data-v12-page="1">
  <div class="v13toolbar"><button data-v13="sync" class="v12primary">자동 수집·연결</button><button data-v13="importSite">현장 JSON·실적 CSV 연결</button><label><input id="v13FetchWeather" type="checkbox" checked> 기상 예보도 조회</label></div><div id="v13Audit"></div>
@@ -3034,9 +3053,31 @@ function foldLongText6(root, minLen){
  </div><p>모든 입력 대안을 같은 난수로 비교합니다. 계산 오차와 상위 대안 순위가 안정되면 종료하며, 한도에 도달하면 ‘미수렴’으로 표시합니다. 비용을 입력하지 않은 대안의 경제성은 검증되지 않습니다.</p>
  <div class="v12buttons"><button data-v12="run" class="v12primary">통합 시뮬레이션 실행</button><button data-v12="cancel" disabled>중단</button></div><progress id="v12Progress" max="100" value="0"></progress><p id="v12ProgressText" aria-live="polite"></p></div></section>
  <section data-v12-page="4" hidden>
- <div class="card"><h3>결과와 판단 근거</h3><div id="v12ResultSummary">계산 결과가 없습니다.</div><div id="v12Results" class="v12scroll"></div><div id="v12Robust" class="v12scroll"></div><div class="v12buttons"><button data-v12="csv">선택 공정표 CSV</button><button data-v12="resultJSON">결과·입력·근거 JSON</button><button data-v12="archive">예측 기록 JSON 저장</button></div><label>공정표에 표시할 대안<select id="v12Candidate"></select></label><div id="v12Schedule" class="v12scroll"></div><p>공정표는 선택 대안의 P80에 가까운 실제 한 시행입니다. 작업별 분위수를 섞지 않습니다. 미완료 시행은 완료 공정표로 내보내지 않습니다.</p></div>
- <div class="card"><h3>과거 실적 검증</h3><p>예측 당시 저장한 입력과 예측값을 실제 실적과 비교합니다. 현재 실행 기록도 저장할 수 있습니다. 과거를 재구성한 자료는 당시 예측 기록과 구분하세요.</p><div class="v12buttons"><button data-v12="loadArchive">과거 예측 JSON 열기</button><button data-v12="verifyTemplate">검증용 실적 CSV 양식</button></div><label>실제로 시행한 대응안<select id="v12ObservedCandidate"></select></label><label><input id="v12Reconstructed" type="checkbox"> 당시 저장한 예측이 아닌 과거 상황 재구성</label><label>검증용 실제 완료 실적 CSV<input id="v12VerifyFile" type="file" accept=".csv"></label><div id="v12Verification"></div><div id="v12Calibration"></div></div>
+  <div id="rc13Root" class="rc13">
+   <div class="card rc13intro"><div class="rc13heading"><div><small>SIMULATION RESULTS</small><h3>계산 결과를 다음 작업으로 연결합니다</h3><p id="rc13RunMeta">통합 계산을 실행하면 준공 전망과 수정 공정표가 표시됩니다.</p></div><span id="rc13State" class="rc13badge">계산 대기</span></div>
+    <div id="rc13Stale" class="v12error" role="status" hidden>입력이 변경되었습니다. 아래는 이전 계산 결과입니다. 다시 계산해야 다운로드할 수 있습니다.</div>
+    <div class="rc13selection"><label>검토할 대응안<select id="v12Candidate" disabled><option>계산 후 선택</option></select></label><label>공정표로 볼 시행<select id="rc13Percentile" disabled><option value="0.5">P50 근처 · 중앙 수준</option><option value="0.8" selected>P80 근처 · 여유 있게 검토</option><option value="0.95">P95 근처 · 큰 지연 검토</option></select></label><button type="button" data-rc13="recommended" disabled>우선 검토안 선택</button></div>
+    <div id="v12ResultSummary"></div>
+    <p class="rc13fine">준공 전망은 반복 계산의 통계입니다. 공정표는 선택한 분위수에 가까운 한 번의 시행이며, 실제 현장 상태나 확정 공정표를 뜻하지 않습니다.</p>
+   </div>
+   <nav class="rc13tabs" aria-label="계산 결과 활용"><button data-rc13-page="overview" class="active" aria-current="page">요약·대안 비교</button><button data-rc13-page="schedule">변경 공정표</button><button data-rc13-page="actions">실행할 조치</button><button data-rc13-page="downloads">다운로드</button><button data-rc13-page="verify">실적 검증</button></nav>
+   <section data-rc13-panel="overview"><div class="card"><h3>어떤 안을 검토할까요?</h3><div id="rc13Decision" class="rc13empty">먼저 ③ 통합 계산에서 시뮬레이션을 실행하세요.</div><div class="v12buttons"><button data-rc13-page="schedule">변경된 작업 확인</button><button data-rc13-page="actions">필요한 조치 확인</button><button data-rc13-page="downloads">결과 내려받기</button></div><div id="v12Results" class="rc13scroll"></div></div><div class="card"><h3>이 결과를 사용할 때 확인할 점</h3><div id="rc13Quality"></div><details><summary>가정 변화에 따른 추천 안정성</summary><div id="v12Robust" class="rc13scroll"></div></details><details><summary>입력 가정·미확인 정보</summary><div id="rc13Assumptions"></div></details></div></section>
+   <section data-rc13-panel="schedule" hidden><div class="card"><div class="rc13heading"><div><h3>변경 공정표</h3><p id="rc13ScheduleNote">선택한 시행의 작업별 날짜를 비교합니다.</p></div><button data-rc13-export="schedule" disabled>공정표 CSV</button></div><div class="rc13filters"><label>비교 기준<select id="rc13Baseline"><option value="reference">보통기간 기준계획</option><option value="none">무대응 · 동일 시행</option><option value="original">입력된 최초 일정</option></select></label><label>작업·구역 검색<input id="rc13Search" type="search" placeholder="작업 ID, 이름, 구역"></label><label class="rc13check"><input id="rc13ChangedOnly" type="checkbox">변경 작업만</label></div><p id="rc13BasisNote" class="rc13fine"></p><div id="rc13ChangeSummary" class="rc13strip"></div><div class="rc13legend"><span><i class="rc13base"></i>비교 기준</span><span><i class="rc13revised"></i>선택 시행</span><span><i class="rc13late"></i>기준보다 늦은 완료</span></div><div id="rc13Gantt" class="rc13scroll"></div><div id="v12Schedule" class="rc13scroll"></div><div class="rc13pager"><span id="rc13PageInfo"></span><button data-rc13="previousRows">이전 작업</button><button data-rc13="nextRows">다음 작업</button></div><div id="rc13TaskDetail"></div></div></section>
+   <section data-rc13-panel="actions" hidden><div class="card"><div class="rc13heading"><div><h3>실행 전 확인할 조치</h3><p>선택한 대응안의 모의 판단 이력을 현장 확인 목록으로 정리합니다. 실제 발주·예약·승인을 실행한 기록은 아닙니다.</p></div><button data-rc13-export="actions" disabled>조치 목록 CSV</button></div><div id="rc13Actions"></div></div><div class="card"><h3>변경된 작업의 착수 준비</h3><div id="rc13Preparation"></div><details><summary>사건·대응 판단 이력 전체</summary><div id="rc13History" class="rc13scroll"></div></details><details><summary>원인 추적 기록</summary><div id="rc13Trace" class="rc13scroll"></div></details></div></section>
+   <section data-rc13-panel="downloads" hidden><div class="card"><h3>필요한 결과를 내려받으세요</h3><p id="rc13ExportMeta">계산 후 다운로드할 수 있습니다.</p><div class="rc13downloads">
+    <article><h4>수정 공정표</h4><p>전체 작업의 일정·선후행·자원·물량 근거. 기존 공정표 입력 형식의 필수 열을 포함합니다.</p><button data-rc13-export="schedule" disabled>공정표 CSV 다운로드</button></article>
+    <article><h4>변경 내역</h4><p>선택한 비교 기준 대비 변경된 작업과 착수·완료 차이, 자원 변경, 관련 사건.</p><button data-rc13-export="changes" disabled>변경 내역 CSV 다운로드</button></article>
+    <article><h4>실행 전 조치 목록</h4><p>대응 조건·모의 적용시각·담당자·마감 확인사항. 미입력 항목은 미확인으로 기록합니다.</p><button data-rc13-export="actions" disabled>조치 목록 CSV 다운로드</button></article>
+    <article><h4>대안 비교표</h4><p>모든 후보의 준공 전망·완료율·기간 절감·입력 비용을 함께 비교합니다.</p><button data-rc13-export="comparison" disabled>대안 비교 CSV 다운로드</button></article>
+    <article><h4>공유·제출용 보고서</h4><p>요약, 대안 비교, 간트 차트, 전체 일정, 조치 목록과 근거를 하나로 저장합니다. 브라우저 인쇄에서 PDF로 저장할 수 있습니다.</p><button data-rc13-export="report" disabled>결과 보고서 HTML 다운로드</button></article>
+    <article><h4>전체 계산 결과</h4><p>입력·난수 시드·반복 결과·선택 시행·작업 중단 구간을 보관합니다. 정확한 계산 맥락은 JSON을 사용하세요.</p><button data-rc13-export="json" disabled>전체 결과 JSON 다운로드</button></article>
+    <article><h4>실적 검증용 예측 기록</h4><p>나중에 실제 착수·완료 실적과 비교할 당시 예측을 저장합니다.</p><button data-rc13-export="archive" disabled>예측 기록 JSON 다운로드</button></article>
+    <article><h4>회의용 요약</h4><p>선택한 대안과 준공 전망·기간 절감·계산 조건을 짧은 문장으로 복사합니다.</p><button data-rc13="copy" disabled>요약 복사</button></article>
+   </div><div id="rc13ExportFeedback" role="status" class="rc13feedback"></div><p class="rc13fine">다운로드는 검색·페이지 필터와 관계없이 해당 파일의 전체 대상 작업을 포함합니다. CSV의 기간은 지연·대기를 포함한 시행 구간입니다. 재입력은 가능하지만 사건·중단 구간·시간별 배정의 완전한 재현은 JSON이 필요하며, 같은 리스크를 다시 적용하면 중복 반영될 수 있습니다.</p></div></section>
+   <section data-rc13-panel="verify" hidden> <div class="card"><h3>과거 실적 검증</h3><p>예측 당시 저장한 입력과 예측값을 실제 실적과 비교합니다. 현재 실행 기록도 저장할 수 있습니다. 과거를 재구성한 자료는 당시 예측 기록과 구분하세요.</p><div class="v12buttons"><button data-v12="loadArchive">과거 예측 JSON 열기</button><button data-v12="verifyTemplate">검증용 실적 CSV 양식</button></div><label>실제로 시행한 대응안<select id="v12ObservedCandidate"></select></label><label><input id="v12Reconstructed" type="checkbox"> 당시 저장한 예측이 아닌 과거 상황 재구성</label><label>검증용 실제 완료 실적 CSV<input id="v12VerifyFile" type="file" accept=".csv"></label><div id="v12Verification"></div><div id="v12Calibration"></div></div></section>
+  </div>
  </section>
+
  <input id="v13SiteFile" type="file" accept=".json,.csv" hidden><input id="v12JSONFile" type="file" accept=".json" hidden><input id="v12ArchiveFile" type="file" accept=".json" hidden>
  <footer class="v12buttons"><button data-v12="prev">이전</button><button data-v12="next">다음</button></footer>
 </section>
@@ -3536,7 +3577,7 @@ function foldLongText6(root, minLen){
 <div class="card"><div class="ad13head"><h3>같은 시뮬레이션에 함께 대입할 사건</h3><button type="button" data-ad-action="addEvent">사건 추가</button></div><p>발생시점·인지시점·예상 해제시간을 구분합니다. 정책은 당시 관측된 예상값만 사용하며, 추출된 미래의 실제 해제시점은 미리 알 수 없습니다.</p><div id="ad13Events"></div></div></section>
   <section data-ad-page="policies" hidden><div class="card"><div class="ad13head"><h3>상황이 되면 실행할 예비계획</h3><button type="button" data-ad-action="addPolicy">정책 추가</button></div><p>“예상 지연이 8시간을 넘으면 B구역 우선”처럼 전환 조건을 정합니다. 이미 진행 중인 작업을 다른 구역으로 순간 이동시키지 않습니다.</p><div id="ad13Policies"></div></div><div class="ad13note">각 정책을 단독으로 평가하고, 선택한 정책 전체를 함께 쓰는 조합도 비교할 수 있습니다. 충돌 시 우선순위 숫자가 작은 정책을 먼저 검토합니다. 비교한 후보 중 결과를 보여주며 전역 최적해를 보증하지 않습니다.</div></section>
   <section data-ad-page="run" hidden><div class="card"><h3>같은 가정으로 공정표·대응 비교</h3><div id="ad13RunSettings" class="ad13grid"></div><p class="ad13muted">빠른 모드: 원본 자원 순서 고정, 무대응 평가 / 영향범위 모드: 대응 대상·후속·공유자원 범위 재배정 / 전체 모드: 생성된 자원 순서를 풀고 전체 재배정. 모든 모드에서 물리적 선후행은 유지합니다.</p><div id="ad13Validation" class="ad13validation"></div><div class="ad13toolbar"><button type="button" class="ad13primary" id="ad13Run" data-ad-action="run">다중 시뮬레이션 실행</button><button type="button" id="ad13Cancel" data-ad-action="cancel" disabled>중단</button><button type="button" data-ad-action="validate">입력 재검사</button></div><progress id="ad13Progress" max="100" value="0"></progress><div id="ad13ProgressText" role="status" aria-live="polite">실행 대기</div></div><details class="card"><summary>계산 범위와 결과 해석</summary><ul><li>삼각분포 또는 PERT로 작업시간을 추출하고, 사건을 시간순으로 처리합니다. 자원은 작업이 끝날 때까지 점유하며 중단 중에도 유지합니다.</li><li>도면·검측이 미확인이면 착수를 막습니다. 기존 자료에 상태 정보가 없으면 “계획상 충족 가정”으로 표시하므로 현장 확인이 필요합니다.</li><li>동일 원인 그룹은 사건 발생 여부만 연동합니다. 지속시간의 통계적 상관관계는 보정하지 않습니다.</li><li>해제 단축시간과 비용은 사용자가 제시한 대응 효과 가정입니다. 실측자료로 학습하거나 외부 예약·발주를 실행하는 기능은 없습니다.</li><li>기간 배수·추가 작업은 기존 리스크 입력을 유지하기 위한 정적 영향입니다. 사실 기반 착수 제약과 같은 원인을 중복 입력하지 마세요. 음수 lag는 보수적으로 처리합니다.</li><li>중단 불가 작업이 진행 도중 차단되면 품질 검토가 필요한 시행으로 분리합니다. 실패·미완료 시행을 성공한 일정처럼 출력하지 않습니다.</li><li>P80은 입력 가정에 따른 모의 시행의 80% 분위수이며 80% 신뢰구간이 아닙니다. 정책별로 동일한 난수를 사용해 비교합니다.</li></ul></details></section>
-  <section data-ad-page="results" hidden><div id="ad13Stale" class="ad13note ad13warn" hidden>입력 또는 원본 데이터가 바뀌었습니다. 이 결과는 이전 입력에 대한 결과입니다. 다시 계산해야 다운로드할 수 있습니다.</div><div id="ad13ResultsEmpty" class="card">④ 비교 실행에서 시뮬레이션을 실행하면 대안별 결과와 수정 공정표가 표시됩니다.</div><div id="ad13Results" hidden><div class="card"><h3>대안 비교</h3><div id="ad13Kpis" class="ad13kpis"></div><div class="ad13scroll" id="ad13Comparison"></div><details open><summary>다중 시뮬레이션 · 심각도 · 후보 선별</summary><div id="ad15MultiResults" class="ad13scroll"></div></details><p class="ad13muted">미완료 시행도 분위수의 분모에 포함합니다. “산정 불가”는 해당 분위수까지 완료가 확인되지 않았다는 뜻입니다. 비용은 입력된 잔여 작업비와 대응·대기 비용만 합산합니다.</p></div><div class="card"><div class="ad13head"><h3>한 번의 일관된 실현 공정표</h3><div><label>대안 <select id="ad13Selected"></select></label> <label>선택 기준 <select id="ad13Percentile"><option value="0.8">P80 근처 시행</option><option value="0.5">P50 근처 시행</option><option value="0.95">P95 근처 시행</option></select></label></div></div><div id="ad13PlanInfo" class="ad13note"></div><div class="ad13toolbar"><button type="button" data-ad-action="csv" data-ad-export>수정 공정표 CSV</button><button type="button" data-ad-action="json" data-ad-export>입력·계산근거 JSON</button><button type="button" data-ad-action="report" data-ad-export>결과 보고서 HTML</button></div><div id="ad13Gantt" class="ad13scroll"></div><div id="ad13Rows" class="ad13scroll"></div><details><summary>대응 판단·전환 이력</summary><div id="ad13History" class="ad13scroll"></div></details><details><summary>원인 → 제약 → 작업 변화 추적</summary><div id="ad13Trace" class="ad13scroll"></div></details><details><summary>자재 입출고 기록</summary><div id="ad13Ledger" class="ad13scroll"></div></details></div></div></section>
+  <section data-ad-page="results" hidden><div class="card"><h3>통합 결과에서 확인하세요</h3><p>대안 비교·공정표·다운로드는 같은 결과창에서 확인할 수 있습니다.</p><button type="button" data-rc13-jump>최신 결과·활용 열기</button></div><div hidden><div id="ad13Stale" class="ad13note ad13warn" hidden>입력 또는 원본 데이터가 바뀌었습니다. 이 결과는 이전 입력에 대한 결과입니다. 다시 계산해야 다운로드할 수 있습니다.</div><div id="ad13ResultsEmpty" class="card">④ 비교 실행에서 시뮬레이션을 실행하면 대안별 결과와 수정 공정표가 표시됩니다.</div><div id="ad13Results" hidden><div class="card"><h3>대안 비교</h3><div id="ad13Kpis" class="ad13kpis"></div><div class="ad13scroll" id="ad13Comparison"></div><details open><summary>다중 시뮬레이션 · 심각도 · 후보 선별</summary><div id="ad15MultiResults" class="ad13scroll"></div></details><p class="ad13muted">미완료 시행도 분위수의 분모에 포함합니다. “산정 불가”는 해당 분위수까지 완료가 확인되지 않았다는 뜻입니다. 비용은 입력된 잔여 작업비와 대응·대기 비용만 합산합니다.</p></div><div class="card"><div class="ad13head"><h3>한 번의 일관된 실현 공정표</h3><div><label>대안 <select id="ad13Selected"></select></label> <label>선택 기준 <select id="ad13Percentile"><option value="0.8">P80 근처 시행</option><option value="0.5">P50 근처 시행</option><option value="0.95">P95 근처 시행</option></select></label></div></div><div id="ad13PlanInfo" class="ad13note"></div><div class="ad13toolbar"><button type="button" data-ad-action="csv" data-ad-export>수정 공정표 CSV</button><button type="button" data-ad-action="json" data-ad-export>입력·계산근거 JSON</button><button type="button" data-ad-action="report" data-ad-export>결과 보고서 HTML</button></div><div id="ad13Gantt" class="ad13scroll"></div><div id="ad13Rows" class="ad13scroll"></div><details><summary>대응 판단·전환 이력</summary><div id="ad13History" class="ad13scroll"></div></details><details><summary>원인 → 제약 → 작업 변화 추적</summary><div id="ad13Trace" class="ad13scroll"></div></details><details><summary>자재 입출고 기록</summary><div id="ad13Ledger" class="ad13scroll"></div></details></div></div></div></section>
   <div class="ad13toolbar ad13footer"><button type="button" data-ad-action="prev">이전 단계</button><button type="button" data-ad-action="next">다음 단계</button><span class="ad13muted" id="ad13Foot">파일은 브라우저 안에서 처리합니다.</span></div>
  </div>
 </div>
@@ -4124,39 +4165,39 @@ BH-2,34.8,4.2,풍화토,2.5,8"></textarea>
     <div class="ifcGenTop4">
       <div class="ifcGenMetric4"><div class="k">STOREYS</div><div class="v" id="ifcMStory4">0</div></div>
       <div class="ifcGenMetric4"><div class="k">ELEMENTS</div><div class="v" id="ifcMElem4">0</div></div>
-      <div class="ifcGenMetric4"><div class="k">MESH VOLUME</div><div class="v" id="ifcMVol4">0.0 m³</div></div>
-      <div class="ifcGenMetric4"><div class="k">FORM/SURFACE BASIS</div><div class="v" id="ifcMArea4">0.0 m²</div></div>
+      <div class="ifcGenMetric4"><div class="k">RC 체적 · 파일 확인분</div><div class="v" id="ifcMVol4">0.0 m³</div></div>
+      <div class="ifcGenMetric4"><div class="k">IFC 거푸집 수량</div><div class="v" id="ifcMArea4">0.0 m²</div></div>
     </div>
   </div>
 
   <div class="card">
     <h2><span class="n">2</span>부재 해석 · 치수 · 물량</h2>
-    <p class="desc">층·부재종류·재료별로 묶고, IFC 메시에서 치수·표면적·체적을 계산합니다. 같은 개수라도 부재 크기가 커지면 거푸집 면적·콘크리트 체적·추정 철근량이 증가하므로 뒤의 공기도 자동으로 길어집니다.</p>
+    <p class="desc">IFC 객체를 직접 집계하고 파일의 수량·단위·검증 가능한 형상을 읽습니다. 철근량 계수와 밀도 가정은 이 물량표에 적용하지 않습니다. 빈 수량은 미확인으로 보존하며, 공정표에 사용하는 추정은 아래에서 별도로 표시합니다.</p>
     <div class="ifcGenTableWrap4">
       <table class="ifcGenTable4">
-        <thead><tr><th>층</th><th>부재</th><th>재료</th><th>개수</th><th>평균 치수 (m)</th><th>체적 (m³)</th><th>거푸집/면적 기준 (m²)</th><th>추정 철근 (kg)</th><th>해석</th></tr></thead>
+        <thead><tr><th>층</th><th>부재</th><th>재료</th><th>객체 수</th><th>확인 철근 본수</th><th>파일 체적(m³)</th><th>IFC 거푸집(m²)</th><th>IFC 철근(kg)</th><th>파일 근거</th></tr></thead>
         <tbody id="ifcQtyBody4"><tr><td colspan="9">아직 분석된 IFC가 없습니다.</td></tr></tbody>
       </table>
     </div>
-    <details class="noteBox" style="margin-top:10px;"><summary>개별 부재 치수 보기</summary><div class="noteBody">
+    <details class="noteBox" style="margin-top:10px;"><summary>개별 부재·철근 수량 확인</summary><div class="noteBody">
       <div class="ifcGenTableWrap4" style="max-height:340px;">
-        <table class="ifcGenTable4"><thead><tr><th>GUID</th><th>층</th><th>IFC TYPE</th><th>이름</th><th>L×W×H (m)</th><th>체적(m³)</th><th>면적(m²)</th></tr></thead><tbody id="ifcDetailBody4"></tbody></table>
+        <div class="a12-actions"><label>객체 검색 <input id="ifcFactQuery" type="search" placeholder="GUID · 층 · 이름 · IFC 종류"></label><label>페이지 <select id="ifcFactPage"></select></label><span id="ifcFactCount"></span></div><table class="ifcGenTable4"><thead><tr><th>GUID</th><th>층</th><th>IFC TYPE</th><th>이름</th><th>BBox 치수(m)</th><th>객체 수</th><th>확인 본수</th><th>길이 속성(m)</th><th>직경(mm)</th><th>파일 질량(kg)</th><th>체적(m³)</th><th>IFC 상위부재</th><th>근거·미확인</th></tr></thead><tbody id="ifcDetailBody4"></tbody></table>
       </div>
     </div></details>
   </div>
 
     <div class="card" id="a12Analysis" hidden>
-    <h2>건물·물량 분석 결과</h2><div id="a12Building" class="a12-metrics"></div>
+    <h2>파일 기반 객체·물량 집계</h2><div class="a12-actions"><button type="button" id="a12InventoryCSV">파일 객체·물량 CSV</button><button type="button" id="a12InventoryJSON">파일 객체·물량 JSON</button></div><div id="a12Building" class="a12-metrics"></div>
     <p id="a12Confidence" class="ar7-notice"></p>
-    <details><summary>층별 물량 · 기준층 선정 근거</summary><div id="a12Floors" class="ar7-scroll"></div></details>
+    <details><summary>층별 파일 객체·철근 집계</summary><div id="a12Floors" class="ar7-scroll"></div></details>
     <details><summary>자동 분류와 산정 규칙</summary><p class="hint">기준층은 지상 구조층의 면적·RC 체적·벽/기둥/보/슬래브 수를 비교해 유사도가 높은 그룹을 고릅니다. 좌표가 있으면 건물의 긴 축에 따른 Bounding Box 분할 후보를 사용하고, 명시적 공구 속성이 후보 수와 일치하면 그 속성을 우선합니다. 좌표가 없는 부분만 균등 물량 배분합니다. 이 구획은 시공 이음·코어·동선·구조 검토를 대신하지 않습니다.</p><p class="hint">공기 계산 전에 층·공종·물량·단위를 확인합니다. 불명확한 Plate/Member·비RC 구조공종·미지정 층은 검토 목록으로 보냅니다. 검토 제외 객체가 있으면 계산 공기는 <b>확인된 범위의 부분 공기</b>이며 전체 프로젝트 준공일로 확정할 수 없습니다.</p></details>
   </div>
   <div class="card" id="a12Settings" hidden>
-    <h2>자동 산정 공정조건</h2><p class="hint">각 항목의 수정값이 있으면 그 값을 우선 사용합니다. ‘자동값 복원’은 해당 항목만 복원합니다. 목표 작업기간은 작업조 산정의 기준이며 최종 층 Cycle을 강제로 맞추지 않습니다.</p>
+    <h2>공정표 전용 가정·생산성</h2><p class="hint">여기서 적용한 계수는 작업기간 산정에만 사용합니다. 위의 파일 물량과 다운로드 원본 수량에는 반영되지 않습니다.</p><label class="hint"><input id="a12AllowPlanningEstimate" type="checkbox" checked> 공정표의 미확인 물량에 추정 가정 허용</label><div id="a12PlanningSummary" class="ar7-notice"></div><details><summary>공정표용 철근–부재 연결 확인·수정</summary><p class="hint">IFC 집합·중첩 관계가 있으면 자동 연결합니다. 파일에 소속이 없으면 아래에서 작업 대상 부재를 지정할 수 있습니다. 사용자 연결은 공정표용 가정이며 파일 원본 관계는 바꾸지 않습니다. 연결된 객체가 전체 배근을 포함하는지 확인하세요.</p><div class="a12-actions"><label>철근 객체 <select id="a12LinkBar"></select></label><label>작업 대상 부재 <select id="a12LinkHost"></select></label><button type="button" id="a12ApplyLink">공정표 연결 적용</button></div></details><p class="hint">각 항목의 수정값이 있으면 그 값을 우선 사용합니다. ‘자동값 복원’은 해당 항목만 복원합니다. 목표 작업기간은 작업조 산정의 기준이며 최종 층 Cycle을 강제로 맞추지 않습니다.</p>
     <div class="ar7-scroll"><table class="a12-table"><thead><tr><th>항목</th><th>적용값</th><th>상태</th><th>개별 수정</th><th>산정근거</th></tr></thead><tbody id="a12SettingBody"></tbody></table></div>
     <p class="hint">한 작업에는 독립 작업조 1조를 배정합니다. 산정된 작업조는 Zone별 동시작업 한도로 사용하므로 조 수 증가만으로 한 작업의 기간을 자동으로 나누지 않습니다. 양생/강도 확인 대기는 계획 작업일 환산값이며 연속시간 강도발현 모델이 아닙니다.</p>
     <label class="hint"><input id="a12SoftOverlap" type="checkbox"> 전문가 가정: 한 Zone 안의 작업면 분할도 확인되어 SS+lag 후보 허용</label>
-    <div class="a12-actions"><button type="button" class="ghost" id="a12Audit">자동 산정 근거 JSON 다운로드</button></div>
+    <div class="a12-actions"><button type="button" class="ghost" id="a12Audit">파일 물량·공정 가정 통합 근거 JSON</button></div>
   </div>
   <div class="card" id="a12Review" hidden>
     <h2>IFC 검토 필요 객체</h2><p id="a12ReviewCount" class="hint"></p>
@@ -4178,7 +4219,7 @@ BH-2,34.8,4.2,풍화토,2.5,8"></textarea>
     <div class="ifcAssumpGrid4">
       <div class="ifcAssump4"><label>거푸집 생산성 (m²/일·조)</label><input type="number" id="ifcProdForm4" value="80" min="0.1" step="1"></div>
       <div class="ifcAssump4"><label>철근 생산성 (kg/일·조)</label><input type="number" id="ifcProdRebar4" value="600" min="0.1" step="10"></div>
-      <div class="ifcAssump4"><label>RC 철근량 가정 (kg/m³)</label><input type="number" id="ifcRebarRatio4" value="120" min="0" step="5"></div>
+      <div class="ifcAssump4"><label>공정표 전용 철근량 계수 (kg/m³)</label><input type="number" id="ifcRebarRatio4" value="120" min="0" step="5"></div>
       <div class="ifcAssump4"><label>콘크리트 타설 (m³/일·조)</label><input type="number" id="ifcProdConcrete4" value="45" min="0.1" step="1"></div>
       <div class="ifcAssump4"><label>양생 고정기간 (일)</label><input type="number" id="ifcCuringDays4" value="3" min="0" step="0.5"></div>
       <div class="ifcAssump4"><label>슬래브 매립설비 (일/패키지)</label><input type="number" id="ifcMepDays4" value="1" min="0" step="0.25"></div>
@@ -4191,7 +4232,8 @@ BH-2,34.8,4.2,풍화토,2.5,8"></textarea>
     </div>
     <label style="display:flex;align-items:center;gap:7px;margin-top:12px;font-weight:500;"><input type="checkbox" id="ifcUnknownRc4" disabled style="width:16px;height:16px;"> 재료 미확인 부재는 검토 목록에서 RC 여부를 개별 확인 (일괄 가정 비활성)</label>
     <div class="ifcFormula4">거푸집 공기 = IFC 형상 기반 거푸집 면적 ÷ 거푸집 생산성 (작업당 1조)
-철근 공기 = IFC 체적 × 철근량 가정 ÷ 철근 생산성 (작업당 1조)
+철근 공기 = 연결된 파일 철근량 또는 공정표용 추정량 ÷ 철근 생산성 (작업당 1조)
+※ 추정량은 파일 물량표에 합산하지 않으며 공정표 CSV에 근거와 확인량/추정량을 분리 기록합니다.
 콘크리트 공기 = IFC 체적 ÷ 타설 생산성 (작업당 1조)
 양생 = 고정기간
 ※ 부재 치수는 물량(면적·체적)에 반영되고, 물량 변화가 공기에 직접 반영됩니다.</div>
@@ -4882,7 +4924,7 @@ function validateAndParseScheduleCSV(text){
       resource_sequence_added: resource_sequence_added || '',
       optimization_profile: optimization_profile || '',
       optimization_zone_count: optimization_zone_count || '',
-      ...Object.fromEntries(['source_story','zone_basis','quantity_method','quantity_unit','quantity_value','productivity_value','crew_assigned','resource_group','resource_lane','ES','EF','LS','LF','TF'].map(k=>[k,get(k)])),
+      ...Object.fromEntries(['source_story','zone_basis','quantity_method','quantity_origin','measured_quantity','estimated_quantity','quantity_source_ids','quantity_assumptions','quantity_unit','quantity_value','productivity_value','crew_assigned','resource_group','resource_lane','ES','EF','LS','LF','TF'].map(k=>[k,get(k)])),
     });
   });
 
@@ -11796,7 +11838,7 @@ async function parseIfcWithWebIfc(buffer){
       for(const h of l.RelatedElements || []) elementStory.set(val(h), val(l.RelatingStructure));
     }
     const aggParent = new Map();
-    for(const rid of idsOf('IFCRELAGGREGATES')){
+    for(const rid of [...idsOf('IFCRELAGGREGATES'),...idsOf('IFCRELNESTS')]){
       const l = line(rid); if(!l) continue;
       for(const h of l.RelatedObjects || []) aggParent.set(val(h), val(l.RelatingObject));
     }
@@ -11847,11 +11889,11 @@ async function parseIfcWithWebIfc(buffer){
     const length12=projectUnits12.get('LENGTHUNIT');
     const qspec12={IFCQUANTITYVOLUME:['VolumeValue','VOLUMEUNIT','m3'],IFCQUANTITYAREA:['AreaValue','AREAUNIT','m2'],IFCQUANTITYLENGTH:['LengthValue','LENGTHUNIT','m'],IFCQUANTITYWEIGHT:['WeightValue','MASSUNIT','kg'],IFCQUANTITYCOUNT:['CountValue',null,'EA']};
     function quantity12(q,eid){
-      const spec=qspec12[codeName.get(q?.type)];if(!spec)return null;const [attr,kind,unit]=spec,n=Number(val(q[attr]));if(!Number.isFinite(n)||n<0)return null;
+      const spec=qspec12[codeName.get(q?.type)];if(!spec)return null;const [attr,kind,unit]=spec,raw=val(q[attr]),n=Number(raw);if(raw===null||raw===undefined||raw===''||!Number.isFinite(n)||n<0)return null;
       let f=kind?null:1,unitSource='count';
       if(kind){if(q.Unit){f=factor12(line(val(q.Unit)),kind);unitSource='explicit';}else if(projectUnits12.has(kind)){f=projectUnits12.get(kind);unitSource='project';}else if(length12>0&&['AREAUNIT','VOLUMEUNIT'].includes(kind)){f=length12**(kind==='AREAUNIT'?2:3);unitSource='derived_length_unit';}}
       if(!(f>0)){if(!qerr12.has(eid))qerr12.set(eid,[]);qerr12.get(eid).push(String(val(q.Name)||attr)+' '+(kind||'COUNT')+' 단위 미확인');return null;}
-      return {name:String(val(q.Name)||attr),value:n*f,unit,original_value:n,unit_source:unitSource};
+      return {name:String(val(q.Name)||attr),value:n*f,unit,original_value:n,unit_source:unitSource,quantity_express_id:q.expressID??null,source_kind:'IFC_QTO'};
     }
     for(const rid of idsOf('IFCRELDEFINESBYPROPERTIES')){
       const rel=line(rid);if(!rel)continue;const def=line(val(rel.RelatingPropertyDefinition));if(!def)continue;
@@ -11861,15 +11903,37 @@ async function parseIfcWithWebIfc(buffer){
       }
     }
     function storyFor12(eid){const seen=new Set();let id=eid;while(id!==undefined&&!seen.has(id)&&seen.size<64){seen.add(id);if(storyByEid.has(id))return storyByEid.get(id);const contained=elementStory.get(id);if(storyByEid.has(contained))return storyByEid.get(contained);id=contained??aggParent.get(id);}return null;}
+    // Count recognized bar Body items, never alternative shape representations together.
+    function barCount12(l,q){
+      const explicit=q.find(x=>x.unit==='EA'&&/^(Count|NumberOfBars|BarCount)$/i.test(x.name));
+      if(explicit&&Number.isInteger(explicit.value))return {value:explicit.value,source:'IFC Quantity '+explicit.name};
+      const product=line(val(l.Representation)),reps=(product?.Representations||[]).map(h=>line(val(h))).filter(r=>String(val(r?.RepresentationIdentifier)||'').toLowerCase()==='body');
+      if(reps.length!==1)return {value:null,source:'본수 미확인 · Body 표현 없음 또는 여러 개'};
+      function countItem(h,seen=new Set()){
+        const id=val(h);if(seen.has(id)||seen.size>32)return null;const item=line(id),kind=codeName.get(item?.type),next=new Set(seen).add(id);
+        if(['IFCSWEPTDISKSOLID','IFCSWEPTDISKSOLIDPOLYGONAL'].includes(kind))return 1;
+        if(kind==='IFCMAPPEDITEM'){const map=line(val(item.MappingSource)),rep=line(val(map?.MappedRepresentation));return countItems(rep?.Items,next);}
+        return null;
+      }
+      function countItems(items,seen){if(!items?.length)return null;const counts=items.map(h=>countItem(h,seen));return counts.every(n=>n!==null)?counts.reduce((a,b)=>a+b,0):null;}
+      const value=countItems(reps[0].Items,new Set());return {value,source:value===null?'본수 미확인 · 지원하지 않는 Body 형식':'IFC Body의 철근 스윕·매핑 개수'};
+    }
+    function host12(eid){
+      const seen=new Set();let id=aggParent.get(eid);
+      while(id!=null&&!seen.has(id)&&seen.size<64){seen.add(id);const l=line(id)||{},type=codeName.get(l.type);if(['IFCWALL','IFCWALLSTANDARDCASE','IFCCOLUMN','IFCBEAM','IFCSLAB','IFCFOOTING','IFCSTAIR','IFCSTAIRFLIGHT'].includes(type))return {guid:val(l.GlobalId)||String(id),expressID:id,source:'IFC 집합·중첩 상위부재 관계'};id=aggParent.get(id);}
+      return null;
+    }
     function metadata12(eid){
       const l=line(eid)||{},typ=line(instType.get(eid))||{},q=[...(qto12.get(eid)||[])],type=codeName.get(l.type)||'UNKNOWN';
+      const attr=k=>val(l[k])??val(typ[k]);
       if(type==='IFCREINFORCINGBAR'){
-        if(length12>0&&Number(val(l.BarLength))>0&&!q.some(v=>/^(Length|BarLength)$/i.test(v.name)))q.push({name:'BarLength',value:Number(val(l.BarLength))*length12,unit:'m',unit_source:'project_length'});
+        if(length12>0&&Number(attr('BarLength'))>0&&!q.some(v=>/^(Length|BarLength)$/i.test(v.name)))q.push({name:'BarLength',value:Number(attr('BarLength'))*length12,unit:'m',unit_source:'project_length'});
+        if(length12>0&&Number(attr('NominalDiameter'))>0)q.push({name:'NominalDiameter',value:Number(attr('NominalDiameter'))*length12,unit:'m',unit_source:'project_length',source_kind:'IFC_ATTRIBUTE'});
         const areaFactor=projectUnits12.has('AREAUNIT')?projectUnits12.get('AREAUNIT'):length12>0?length12**2:null;
-        if(areaFactor>0&&Number(val(l.CrossSectionArea))>0)q.push({name:'CrossSectionArea',value:Number(val(l.CrossSectionArea))*areaFactor,unit:'m2',unit_source:'project_area_or_length'});
-        else if(length12>0&&Number(val(l.NominalDiameter))>0)q.push({name:'CrossSectionArea',value:Math.PI*(Number(val(l.NominalDiameter))*length12)**2/4,unit:'m2',unit_source:'nominal_diameter'});
+        if(areaFactor>0&&Number(attr('CrossSectionArea'))>0)q.push({name:'CrossSectionArea',value:Number(attr('CrossSectionArea'))*areaFactor,unit:'m2',unit_source:'project_area_or_length'});
+        else if(length12>0&&Number(attr('NominalDiameter'))>0)q.push({name:'CrossSectionArea',value:Math.PI*(Number(attr('NominalDiameter'))*length12)**2/4,unit:'m2',unit_source:'nominal_diameter'});
       }
-      return {expressID:eid,ifcType:type,objectType:val(l.ObjectType)||val(typ.Name)||'',predefinedType:val(l.PredefinedType)||val(typ.PredefinedType)||'',parentType:codeName.get((line(aggParent.get(eid))||{}).type)||'',quantities:q,quantityErrors:qerr12.get(eid)||[],zone_ref:properties12.get(eid)||null};
+      return {expressID:eid,global_id:val(l.GlobalId)||null,ifcType:type,objectType:val(l.ObjectType)||val(typ.Name)||'',predefinedType:val(l.PredefinedType)||val(typ.PredefinedType)||'',parentType:codeName.get((line(aggParent.get(eid))||{}).type)||'',host_ref:host12(eid),bar_count:type==='IFCREINFORCINGBAR'?barCount12(l,q):null,quantities:q,quantityErrors:qerr12.get(eid)||[],zone_ref:properties12.get(eid)||null};
     }
     stories.forEach((s,i)=>{s.quantities=qto12.get(storiesRaw[i].eid)||[];});
 
@@ -11943,7 +12007,7 @@ async function parseIfcWithWebIfc(buffer){
       }
     });
     const seen12=new Set([...walls,...solids].map(x=>x.expressID)), scheduleObjects=[];
-    const extra12=new Set([...WALL_TYPES,...SOLID_ELEMENT_TYPES,'IFCREINFORCINGBAR','IFCPILE','IFCCURTAINWALL','IFCFURNISHINGELEMENT','IFCSANITARYTERMINAL','IFCTRANSPORTELEMENT','IFCBUILDINGELEMENTPROXY']);
+    const extra12=new Set([...WALL_TYPES,...SOLID_ELEMENT_TYPES,'IFCREINFORCINGBAR','IFCREINFORCINGMESH','IFCELEMENTASSEMBLY','IFCBUILDINGELEMENTPART','IFCTENDON','IFCPILE','IFCCURTAINWALL','IFCFURNISHINGELEMENT','IFCSANITARYTERMINAL','IFCTRANSPORTELEMENT','IFCBUILDINGELEMENTPROXY']);
     for(const type of extra12)for(const eid of idsOf(type)){if(seen12.has(eid))continue;seen12.add(eid);const l=line(eid)||{};scheduleObjects.push({guid:val(l.GlobalId)||String(eid),name:val(l.Name)||'',story:storyFor12(eid)?.name||'미지정',material:materialFor(eid),...metadata12(eid)});}
     for(const el of extraMesh12)if(!seen12.has(el.expressID)){seen12.add(el.expressID);scheduleObjects.push(el); }
     for(const g of Object.values(lib)) delete g.t;
@@ -13610,35 +13674,7 @@ function formworkArea4(el,family,b,areaM2){
   if(family==='stair')return Math.max(0,areaM2*.65);
   return Math.max(0,areaM2);
 }
-function analyzeIfcQuantities4(data){
-  const detail=[];
-  const collect=(el,isWall)=>{
-    const faces=elementFaces4(el,data),b=bboxFromFaces4(faces),areaMM2=surfaceArea4(faces),volMM3=signedVolume4(faces);
-    const info=typeInfo4(el,isWall),areaM2=areaMM2/1e6;
-    let volumeM3=volMM3/1e9,volMethod='mesh';
-    if(!(volumeM3>1e-8)){
-      if(info.family==='wall'&&isFinite(el.x1)&&isFinite(el.x2)&&isFinite(el.thickness)){
-        volumeM3=(Math.hypot(el.x2-el.x1,el.y2-el.y1)*Number(el.thickness)*b.dz)/1e9;volMethod='wall L×T×H';
-      }else{volumeM3=(b.dx*b.dy*b.dz)/1e9;volMethod='bbox proxy';}
-    }
-    const concrete=isConcreteMaterial4(el,info.family);
-    const formM2=formworkArea4(el,info.family,b,areaM2);
-    detail.push({guid:el.guid||'',name:el.name||'',story:el.story||'미지정',material:el.material||'미상',materialClass:el.materialClass||'',ifcType:info.ifcType,family:info.family,label:info.label,kind:el.kind||'',count:1,
-      dx:b.dx/1000,dy:b.dy/1000,dz:b.dz/1000,volume_m3:Math.max(0,volumeM3),surface_m2:Math.max(0,areaM2),formwork_m2:Math.max(0,formM2),concrete,volMethod});
-  };
-  (data.walls||[]).forEach(e=>collect(e,true));
-  (data.solids||[]).forEach(e=>collect(e,false));
-  IFC_QTY_DETAIL4=detail;
-
-  const ratio=n4('ifcRebarRatio4',120),map=new Map();
-  for(const r of detail){
-    const key=[r.story,r.family,r.material,r.concrete?'RC':'GEN'].join('||');
-    if(!map.has(key))map.set(key,{story:r.story,family:r.family,label:r.label,material:r.material,concrete:r.concrete,count:0,volume_m3:0,surface_m2:0,formwork_m2:0,rebar_kg:0,dx:0,dy:0,dz:0,ifcTypes:new Set(),methods:new Set()});
-    const g=map.get(key);g.count++;g.volume_m3+=r.volume_m3;g.surface_m2+=r.surface_m2;g.formwork_m2+=r.formwork_m2;g.rebar_kg+=r.concrete?r.volume_m3*ratio:0;g.dx+=r.dx;g.dy+=r.dy;g.dz+=r.dz;g.ifcTypes.add(r.ifcType);g.methods.add(r.volMethod);
-  }
-  IFC_QTY_GROUP4=[...map.values()].map(g=>({...g,dx:g.dx/g.count,dy:g.dy/g.count,dz:g.dz/g.count,ifcTypes:[...g.ifcTypes],methods:[...g.methods]}));
-  return IFC_QTY_GROUP4;
-}
+function analyzeIfcQuantities4(data){if(!window.SA_AUTO12)throw Error('IFC 물량 분석 모듈이 아직 준비되지 않았습니다.');return window.SA_AUTO12.rebuild(data);}
 function storyOrder4(data){
   const m=new Map((data.stories||[]).map((s,i)=>[s.name,{e:Number(s.elevation)||0,i}]));
   return (a,b)=>{
@@ -13743,6 +13779,7 @@ function createPackageActivitiesParallel4(pkg,preds,storyCode,idx,set,logic){
     const id=`${base}_${String(rows.length+1).padStart(2,'0')}`;
     rows.push(taskRow4(id,`${nm} ${name}`,predSpecs,dur,zone,res,delay,basis,{...meta,prod}));
     Object.assign(rows[rows.length-1],{source_story:pkg.story,zone_basis:(pkg.splitMethods||[]).join(' / '),quantity_method:(pkg.methods||[]).join(' / '),scheduleActive:true,validationStatus:'VALID',crew_assigned:1,quantity_unit:/철근/.test(name)?'kg':/거푸집/.test(name)?'m2':/타설/.test(name)?'m3':name==='설치'?'EA':'',quantity_value:/철근/.test(name)?pkg.rebar_kg:/거푸집/.test(name)?pkg.formwork_m2:/타설/.test(name)?pkg.volume_m3:name==='설치'?pkg.count:'',productivity_value:/철근/.test(name)?set.rebar:/거푸집/.test(name)?set.form:/타설/.test(name)?set.concrete:name==='설치'?set.generic:''});
+    const trade=/철근/.test(name)?'rebar':/거푸집/.test(name)?'form':/타설/.test(name)?'concrete':name==='설치'?'count':null;if(trade&&window.SA_AUTO12)rows[rows.length-1]._quantityEvidence=window.SA_AUTO12.taskEvidence(pkg,trade);
     keys[key]=id; return {id,dur};
   };
   const isPipePackage=logic.allowWithinZoneOverlap && (pkg.count>1||pkg.formwork_m2>=80||pkg.surface_m2>=120);
@@ -13876,7 +13913,7 @@ function splitPkg8(pkg,zi,zc){
 /* 층별 Zone으로 물량을 균등 분할한 뒤, 각 Zone은 같은 공법 Template을 사용한다.
    IFC 자체에 IfcZone/공구 정보가 없을 때만 쓰는 초기계획용 후보이며 실제 Zone을 사실처럼 추정하지 않는다. */
 function buildLogicalCandidate8(zoneCount,logic,set){
-  const groups=[...IFC_QTY_GROUP4].sort((a,b)=>storyOrder4(IFC_SCHED_DATA4)(a,b)||packageStage4(a.family)-packageStage4(b.family)||a.label.localeCompare(b.label,'ko'));
+  const groups=[...(window.SA_AUTO12?.planningGroups()||IFC_QTY_GROUP4)].sort((a,b)=>storyOrder4(IFC_SCHED_DATA4)(a,b)||packageStage4(a.family)-packageStage4(b.family)||a.label.localeCompare(b.label,'ko'));
   const stories=[];for(const g of groups)if(!stories.includes(g.story))stories.push(g.story);
   const rows=[];let prevZoneGate=Array(zoneCount).fill(null);
 
@@ -13931,6 +13968,7 @@ function buildLogicalCandidate8(zoneCount,logic,set){
       `${zoneCount}개 Zone Gate 통합 milestone`,{type:'MILESTONE',count:'',prod:'0일'}));
     prevZoneGate=thisZoneGate;
   });
+  window.SA_AUTO12?.annotateRows(rows);
   return {rows,stories};
 }
 
@@ -13967,7 +14005,7 @@ function resourceKey8(res){
 function csvFromRows8(rows){
   const cols=['task_id','task_name','predecessor_ids','duration_value','duration_unit','start_date','end_date',
     'zone_ref','resource','delay_category','risk_categories','dur_min','dur_max','cost_fixed','cost_per_day',
-    'ifc_element_type','ifc_count','quantity_basis','productivity_basis','optimization_profile','optimization_zone_count','resource_sequence_added','source_story','zone_basis','quantity_method','quantity_unit','quantity_value','productivity_value','crew_assigned','resource_group','resource_lane','resource_wait_days','scheduleActive','validationStatus','ES','EF','LS','LF','TF','is_critical'];
+    'ifc_element_type','ifc_count','quantity_basis','productivity_basis','optimization_profile','optimization_zone_count','resource_sequence_added','source_story','zone_basis','quantity_method','quantity_origin','measured_quantity','estimated_quantity','quantity_source_ids','quantity_assumptions','quantity_unit','quantity_value','productivity_value','crew_assigned','resource_group','resource_lane','resource_wait_days','scheduleActive','validationStatus','ES','EF','LS','LF','TF','is_critical'];
   return [cols.join(','),...rows.map(r=>cols.map(c=>csv4(r[c]??'')).join(','))].join('\n');
 }
 function addCalendarDates8(rows){
@@ -14106,7 +14144,7 @@ function optimizeIfcSchedule8(){
       let logical;
       if(p.serial){
         /* 비교용 직렬안은 기존 생성기를 1 Zone으로 구성 */
-        const groups=[...IFC_QTY_GROUP4].sort((a,b)=>storyOrder4(IFC_SCHED_DATA4)(a,b)||packageStage4(a.family)-packageStage4(b.family)||a.label.localeCompare(b.label,'ko'));
+        const groups=[...(window.SA_AUTO12?.planningGroups()||IFC_QTY_GROUP4)].sort((a,b)=>storyOrder4(IFC_SCHED_DATA4)(a,b)||packageStage4(a.family)-packageStage4(b.family)||a.label.localeCompare(b.label,'ko'));
         const stories=[];for(const g of groups)if(!stories.includes(g.story))stories.push(g.story);
         const rows=[];let prev=[];
         stories.forEach((story,si)=>{
@@ -14208,77 +14246,74 @@ function buildIfcSchedule4(){
     document.getElementById('ifcDownloadSchedule4').disabled=true;document.getElementById('ifcApplySchedule4').disabled=true;
   }
 }
-/* [간트] 생성된 최적 공정표를 WBS 계층으로 그린다 — 층 → (Zone) → 공종 요약 막대 → 세부 작업.
-   실무 공정표처럼 요약 막대(층·공종)를 기본으로 보이고, 세부 작업(철근·거푸집·검측·타설·양생)은 행을 눌러 펼친다.
-   값은 IFC_GENERATED_ROWS4 의 ES/EF/LS/TF(일)·is_critical 을 그대로 쓰고 요약은 자식의 min ES / max EF. */
-const IFC_GANTT_TRADE4={IFCWALL:'벽체 골조',IFCSLAB:'슬래브 골조',IFCROOF:'지붕공사','IFCWINDOW/IFCDOOR':'창호·개구부',IFCCOLUMN:'기둥 골조',IFCBEAM:'보 골조',IFCSTAIR:'계단'};
-let IFC_GANTT_OPEN4=null;   // 펼친 노드 키 집합(null 이면 기본: 층만 펼침)
-function ifcGanttTree4(rows){
-  const storyOf=r=>String(r.zone_ref||r.source_story||'').split('-')[0]||'기타';
+/* [WBS 간트] 공통 렌더러 — 층 › (Zone) › 공종 요약 막대 → 세부 작업. 1번 탭(최적 공정표)과 3번 탭 결과(기준 vs 결과)가 같이 쓴다.
+   items: [{task_id,task_name,zone_ref,source_story,ifc_element_type,resource,predecessor_ids,ES,EF,LS,LF,TF,is_critical,late,base_ES,base_EF,start_date,end_date,duration_value,duration_unit}] (일 단위)
+   store: {open:Set|null, lw:number|null} — 펼침 상태·라벨 열 너비를 인스턴스별로 보관. opts: {tick(d)→라벨, links, baseline, lateIsCrit, onLevel} */
+const IFC_GANTT_TRADE4={IFCWALL:'벽체 골조',IFCSLAB:'슬래브 골조',IFCROOF:'지붕공사','IFCWINDOW/IFCDOOR':'창호·개구부',IFCCOLUMN:'기둥 골조',IFCBEAM:'보 골조',IFCSTAIR:'계단',IFCFOOTING:'기초'};
+const IFC_GANTT_STORE4={open:null,lw:null};
+function ifcGanttTextWidth4(text,font){ const c=ifcGanttTextWidth4._c||(ifcGanttTextWidth4._c=document.createElement('canvas').getContext('2d')); c.font=font; return c.measureText(text).width; }
+function wbsTree6(items){
+  const storyOf=r=>String(r.source_story||String(r.zone_ref||'').split('-')[0]||'').trim()||'전체';
   const zoneOf=r=>{ const m=String(r.zone_ref||'').match(/-(.+)$/); return m?m[1]:''; };
-  const multiZone=Number(rows[0]&&rows[0].optimization_zone_count)>1;
+  const byName=n=>/철근|거푸집|타설|양생|골조/.test(n)?'골조':/설비|배관|전기/.test(n)?'설비':/검측|검사/.test(n)?'검측':/마감|도장|도배|타일/.test(n)?'마감':/토공|굴착|터파기/.test(n)?'토공':/가설|비계/.test(n)?'가설':'기타';
+  const zonesByStory={}; for(const r of items){ const z=zoneOf(r); if(z) (zonesByStory[storyOf(r)]||(zonesByStory[storyOf(r)]=new Set())).add(z); }
+  const multiZone=Object.values(zonesByStory).some(set=>set.size>1);
   const tree=[], byKey=new Map();
   const node=(key,label,depth,parent)=>{ let n=byKey.get(key); if(!n){ n={key,label,depth,kids:[],tasks:[],miles:[]}; byKey.set(key,n); (parent?parent.kids:tree).push(n); } return n; };
-  for(const r of rows){
+  for(const r of items){
     const st=node('S:'+storyOf(r), storyOf(r), 0, null);
-    if(r.ifc_element_type==='MILESTONE'){ st.miles.push(r); continue; }
+    if(r.ifc_element_type==='MILESTONE'||(Number(r.EF)-Number(r.ES)<=1e-6&&/gate|milestone|완료|착수 가능/i.test(String(r.task_name||'')))){ st.miles.push(r); continue; }
     const zn=multiZone&&zoneOf(r)?node(st.key+'/Z:'+zoneOf(r), zoneOf(r), 1, st):st;
-    const trade=IFC_GANTT_TRADE4[r.ifc_element_type]||String(r.ifc_element_type||'기타').replace(/^IFC/,'');
+    const trade=IFC_GANTT_TRADE4[r.ifc_element_type]||(r.ifc_element_type?String(r.ifc_element_type).replace(/^IFC/,''):byName(String(r.task_name||'')));
     const g=node(zn.key+'/T:'+trade, trade, zn.depth+1, zn); g.tasks.push(r);
   }
-  const span=n=>{ const xs=[...n.tasks,...n.miles].map(r=>[Number(r.ES),Number(r.EF),!!r.is_critical]); n.kids.forEach(k=>{ span(k); xs.push([k.es,k.ef,k.crit]); });
+  const span=n=>{ const xs=[...n.tasks,...n.miles].map(r=>[Number(r.ES),Number(r.EF),!!(r.is_critical||r.late)]); n.kids.forEach(k=>{ span(k); xs.push([k.es,k.ef,k.crit]); });
     n.es=xs.length?Math.min(...xs.map(x=>x[0])):0; n.ef=xs.length?Math.max(...xs.map(x=>x[1])):0; n.crit=xs.some(x=>x[2]); n.count=n.tasks.length+n.kids.reduce((a,k)=>a+k.count,0); };
   tree.forEach(span); return tree;
 }
-function ifcGanttSetLevel4(level){ // 0 층만 · 1 공종까지 · 2 세부 작업까지
-  const rows=IFC_GENERATED_ROWS4; IFC_GANTT_OPEN4=new Set();
-  const walk=n=>{ if(n.depth<level||(level>=2)) IFC_GANTT_OPEN4.add(n.key); n.kids.forEach(walk); };
-  ifcGanttTree4(rows).forEach(walk); if(level===0) IFC_GANTT_OPEN4=new Set(); renderIfcGantt4();
-}
-function ifcGanttToggle4(key){ if(!IFC_GANTT_OPEN4) IFC_GANTT_OPEN4=new Set(ifcGanttTree4(IFC_GENERATED_ROWS4).map(n=>n.key)); if(IFC_GANTT_OPEN4.has(key)) IFC_GANTT_OPEN4.delete(key); else IFC_GANTT_OPEN4.add(key); renderIfcGantt4(); }
-function renderIfcGantt4(){
-  const wrap=document.getElementById('ifcGanttWrap4'); if(!wrap) return;
-  const rows=IFC_GENERATED_ROWS4.filter(r=>Number.isFinite(Number(r.ES))&&Number.isFinite(Number(r.EF)));
-  if(!rows.length){ wrap.innerHTML='<div class="hint" style="padding:12px;">아직 생성된 최적 공정표가 없습니다 — 위 "최적 공정표 생성 · 검증"을 누르면 여기에 간트 차트가 그려집니다.</div>'; return; }
-  const tree=ifcGanttTree4(rows);
-  const open=IFC_GANTT_OPEN4||new Set(tree.map(n=>n.key));          // 기본: 층은 펼치고 공종은 접음
-  // 보이는 행 목록
-  const vis=[];
-  const push=n=>{ vis.push({type:'sum',n,depth:n.depth}); if(!open.has(n.key)) return;
-    n.kids.forEach(push); n.tasks.forEach(r=>vis.push({type:'task',r,depth:n.depth+1})); n.miles.forEach(r=>vis.push({type:'mile',r,depth:n.depth+1})); };
+function wbsSetLevel6(store,items,level,rerender){ store.open=new Set(); const walk=n=>{ if(n.depth<level||level>=2) store.open.add(n.key); n.kids.forEach(walk); }; wbsTree6(items).forEach(walk); if(level===0) store.open=new Set(); rerender(); }
+function renderWbsGantt6(wrap,items,store,opts){
+  opts=opts||{}; if(!wrap) return;
+  items=items.filter(r=>Number.isFinite(Number(r.ES))&&Number.isFinite(Number(r.EF)));
+  if(!items.length){ wrap.innerHTML='<div class="hint" style="padding:12px;">'+(opts.emptyText||'표시할 작업이 없습니다.')+'</div>'; return; }
+  const tree=wbsTree6(items);
+  const open=store.open||new Set(tree.map(n=>n.key));
+  const vis=[]; const push=n=>{ vis.push({type:'sum',n,depth:n.depth}); if(!open.has(n.key)) return; n.kids.forEach(push); n.tasks.forEach(r=>vis.push({type:'task',r,depth:n.depth+1})); n.miles.forEach(r=>vis.push({type:'mile',r,depth:n.depth+1})); };
   tree.forEach(push);
-  const LW=300, HDR=30, RH=24, PAD=12, esc=escIfc4, IND=14;
-  const total=Math.max(1,...rows.map(r=>Math.max(Number(r.EF),Number(r.LF)||0)));
+  const HDR=30, RH=24, PAD=12, esc=escIfc4, IND=14;
+  const stripPrefix=(name,r)=>{ let n=name; for(const pre of [r.source_story,String(r.zone_ref||'').split('-')[0]]){ const t=String(pre||'').trim(); if(t&&n.startsWith(t)) n=n.slice(t.length).replace(/^[\s·:\-–]+/,''); } n=n.replace(/^Zone\s*[A-Za-z0-9]*\s*[·:\-–]?\s*/i,''); return n||name; };
+  const labelOf=v=>v.type==='sum'?v.n.label:stripPrefix(String(v.r.task_name||''),v.r);
+  const rightOf=v=>v.type==='sum'?String(v.n.count):String(v.r.resource||'').replace(/ #\d+$/,'');
+  const cs=getComputedStyle(wrap), fontL=`11.5px ${cs.fontFamily}`, fontR=`10px ${cs.fontFamily}`;
+  const autoLW=Math.round(Math.min(560,Math.max(200,PAD*2+Math.max(0,...vis.map(v=>v.depth*IND+16+ifcGanttTextWidth4(labelOf(v),fontL)+18+ifcGanttTextWidth4(rightOf(v),fontR))))));
+  const LW=store.lw!==null&&store.lw!==undefined?Math.max(120,store.lw):autoLW;
+  const total=Math.max(1,...items.map(r=>Math.max(Number(r.EF),Number(r.LF)||0,Number(r.base_EF)||0)));
   const avail=Math.max(420,(wrap.clientWidth||900)-LW-PAD*2);
   const ppd=Math.max(6,Math.min(48,avail/total));
-  const W=LW+PAD+Math.ceil(total*ppd)+PAD+48, H=HDR+vis.length*RH+PAD;   // +48: 마지막 요약 막대의 기간 라벨 자리
+  const W=LW+PAD+Math.ceil(total*ppd)+PAD+48, H=HDR+vis.length*RH+PAD;
   const X=d=>LW+PAD+d*ppd, Y=i=>HDR+i*RH;
-  const startRaw=(document.getElementById('ifcProjectStart8')||{}).value||'';
-  const base=/^\d{4}-\d{2}-\d{2}$/.test(startRaw)?Date.parse(startRaw+'T00:00:00Z'):null;
-  const tickLbl=d=>{ if(base===null) return d+'일'; const t=new Date(base+d*86400000); return (t.getUTCMonth()+1)+'/'+t.getUTCDate(); };
-  const step=[1,2,5,7,10,14,30].find(k=>k*ppd>=52)||30;
+  const tickLbl=opts.tick||(d=>d+'일');
+  const step=[1,2,5,7,10,14,30,60].find(k=>k*ppd>=52)||60;
   const idx=new Map(); vis.forEach((v,i)=>{ if(v.type!=='sum') idx.set(v.r.task_id,i); });
-  const ids=new Set(rows.map(r=>r.task_id));
-  const f1=v=>Number(v).toFixed(1);
-  let s=`<svg class="sgGanttBody" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="최적 공정표 간트 차트">`;
+  const ids=new Set(items.map(r=>r.task_id)); const f1=v=>Number(v).toFixed(1);
+  let s=`<svg class="sgGanttBody" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="WBS 간트 차트">`;
   s+=`<rect class="gHdrBg" x="0" y="0" width="${W}" height="${HDR}"/>`;
-  for(let d=0; d<=total; d+=step){ const x=X(d); s+=`<line class="gGridDay" x1="${x}" y1="${HDR}" x2="${x}" y2="${H-PAD}"/><line class="gTickLine" x1="${x}" y1="${HDR-6}" x2="${x}" y2="${HDR}"/><text class="gTick" x="${x+3}" y="${HDR-9}">${tickLbl(d)}</text>`; }
+  for(let d=0; d<=total; d+=step){ const x=X(d); s+=`<line class="gGridDay" x1="${x}" y1="${HDR}" x2="${x}" y2="${H-PAD}"/><line class="gTickLine" x1="${x}" y1="${HDR-6}" x2="${x}" y2="${HDR}"/><text class="gTick" x="${x+3}" y="${HDR-9}">${esc(tickLbl(d))}</text>`; }
   vis.forEach((v,i)=>{ if(v.type==='sum'&&v.depth===0) s+=`<rect class="gRowStory" x="${LW}" y="${Y(i)}" width="${W-LW}" height="${RH}"/>`; else if(i%2) s+=`<rect class="gRowAlt" x="${LW}" y="${Y(i)}" width="${W-LW}" height="${RH}"/>`; });
   vis.forEach((v,i)=>{
     const y=Y(i);
     if(v.type==='sum'){ const n=v.n, x1=X(n.es), x2=Math.max(X(n.ef),x1+3), cy=y+RH/2, cls=n.crit?'gSum crit':'gSum';
-      s+=`<g class="gBarRow"><rect class="${cls}" x="${x1}" y="${cy-3}" width="${x2-x1}" height="6"/><path class="${cls}" d="M${x1},${cy+1} l5,6 l-5,0 z"/><path class="${cls}" d="M${x2},${cy+1} l-5,6 l5,0 z"/><title>${esc(n.label)} · ${n.count}개 작업 · ${f1(n.es)}일 → ${f1(n.ef)}일 (${f1(n.ef-n.es)}일)${n.crit?' · 임계경로 포함':''}</title></g>`;
-      if(x2-x1>=40) s+=`<text class="gBarLbl" x="${x2+6}" y="${cy+4}">${f1(n.ef-n.es)}d</text>`;
-      return; }
-    const r=v.r, es=Number(r.ES), ef=Number(r.EF), ls=Number.isFinite(Number(r.LS))?Number(r.LS):es, dur=Math.max(ef-es,0), by=y+6, h=RH-12, cx=X(es), cy=y+RH/2;
-    const tip=`<title>${esc(r.task_id)} · ${esc(r.task_name)} · ${esc(r.resource||'')} · ES ${f1(es)}일 → EF ${f1(ef)}일 · TF ${f1(r.TF||0)}일${r.start_date?' · '+esc(r.start_date)+' ~ '+esc(r.end_date):''}</title>`;
-    if(v.type==='mile'||dur<=1e-6){ s+=`<g class="gBarRow"><path class="${r.is_critical?'gMile crit':'gMile'}" d="M${cx},${cy-6} l6,6 l-6,6 l-6,-6 z">${tip}</path></g>`; return; }
-    if(ls>es+1e-6) s+=`<rect class="gFloat" x="${cx}" y="${by}" width="${Math.max(1,(ls-es+dur)*ppd)}" height="${h}"/>`;
+      s+=`<g class="gBarRow"><rect class="${cls}" x="${x1}" y="${cy-3}" width="${x2-x1}" height="6"/><path class="${cls}" d="M${x1},${cy+1} l5,6 l-5,0 z"/><path class="${cls}" d="M${x2},${cy+1} l-5,6 l5,0 z"/><title>${esc(n.label)} · ${n.count}개 작업 · ${f1(n.es)}일 → ${f1(n.ef)}일 (${f1(n.ef-n.es)}일)${n.crit?(opts.lateIsCrit?' · 지연 작업 포함':' · 임계경로 포함'):''}</title></g>`;
+      if(x2-x1>=40) s+=`<text class="gBarLbl" x="${x2+6}" y="${cy+4}">${f1(n.ef-n.es)}d</text>`; return; }
+    const r=v.r, es=Number(r.ES), ef=Number(r.EF), ls=Number.isFinite(Number(r.LS))?Number(r.LS):es, dur=Math.max(ef-es,0), by=y+6, h=RH-12, cx=X(es), cy=y+RH/2, crit=!!(r.is_critical||(opts.lateIsCrit&&r.late));
+    const tip=`<title>${esc(r.task_id)} · ${esc(r.task_name)} · ${esc(r.resource||'')} · ${f1(es)}일 → ${f1(ef)}일${Number.isFinite(Number(r.TF))?' · TF '+f1(r.TF)+'일':''}${opts.baseline&&Number.isFinite(Number(r.base_EF))?' · 기준 '+f1(r.base_ES)+'→'+f1(r.base_EF)+'일'+(r.late?' · 지연 +'+f1(ef-Number(r.base_EF))+'일':''):''}${r.start_date?' · '+esc(r.start_date)+' ~ '+esc(r.end_date):''}</title>`;
+    if(opts.baseline&&Number.isFinite(Number(r.base_ES))&&Number.isFinite(Number(r.base_EF))) s+=`<rect class="gBase" x="${X(Number(r.base_ES))}" y="${by-2}" width="${Math.max(2,(Number(r.base_EF)-Number(r.base_ES))*ppd)}" height="${h+4}"/>`;
+    if(v.type==='mile'||dur<=1e-6){ s+=`<g class="gBarRow"><path class="${crit?'gMile crit':'gMile'}" d="M${cx},${cy-6} l6,6 l-6,6 l-6,-6 z">${tip}</path></g>`; return; }
+    if(!opts.baseline&&ls>es+1e-6) s+=`<rect class="gFloat" x="${cx}" y="${by}" width="${Math.max(1,(ls-es+dur)*ppd)}" height="${h}"/>`;
     const w=Math.max(2,dur*ppd);
-    s+=`<g class="gBarRow"><rect class="${r.is_critical?'gBar crit':'gBar'}" x="${cx}" y="${by}" width="${w}" height="${h}" rx="1">${tip}</rect>${w>=44?`<text class="gBarLbl" x="${cx+4}" y="${by+h-3}">${esc(String(r.duration_value))}${r.duration_unit==='hour'?'h':'d'}</text>`:''}</g>`;
+    s+=`<g class="gBarRow"><rect class="${crit?'gBar crit':'gBar'}" x="${cx}" y="${by}" width="${w}" height="${h}" rx="1">${tip}</rect>${w>=44?`<text class="gBarLbl" x="${cx+4}" y="${by+h-3}">${esc(r.duration_value!==undefined?String(r.duration_value)+(r.duration_unit==='hour'?'h':'d'):f1(dur)+'d')}</text>`:''}</g>`;
   });
-  // 링크 화살표: 둘 다 보이는 세부 작업 사이의 driving 링크만
-  if(typeof rowLinks8==='function'){
+  if(opts.links&&typeof rowLinks8==='function'){
     const lagD=l=>(typeof linkLagHours==='function'?linkLagHours(l):0)/HOURS_PER_DAY;
     vis.forEach((v,i)=>{ if(v.type!=='task') return; const r=v.r;
       for(const l of rowLinks8(r,ids)){ const j=idx.get(l.id); if(j===undefined) continue; const p=vis[j].r;
@@ -14287,19 +14322,35 @@ function renderIfcGantt4(){
         const crit=r.is_critical&&p.is_critical, x1=X(from), y1=Y(j)+RH/2, x2=X(Number(r.ES)), y2=Y(i)+RH/2, xm=Math.max(x1+6,x2-6);
         s+=`<path class="gArrow${crit?' crit':''}" d="M${x1},${y1} H${xm} V${y2} H${x2-2}"/><path class="gArrowHead${crit?' crit':''}" d="M${x2},${y2} l-6,-3.5 v7 z"/>`; } });
   }
-  // 라벨 열(막대 위에 놓는다)
   s+=`<rect class="gLblBg" x="0" y="${HDR}" width="${LW}" height="${H-HDR}"/><line class="gLblLine" x1="${LW}" y1="0" x2="${LW}" y2="${H}"/>`;
   s+=`<text class="gTick" x="${PAD}" y="${HDR-9}">WBS · 층 › 공종 › 작업</text>`;
-  const stripPrefix=(name,r)=>{ let n=name; for(const pre of [r.source_story,String(r.zone_ref||'').split('-')[0]]){ const t=String(pre||'').trim(); if(t&&n.startsWith(t)) n=n.slice(t.length).replace(/^[\s·:\-–]+/,''); } n=n.replace(/^Zone\s*[A-Za-z0-9]*\s*[·:\-–]?\s*/i,''); return n||name; };
+  const fit=(text,x,font)=>{ let t=text, w=LW-PAD-x-40; if(ifcGanttTextWidth4(t,font)<=w) return t; while(t.length>1&&ifcGanttTextWidth4(t+'…',font)>w) t=t.slice(0,-1); return t+'…'; };
   vis.forEach((v,i)=>{ const y=Y(i)+RH-8, x=PAD+v.depth*IND;
     if(v.type==='sum'){ const n=v.n, o=open.has(n.key);
-      s+=`<g class="gTgl" data-key="${esc(n.key)}" style="cursor:pointer"><rect x="0" y="${Y(i)}" width="${LW}" height="${RH}" fill="transparent"/><text class="gLbl ${v.depth===0?'gLblStory':''}" x="${x}" y="${y}"><tspan class="gLblSub">${o?'−':'+'}</tspan> ${esc(n.label)}<title>${esc(n.label)} · ${n.count}개 작업 (클릭하면 ${o?'접힘':'펼침'})</title></text><text class="gLblSub" x="${LW-PAD}" y="${y}" text-anchor="end">${n.count}</text></g>`;
-    }else{ const r=v.r, name=String(r.task_name||''), short=stripPrefix(name,r), nm=short.length>20?short.slice(0,19)+'…':short;
-      s+=`<text class="gLbl" x="${x}" y="${y}">${esc(nm)}<title>${esc(r.task_id)} · ${esc(name)} · ${esc(r.resource||'')}</title></text><text class="gLblSub" x="${LW-PAD}" y="${y}" text-anchor="end">${esc(String(r.resource_group||r.resource||'').replace(/ #\d+$/,''))}</text>`; }
+      s+=`<g class="gTgl" data-key="${esc(n.key)}" style="cursor:pointer"><rect x="0" y="${Y(i)}" width="${LW}" height="${RH}" fill="transparent"/><text class="gLbl ${v.depth===0?'gLblStory':''}" x="${x}" y="${y}"><tspan class="gLblSub">${o?'−':'+'}</tspan> ${esc(fit(n.label,x+16,fontL))}<title>${esc(n.label)} · ${n.count}개 작업 (클릭하면 ${o?'접힘':'펼침'})</title></text><text class="gLblSub" x="${LW-PAD}" y="${y}" text-anchor="end">${n.count}</text></g>`;
+    }else{ const r=v.r, name=String(r.task_name||''), nm=fit(stripPrefix(name,r),x,fontL);
+      s+=`<text class="gLbl" x="${x}" y="${y}">${esc(nm)}<title>${esc(r.task_id)} · ${esc(name)} · ${esc(r.resource||'')}</title></text><text class="gLblSub" x="${LW-PAD}" y="${y}" text-anchor="end">${esc(rightOf(v))}</text>`; }
   });
+  s+=`<rect class="gColHandle" x="${LW-4}" y="0" width="8" height="${H}"><title>드래그: 라벨 열 너비 조정 · 더블클릭: 자동 맞춤${store.lw==null?' (현재 자동)':''}</title></rect>`;
   s+='</svg>';
   wrap.innerHTML=s;
-  wrap.querySelectorAll('.gTgl').forEach(g=>g.addEventListener('click',()=>ifcGanttToggle4(g.getAttribute('data-key'))));
+  const rerender=()=>renderWbsGantt6(wrap,items,store,opts);
+  wrap.querySelectorAll('.gTgl').forEach(g=>g.addEventListener('click',()=>{ if(!store.open) store.open=new Set(tree.map(n=>n.key)); const k=g.getAttribute('data-key'); if(store.open.has(k)) store.open.delete(k); else store.open.add(k); rerender(); }));
+  const handle=wrap.querySelector('.gColHandle');
+  handle.addEventListener('dblclick',()=>{ store.lw=null; rerender(); });
+  handle.addEventListener('mousedown',e=>{ e.preventDefault(); const x0=e.clientX, w0=LW; let last=w0;
+    const move=ev=>{ last=Math.max(120,Math.min(900,w0+(ev.clientX-x0))); handle.setAttribute('x',String(last-4)); };
+    const up=()=>{ document.removeEventListener('mousemove',move); document.removeEventListener('mouseup',up); if(last!==w0){ store.lw=last; rerender(); } };
+    document.addEventListener('mousemove',move); document.addEventListener('mouseup',up); });
+}
+/* 1번 탭: 최적 공정표 → 공통 렌더러 */
+function ifcGanttSetLevel4(level){ wbsSetLevel6(IFC_GANTT_STORE4,IFC_GENERATED_ROWS4,level,renderIfcGantt4); }
+function renderIfcGantt4(){
+  const wrap=document.getElementById('ifcGanttWrap4'); if(!wrap) return;
+  const startRaw=(document.getElementById('ifcProjectStart8')||{}).value||'';
+  const base=/^\d{4}-\d{2}-\d{2}$/.test(startRaw)?Date.parse(startRaw+'T00:00:00Z'):null;
+  const tick=d=>{ if(base===null) return d+'일'; const t=new Date(base+d*86400000); return (t.getUTCMonth()+1)+'/'+t.getUTCDate(); };
+  renderWbsGantt6(wrap,IFC_GENERATED_ROWS4,IFC_GANTT_STORE4,{tick,links:true,emptyText:'아직 생성된 최적 공정표가 없습니다 — 위 "최적 공정표 생성 · 검증"을 누르면 여기에 간트 차트가 그려집니다.'});
 }
 function renderGeneratedSchedule4(){
   renderIfcGantt4();
@@ -14584,7 +14635,7 @@ function refreshAutoOverview5(){
   const riskBy={}; for(const r of risks){const k=r.risk_label||r.risk_type||'리스크';riskBy[k]=(riskBy[k]||0)+1;}
   const vol=ifc.detail.reduce((s,r)=>s+(Number(r.volume_m3)||0),0);
   const form=ifc.detail.reduce((s,r)=>s+(Number(r.formwork_m2)||0),0);
-  const rebar=ifc.groups.reduce((s,r)=>s+(Number(r.rebar_kg)||0),0);
+  const measuredRebar=window.SA_AUTO12?.inventorySummary()?.rebar;const rebar=measuredRebar?.mass_kg??null;
 
   const statusItems=[
     ['공정표',sched.count>0],
@@ -14616,8 +14667,8 @@ function refreshAutoOverview5(){
   h+=`<tr><th>층</th><td>${ifc.has?ifc.stories+'개':'<span class="ovEmpty">미분석</span>'}</td></tr>`;
   h+=`<tr><th>부재</th><td>${ifc.has?`벽 ${ifc.walls}개 · 기타 솔리드 ${ifc.solids}개 · 물량해석 ${ifc.detail.length}개`:'<span class="ovEmpty">미분석</span>'}</td></tr>`;
   h+=`<tr><th>해석 체적</th><td>${ifc.detail.length?vol.toFixed(1)+' m³':'<span class="ovEmpty">미분석</span>'}</td></tr>`;
-  h+=`<tr><th>거푸집/면적 기준</th><td>${ifc.detail.length?form.toFixed(1)+' m²':'<span class="ovEmpty">미분석</span>'}</td></tr>`;
-  h+=`<tr><th>추정 철근량</th><td>${ifc.groups.length?(rebar>=1000?(rebar/1000).toFixed(2)+' t ('+Math.round(rebar).toLocaleString()+' kg)':Math.round(rebar).toLocaleString()+' kg'):'<span class="ovEmpty">미분석</span>'}</td></tr>`;
+  h+=`<tr><th>거푸집/면적 기준</th><td>${ifc.detail.some(r=>r.formwork_m2!=null)?form.toFixed(1)+' m² · IFC 확인분':'<span class="ovEmpty">IFC 거푸집 수량 미확인</span>'}</td></tr>`;
+  h+=`<tr><th>IFC 철근 질량 · 확인분</th><td>${rebar!==null?(rebar>=1000?(rebar/1000).toFixed(2)+' t ('+Math.round(rebar).toLocaleString()+' kg)':Math.round(rebar).toLocaleString()+' kg'):'<span class="ovEmpty">질량 정보 미확인</span>'}</td></tr>`;
   h+='</table>';
   if(ifc.groups.length){
     h+='<table class="ovLabor" style="margin-top:10px;"><thead><tr><th>층</th><th>부재</th><th class="num">개수</th><th class="num">체적(m³)</th></tr></thead><tbody>';
@@ -15458,19 +15509,19 @@ try{
  const sum=(a,k)=>a.reduce((s,x)=>s+(Number(x[k])||0),0),med=a=>{a=a.filter(Number.isFinite).sort((x,y)=>x-y);return a.length?(a[Math.floor((a.length-1)/2)]+a[Math.ceil((a.length-1)/2)])/2:0;};
  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
  const CFG={
-  version:'IFC_AUTO_CONDITIONS/1.0',source:'사용자 지시문의 초기 예시값; 현장 검증 전',
+  version:'IFC_FILE_QUANTITIES_AND_PLANNING/2.0',source:'공정표 전용 초기 예시 가정 · 파일 물량 산정에는 미사용',
   productivityDB:{rc:{small:{form:130,rebar:2200,concrete:120},medium:{form:150,rebar:2500,concrete:150},large:{form:170,rebar:2800,concrete:180}}},
   repetition:{high:1.05,medium:1,low:.90},complexity:{low:1.05,medium:1,high:.85},
   defaults:{ratio:120,density:7850,curing:3,mep:1,insp:.5,generic:12,roof:90,capConcrete:1,capInspect:1},
   targets:{form:5,rebar:5,concrete:1},crewLimits:{form:[1,6],rebar:[1,5],concrete:[1,2]},
   areaThresholds:[500,1500],zoneAreaThresholds:[500,1200,2500],volumeThresholds:[80,250],
   penalty:{small:.25,medium:.20,large:.15},similarity:.20,taskLongDays:60,projectDaysPerFloor:60,
-  rebarCoverage:[.6,1.6],complexityRules:{columnDensity:.05,wallDensity:.07,beamDensity:.10,variety:8,irregularShare:.15},
+  complexityRules:{columnDensity:.05,wallDensity:.07,beamDensity:.10,variety:8,irregularShare:.15},
   geometryUnit:'mm',notes:'양생은 계획 작업일 환산값. Zone 분할은 시공 구획의 추정 후보. 작업조와 동시작업을 중복 기간 단축에 쓰지 않음.'
  };
- const fields={form:['거푸집 생산성','m²/일·조','ifcProdForm4',.01],rebar:['철근 생산성','kg/일·조','ifcProdRebar4',.01],concrete:['콘크리트 생산성','m³/일·조','ifcProdConcrete4',.01],ratio:['철근량 추정계수','kg/m³','ifcRebarRatio4',.01],curing:['강도 확인 대기','계획 작업일','ifcCuringDays4',0],mep:['매립설비','일/구역·패키지','ifcMepDays4',0],insp:['검측','일/구역·패키지','ifcInspectionDays4',0],generic:['확인된 개수 설치','EA/일·조','ifcProdGeneric4',.01],roof:['면적 기반 설치','m²/일·조','ifcProdRoof4',.01],crewForm:['거푸집 작업조','조','ifcCrewForm4',1,6],crewRebar:['철근 작업조','조','ifcCrewRebar4',1,5],crewConcrete:['독립 타설 세트','세트','ifcCrewConcrete4',1,2],maxZones:['최대 Zone 후보','구역','ifcOptMaxZones8',1,4],penalty:['Zone 관리 Penalty','일/기준층·추가구역','ifcOptZonePenalty8',0,5],capForm:['거푸집 동시작업 상한','개','ifcCapForm8',1,8],capRebar:['철근 동시작업 상한','개','ifcCapRebar8',1,8],capConcrete:['타설 동시작업 상한','개','ifcCapConcrete8',1,8],capMep:['설비 동시작업 상한','개','ifcCapMep8',1,8],capInspect:['검측 동시작업 상한','개','ifcCapInspect8',1,8]};
+ const fields={form:['거푸집 생산성','m²/일·조','ifcProdForm4',.01],rebar:['철근 생산성','kg/일·조','ifcProdRebar4',.01],concrete:['콘크리트 생산성','m³/일·조','ifcProdConcrete4',.01],ratio:['공정표 전용 철근량 계수','kg/m³','ifcRebarRatio4',.01],density:['공정표 전용 철근 밀도 가정','kg/m³','ifcPlanningDensity',1],curing:['강도 확인 대기','계획 작업일','ifcCuringDays4',0],mep:['매립설비','일/구역·패키지','ifcMepDays4',0],insp:['검측','일/구역·패키지','ifcInspectionDays4',0],generic:['확인된 개수 설치','EA/일·조','ifcProdGeneric4',.01],roof:['면적 기반 설치','m²/일·조','ifcProdRoof4',.01],crewForm:['거푸집 작업조','조','ifcCrewForm4',1,6],crewRebar:['철근 작업조','조','ifcCrewRebar4',1,5],crewConcrete:['독립 타설 세트','세트','ifcCrewConcrete4',1,2],maxZones:['최대 Zone 후보','구역','ifcOptMaxZones8',1,4],penalty:['Zone 관리 Penalty','일/기준층·추가구역','ifcOptZonePenalty8',0,5],capForm:['거푸집 동시작업 상한','개','ifcCapForm8',1,8],capRebar:['철근 동시작업 상한','개','ifcCapRebar8',1,8],capConcrete:['타설 동시작업 상한','개','ifcCapConcrete8',1,8],capMep:['설비 동시작업 상한','개','ifcCapMep8',1,8],capInspect:['검측 동시작업 상한','개','ifcCapInspect8',1,8]};
  const integerKeys=new Set(['crewForm','crewRebar','crewConcrete','maxZones','capForm','capRebar','capConcrete','capMep','capInspect']);
- const st={mode:'auto',model:null,records:[],reviews:[],reviewGroups:[],settings:{},building:null,objectOverrides:{},revision:0,outcome:null,zoneCache:new Map(),busy:false};
+ const st={mode:'auto',model:null,records:[],reviews:[],reviewGroups:[],settings:{},building:null,objectOverrides:{},revision:0,outcome:null,zoneCache:new Map(),busy:false,planning:null,planningHostLinks:{},allowPlanningEstimates:true};
  const cache=new WeakMap();
  function final(k){const x=st.settings[k];return x?x.override??x.auto:null;}
  function setAuto(k,v,basis){const prior=st.settings[k]||{};st.settings[k]={auto:v,override:prior.override??null,final:prior.override??v,basis};}
@@ -15478,7 +15529,7 @@ try{
  function materialType(s){const text=String(s||'');const rc=/concrete|콘크리트|béton|beton|(?:^|\W)RC(?:$|\W)/i.test(text),steel=/steel|철골|강재|강철/i.test(text);return rc&&steel?'SRC':rc?'RC':steel?'Steel':text&&!/미상|unknown|undefined/i.test(text)?'Other':'Unknown';}
  function quantity(el,names,unit){
   const qs=Array.isArray(el.quantities)?el.quantities:[];
-  for(const name of names){const q=qs.find(q=>String(q.name||'').toLowerCase()===name.toLowerCase()&&q.unit===unit&&Number.isFinite(Number(q.value))&&Number(q.value)>=0);if(q)return {value:Number(q.value),source:'IFC Quantity '+q.name};}
+  for(const name of names){const q=qs.find(q=>String(q.name||'').toLowerCase()===name.toLowerCase()&&q.unit===unit&&q.value!==null&&q.value!==undefined&&q.value!==''&&Number.isFinite(Number(q.value))&&Number(q.value)>=0);if(q)return {value:Number(q.value),source:(q.unit_source==='nominal_diameter'?'IFC 직경으로 계산한 ':q.unit_source==='project_length'||q.unit_source==='project_area_or_length'?'IFC Attribute ':'IFC Quantity ')+q.name};}
   return null;
  }
  function stableVolume(faces){const origin=faces?.[0]?.[0];if(!origin)return 0;let v=0;for(const f of faces){if(f.length<3)continue;const a=f[0].map((n,j)=>n-origin[j]);for(let i=1;i<f.length-1;i++){const b=f[i].map((n,j)=>n-origin[j]),c=f[i+1].map((n,j)=>n-origin[j]);v+=(a[0]*(b[1]*c[2]-b[2]*c[1])+a[1]*(b[2]*c[0]-b[0]*c[2])+a[2]*(b[0]*c[1]-b[1]*c[0]))/6;}}return Math.abs(v)/1e9;}
@@ -15518,7 +15569,7 @@ try{
  }
  function classify(el,isWall){
   const type=String(isWall?'IFCWALL':el.ifcType||'UNKNOWN').toUpperCase(),mat=materialType(el.material),text=[el.name,el.objectType,el.predefinedType,el.parentType].filter(Boolean).join(' ');
-  const map={IFCWALL:'wall',IFCWALLSTANDARDCASE:'wall',IFCCOLUMN:'column',IFCBEAM:'beam',IFCSLAB:'slab',IFCFOOTING:'footing',IFCSTAIR:'stair',IFCSTAIRFLIGHT:'stair',IFCROOF:'roof',IFCDOOR:'opening',IFCWINDOW:'opening',IFCFURNISHINGELEMENT:'opening',IFCSANITARYTERMINAL:'opening',IFCTRANSPORTELEMENT:'opening',IFCREINFORCINGBAR:'rebar',IFCCURTAINWALL:'facade',IFCPILE:'pile'};
+  const map={IFCWALL:'wall',IFCWALLSTANDARDCASE:'wall',IFCCOLUMN:'column',IFCBEAM:'beam',IFCSLAB:'slab',IFCFOOTING:'footing',IFCSTAIR:'stair',IFCSTAIRFLIGHT:'stair',IFCROOF:'roof',IFCDOOR:'opening',IFCWINDOW:'opening',IFCFURNISHINGELEMENT:'opening',IFCSANITARYTERMINAL:'opening',IFCTRANSPORTELEMENT:'opening',IFCREINFORCINGBAR:'rebar',IFCREINFORCINGMESH:'rebar_mesh',IFCCURTAINWALL:'facade',IFCPILE:'pile'};
   let family=map[type]||'review',category=family,reason='';
   if(type==='IFCSLAB'&&(el.kind==='roof'||/ROOF/i.test(el.predefinedType||'')))family='roof';
   if(['IFCPLATE','IFCMEMBER'].includes(type)){
@@ -15532,9 +15583,9 @@ try{
  }
  function rawRecords(data){
   if(cache.has(data))return cache.get(data);
-  const records=[],seen=new Set();
+  const records=[],seen=new Set(),guidMap=new Map();
   const collect=(el,isWall)=>{
-   const id=String(el.guid||el.expressID||'obj_'+records.length);if(seen.has(id))return;seen.add(id);
+   const ifcGuid=String((el.global_id!==undefined?el.global_id:el.guid)||''),identity=el.expressID!=null?'#'+el.expressID:ifcGuid||'obj_'+records.length;if(seen.has(identity))return;seen.add(identity);const id=ifcGuid&&!guidMap.has(ifcGuid)?ifcGuid:identity;
    const c=classify(el,isWall),faces=elementFaces4(el,data),b=bboxFromFaces4(faces),area=surfaceArea4(faces)/1e6;
    const volQ=quantity(el,['NetVolume','GrossVolume','Volume'],'m3'),areaQ=quantity(el,['NetArea','GrossArea','Area','NetSideArea','GrossSideArea'],'m2'),formQ=quantity(el,['FormworkArea','ShutteringArea'],'m2');
    const volAudit=auditedVolume4(volQ,faces,b,c.family);
@@ -15543,12 +15594,15 @@ try{
    // If the mesh/QTO cannot be validated, the object goes to REVIEW instead of inflating the schedule.
    const bbox=faces.length?{min:b.min.map(x=>x/1000),max:b.max.map(x=>x/1000)}:null;
    let center=bbox?bbox.min.map((x,i)=>(x+bbox.max[i])/2):Array.isArray(el.position)&&el.position.length===3&&el.position.every(Number.isFinite)?el.position:null;
-   const form=formQ?.value??formworkArea4(el,c.family,b,area);
-   const r={id,index:records.length,ifcType:c.type,name:el.name||'',objectType:el.objectType||'',predefinedType:el.predefinedType||'',story:el.story||'미지정',material:el.material||'',mat:c.mat,family:c.family,suggestedCategory:c.category,classReason:c.reason,volume_m3:volume,volumeSource:volMethod,area_m2:areaQ?.value??(c.family==='slab'?b.dx*b.dy/1e6:area),areaSource:areaQ?.source||'Geometry/BBox 면적 추정',formwork_m2:form,formSource:formQ?.source||'형상 접촉면 추정',surface_m2:area,count:1,bbox,center,dx:b.dx/1000,dy:b.dy/1000,dz:b.dz/1000,explicitZone:el.zone_ref||el.zone||null,raw:el,quantityErrors:[...(el.quantityErrors||[]),...(volAudit.error?[volAudit.error]:[])]};
-   const weight=quantity(el,['NetWeight','GrossWeight','Weight'],'kg'),length=quantity(el,['Length','BarLength'],'m'),cross=quantity(el,['CrossSectionArea'],'m2');
-   // Reinforcing bar mass: trust explicit weight first, then bar length×section, then validated IFC volume.
-   // Never infer rebar mass from raw mesh volume; bent/open/double-scaled meshes can explode by orders of magnitude.
-   r.bar_kg=c.family==='rebar'?(weight?.value??(length&&cross?length.value*cross.value*CFG.defaults.density:(volume>0&&String(volMethod).startsWith('IFC Quantity')?volume*CFG.defaults.density:0))):0;
+   const form=formQ?.value??null;
+   const r={id,ifcGuid,expressID:el.expressID??null,host_ref:el.host_ref||null,quantityDomain:'file',index:records.length,ifcType:c.type,name:el.name||'',objectType:el.objectType||'',predefinedType:el.predefinedType||'',story:el.story||'미지정',material:el.material||'',mat:c.mat,family:c.family,suggestedCategory:c.category,classReason:c.reason,volume_m3:volAudit.error?null:volume,volumeSource:volMethod,area_m2:areaQ?.value??null,areaSource:areaQ?.source||'IFC 면적 수량 미확인',formwork_m2:form,formSource:formQ?.source||'IFC 거푸집 수량 미확인',surface_m2:faces.length?area:null,count:1,bbox,center,dx:b.dx/1000,dy:b.dy/1000,dz:b.dz/1000,explicitZone:el.zone_ref||el.zone||null,raw:el,quantityErrors:[...(el.quantityErrors||[]),...(volAudit.error&&c.family!=='rebar'?[volAudit.error]:[])]};
+   const weight=quantity(el,['NetWeight','GrossWeight','Weight','TotalWeight','NetMass','GrossMass','Mass'],'kg'),length=quantity(el,['Length','BarLength'],'m'),cross=quantity(el,['CrossSectionArea'],'m2');
+   const bar=c.family==='rebar',diameter=quantity(el,['NominalDiameter','Diameter'],'m'),count=quantity(el,['NumberOfBars','BarCount','Count'],'EA');
+   r.bar_kg=bar?weight?.value??null:null;r.rebar_kg=r.bar_kg;r.rebarSource=bar?(weight?.source||'IFC 질량 정보 미확인'):'';
+   r.bar_length_m=bar?length?.value??null:null;r.bar_section_m2=bar?cross?.value??null:null;r.bar_diameter_mm=bar&&diameter?diameter.value*1000:null;
+   r.bar_count=bar?(count&&Number.isInteger(count.value)?count.value:el.bar_count?.value??null):null;r.bar_count_source=bar?(count?.source||el.bar_count?.source||'본수 미확인 · 객체 수와 구분'):'';
+   if(ifcGuid){if(guidMap.has(ifcGuid)){r.duplicateGuid=true;guidMap.get(ifcGuid).duplicateGuid=true;}else guidMap.set(ifcGuid,r);}
+
    records.push(r);
   };
   (data.walls||[]).forEach(x=>collect(x,true));(data.solids||[]).forEach(x=>collect(x,false));(data.scheduleObjects||[]).forEach(x=>collect(x,false));
@@ -15556,33 +15610,24 @@ try{
  }
  function reviewKey(r){return JSON.stringify([r.ifcType,r.story,r.reason||r.classReason||'']);}
  function classifyRecords(data){
-  const storySet=new Set((data.stories||[]).map(s=>s.name)),ratio=final('ratio')??CFG.defaults.ratio;
+  const storySet=new Set((data.stories||[]).map(s=>s.name));
   const records=rawRecords(data).map(raw=>{
    const r={...raw,reason:raw.classReason,scheduleActive:false,evidenceOnly:false,quantityUnit:'',validationStatus:'REVIEW'};
    const override=st.objectOverrides[r.id];if(override){r.story=override.story;r.family=override.family;r.mat=['wall','column','beam','slab','footing','stair'].includes(r.family)?'RC':r.mat;r.reason='';r.manualClassification=true;}
-   if(!validStorey(r.story)||!storySet.has(r.story))r.reason='층 소속 없음/불일치';
-   else if(r.family==='rebar'){r.evidenceOnly=r.bar_kg>0&&!r.quantityErrors.length;r.reason=r.evidenceOnly?'':'철근 길이·단면·체적/질량 단위 부족';r.validationStatus=r.evidenceOnly?'EVIDENCE':'REVIEW';return r;}
+   r.concrete=['RC','SRC'].includes(r.mat)&&['wall','column','beam','slab','footing','stair'].includes(r.family);
+   if(r.family==='rebar'){r.evidenceOnly=!r.duplicateGuid;r.reason=r.duplicateGuid?'동일 GUID의 서로 다른 IFC 객체':r.bar_kg==null?'철근 객체 확인 · 파일 질량 미확인':'';r.validationStatus=r.reason?'FILE_PARTIAL':'FILE_QUANTITY';return r;}
+   if(r.duplicateGuid)r.reason='동일 GUID의 서로 다른 IFC 객체 · 중복 모델 검토';
+   else if(!validStorey(r.story)||!storySet.has(r.story))r.reason='층 소속 없음/불일치';
    else if(['wall','column','beam','slab','footing','stair'].includes(r.family)){
-    r.quantityUnit='m3';
-    if(!['RC','SRC'].includes(r.mat))r.reason=r.mat==='Unknown'?'구조 재료 미확인 · RC 강제 가정 안 함':'비RC 구조공종: 공법·생산성 DB 검토 필요';
-    else if(!(r.volume_m3>0&&r.formwork_m2>0))r.reason='RC 체적/거푸집 면적 부족 또는 단위 오류';
-   }else if(r.family==='opening'){
-    r.quantityUnit='EA';if(!isGeneralInstallationObject(r))r.reason='개수 기반 설치공종 확인 필요';
-   }else if(r.family==='roof'){
-    r.quantityUnit='m2';if(!(r.area_m2>0))r.reason='면적 기반 시공 물량/단위 부족';
-   }else if(!r.reason)r.reason='공종·설치단위·생산성 연결 검토 필요';
-   if(r.quantityErrors.length&&!r.reason)r.reason='IFC Quantity 단위 오류: '+r.quantityErrors.join(', ');
-   r.scheduleActive=!r.reason;r.validationStatus=r.scheduleActive?'VALID':'REVIEW';r.concrete=['RC','SRC'].includes(r.mat)&&['wall','column','beam','slab','footing','stair'].includes(r.family);r.rebar_kg=r.concrete?r.volume_m3*ratio:0;r.rebarSource=r.concrete?'RC 체적 × '+ratio+' kg/m³ 추정':'';
-   return r;
+    r.quantityUnit='m3';if(!['RC','SRC'].includes(r.mat))r.reason=r.mat==='Unknown'?'구조 재료 미확인 · RC 강제 가정 안 함':'비RC 구조공종: 공법·생산성 DB 검토 필요';
+    else if(!(r.volume_m3>0))r.reason='RC 체적 부족 또는 단위 오류';
+   }else if(r.family==='opening'){r.quantityUnit='EA';if(!isGeneralInstallationObject(r))r.reason='개수 기반 설치공종 확인 필요';}
+   else if(r.family==='roof'){r.quantityUnit='m2';if(!(r.area_m2>0))r.reason='IFC 면적 수량 미확인';}
+   else if(!r.reason)r.reason='공종·생산성 연결 검토 필요 · 파일 객체는 집계함';
+   if(r.quantityErrors.length&&!r.reason)r.reason='IFC 수량 검토: '+r.quantityErrors.join(', ');
+   r.scheduleActive=!r.reason;r.validationStatus=r.scheduleActive?'VALID':'REVIEW';return r;
   });
-  applyFloorVolumeSanity4(data,records);
-  for(const story of storySet){
-   const concrete=records.filter(r=>r.story===story&&r.scheduleActive&&r.concrete),bars=records.filter(r=>r.story===story&&r.evidenceOnly),est=sum(concrete,'rebar_kg'),actual=sum(bars,'bar_kg'),coverage=est>0?actual/est:0;
-   const usable=bars.length>0&&coverage>=CFG.rebarCoverage[0]&&coverage<=CFG.rebarCoverage[1];
-   if(usable)for(const r of concrete){r.rebar_kg=actual*r.volume_m3/sum(concrete,'volume_m3');r.rebarSource='IFC 철근 질량 · 층 내 RC 체적 비례 배분 (완전성 추정 검사)';}
-   for(const r of concrete){r.rebarCoverage=coverage;r.ifcBarMass=actual;if(bars.length&&!usable)r.rebarSource='철근 객체 불완전 가능 → RC 체적 추정 (IFC '+nf(actual)+' kg 별도 기록)';}
-  }
-  return records;
+  applyFloorVolumeSanity4(data,records);return records;
  }
  // Story-level sanity guard. Geometry-derived quantities on an above-ground floor are rejected when
  // RC volume per floor area is physically implausible. Explicit QTO is kept unless the whole floor is extreme.
@@ -15605,7 +15650,86 @@ try{
   }
  }
  function isGeneralInstallationObject(r){return r.manualClassification&&r.family==='opening'||['IFCDOOR','IFCWINDOW','IFCFURNISHINGELEMENT','IFCSANITARYTERMINAL','IFCTRANSPORTELEMENT'].includes(r.ifcType);}
- const labels={wall:'벽체',column:'기둥',beam:'보',slab:'슬래브',footing:'기초',stair:'계단',roof:'지붕',opening:'개수 기반 설치'};
+ // File quantities contain no productivity, reinforcement ratio, or assumed density.
+ const knownNumber=x=>typeof x==='number'&&Number.isFinite(x),nullableSum=(rs,k)=>{const values=rs.map(r=>r[k]).filter(knownNumber);return values.length?values.reduce((a,b)=>a+b,0):null;};
+ function inventorySummary(){
+  const rs=st.records,bars=rs.filter(r=>r.family==='rebar'),masses=bars.filter(r=>knownNumber(r.bar_kg)),counts=bars.filter(r=>knownNumber(r.bar_count));
+  return {scope:'파일에 포함된 객체만 집계 · 실제 현장 전체 모델링 여부 미검증',objects:rs.length,duplicate_guid_objects:rs.filter(r=>r.duplicateGuid).length,
+   rebar:{objects:bars.length,bar_count:nullableSum(bars,'bar_count'),count_known_objects:counts.length,count_unknown_objects:bars.length-counts.length,mass_kg:nullableSum(bars,'bar_kg'),mass_known_objects:masses.length,mass_unknown_objects:bars.length-masses.length,unlinked_objects:bars.filter(r=>!r.host_ref).length},
+   concrete_m3:nullableSum(rs.filter(r=>r.concrete),'volume_m3'),formwork_m2:nullableSum(rs,'formwork_m2')};
+ }
+ function aggregateFacts(records){
+  const map=new Map();for(const r of records){const key=JSON.stringify([r.story,r.family,r.material]);if(!map.has(key))map.set(key,{key,story:r.story,family:r.family,label:labels[r.family]||r.ifcType,material:r.material||'재료 미확인',concrete:r.concrete,_records:[]});map.get(key)._records.push(r);}
+  return [...map.values()].map(g=>{const rs=g._records,out={...g,count:rs.length,ifcTypes:[...new Set(rs.map(r=>r.ifcType))],methods:[...new Set(rs.flatMap(r=>[r.volumeSource,r.formSource,r.rebarSource]).filter(Boolean))]};for(const k of ['volume_m3','formwork_m2','surface_m2','area_m2','rebar_kg','bar_count']){out[k]=nullableSum(rs,k);out[k+'_known']=rs.filter(r=>knownNumber(r[k])).length;}for(const k of ['dx','dy','dz'])out[k]=rs.some(r=>r[k]>0)?sum(rs,k)/rs.length:null;return out;});
+ }
+ function makePlanning(records){
+  const bars=records.filter(r=>r.family==='rebar'&&!r.duplicateGuid),rc=records.filter(r=>r.scheduleActive&&r.concrete),byId=new Map(records.map(r=>[r.id,r])),ratio=final('ratio')??CFG.defaults.ratio,density=final('density')??CFG.defaults.density;
+  const hostOf=bar=>{if(st.planningHostLinks[bar.id])return byId.get(st.planningHostLinks[bar.id]);return rc.find(r=>bar.host_ref&&(bar.host_ref.expressID!=null&&bar.host_ref.expressID===r.expressID||bar.host_ref.guid===r.ifcGuid));};
+  const massOf=bar=>{if(knownNumber(bar.bar_kg))return {value:bar.bar_kg,measured:bar.bar_kg,estimated:0,source:bar.rebarSource};
+   if(bar.bar_count>0&&bar.bar_length_m>0&&bar.bar_section_m2>0)return {value:bar.bar_count*bar.bar_length_m*bar.bar_section_m2*density,measured:0,estimated:bar.bar_count*bar.bar_length_m*bar.bar_section_m2*density,source:'공정표 전용: 파일 본수 × 길이 속성 × 단면적 × 밀도 '+density+' kg/m³ (동일 규격 가정)'};
+   if(bar.volume_m3>0&&String(bar.volumeSource).startsWith('IFC Quantity'))return {value:bar.volume_m3*density,measured:0,estimated:bar.volume_m3*density,source:'공정표 전용: IFC 철근 체적 × 밀도 '+density+' kg/m³'};
+   return null;
+  };
+  const out=records.map(r=>{const p={...r,planningBasis:{},planningAssumptions:[],rebarSourceIds:[],measured_rebar_kg:0,estimated_rebar_kg:0,quantityDomain:'schedule_assumption'};
+   if(!r.scheduleActive)return p;
+   if(p.concrete){
+    if(p.formwork_m2==null){const b={dx:r.dx*1000,dy:r.dy*1000,dz:r.dz*1000};p.formwork_m2=formworkArea4(r.raw,r.family,b,r.surface_m2||0);p.formSource='공정표 전용: 형상 기반 접촉면 가정';p.planningAssumptions.push('거푸집 접촉면 추정 · IFC 물량표에 쓰지 않음');}
+    const linked=bars.filter(b=>hostOf(b)?.id===r.id),ms=linked.map(massOf),known=ms.filter(Boolean),base=known.reduce((a,m)=>a+m.value,0);
+    p.rebarSourceIds=linked.map(b=>b.id);p.measured_rebar_kg=known.reduce((a,m)=>a+m.measured,0);p.estimated_rebar_kg=known.reduce((a,m)=>a+m.estimated,0);
+    if(linked.length&&ms.every(Boolean)){p.rebar_kg=base;p.rebarSource=[...new Set(known.map(m=>m.source))].join(' / ');p.planningAssumptions.push('연결된 철근 객체가 해당 부재의 배근 범위를 포함한다고 가정 · 누락 여부 확인 필요');}
+    else{p.rebar_kg=Math.max(base,r.volume_m3*ratio);p.estimated_rebar_kg+=p.rebar_kg-base;p.rebarSource='공정표 전용: RC 체적 × '+ratio+' kg/m³'+(base?' (확인·환산분 이상으로 보완)':'');p.planningAssumptions.push('철근 질량 또는 부재 연결 미확인 → 공정표용 계수 가정');}
+    if(p.estimated_rebar_kg>0)p.planningAssumptions.push('추정 철근 '+nf(p.estimated_rebar_kg,2)+' kg는 파일 물량이 아님');
+    if(linked.some(b=>st.planningHostLinks[b.id]))p.planningAssumptions.push('철근 소속: 사용자 지정 공정표 연결');
+    p.planningBasis={rebar:{origin:p.estimated_rebar_kg>0?(p.measured_rebar_kg>0?'mixed':'estimated'):'ifc_quantity',measured:p.measured_rebar_kg,estimated:p.estimated_rebar_kg,source:p.rebarSource},form:{origin:r.formwork_m2==null?'estimated':'ifc_quantity',measured:r.formwork_m2??0,estimated:r.formwork_m2==null?p.formwork_m2:0,source:p.formSource}};
+   }
+   if(p.area_m2==null&&p.family==='slab'&&p.dx>0&&p.dy>0){p.area_m2=p.dx*p.dy;p.areaSource='공정조건 전용: 형상 외접면적 대용';}
+   return p;
+  });
+  const active=out.filter(r=>r.scheduleActive),errors=[];
+  for(const r of active)if(r.concrete&&(!(r.formwork_m2>0)||!(r.rebar_kg>=0)))errors.push(r.id+': 공정표용 거푸집 면적 또는 철근 물량 확인 필요');
+  if(!st.allowPlanningEstimates)for(const r of active)if(r.concrete&&(r.estimated_rebar_kg>0||r.planningBasis.form.origin==='estimated'))errors.push(r.id+': 공정표 가정이 필요합니다. IFC 수량을 보완하거나 추정을 허용하세요.');
+  return {records:out,groups:aggregate(out),errors,unlinkedBars:bars.filter(b=>!hostOf(b)).map(b=>b.id),assumedObjects:active.filter(r=>r.planningAssumptions.length).length,estimatedRebar:sum(active,'estimated_rebar_kg'),measuredRebar:sum(active,'measured_rebar_kg')};
+ }
+ function planningGroups(){return st.planning?.groups||[];}
+ function annotateRows(rows){
+  for(const row of rows){if(!row._quantityEvidence)continue;const m=row._quantityEvidence;row.quantity_origin=m.origin;row.measured_quantity=m.measured;row.estimated_quantity=m.estimated;row.quantity_source_ids=m.ids.join(';');row.quantity_assumptions=m.notes.join(' / ');row.quantity_method=m.source;row.quantity_basis=(row.quantity_basis||'')+' · '+({ifc_quantity:'IFC 확인량',geometry:'IFC 형상 계산량',estimated:'공정표 추정량',mixed:'IFC 확인량+공정표 추정량'}[m.origin]||m.origin);delete row._quantityEvidence;}
+ }
+ function taskEvidence(pkg,kind){
+  const ids=[],notes=[],src=[];let measured=0,estimated=0;
+  for(const item of pkg._records||[]){const share=pkg._shares?.[item.id]??1,record=st.planning?.records.find(r=>r.id===item.id)||item;
+   const basis=record.planningBasis?.[kind];if(basis){measured+=basis.measured*share;estimated+=basis.estimated*share;src.push(basis.source);}else{measured+=(kind==='concrete'?record.volume_m3:record.count||1)*share;src.push(kind==='concrete'?record.volumeSource:'IFC 객체 개수');}
+   ids.push(...(kind==='rebar'?[record.id,...record.rebarSourceIds||[]]:[record.id]));notes.push(...record.planningAssumptions||[]);
+  }
+  notes.push(...(pkg.splitMethods||[]).filter(x=>/추정|비|부족|검토/.test(x)));
+  return {origin:estimated>0?(measured>0?'mixed':'estimated'):src.some(x=>/Geometry|형상/.test(x))?'geometry':'ifc_quantity',measured,estimated,source:[...new Set(src)].join(' / '),ids:[...new Set(ids)],notes:[...new Set(notes)]};
+ }
+ function setPlanningHost(barId,hostId){
+  if(!st.records.some(r=>r.id===barId&&r.family==='rebar'))throw Error('철근 객체를 선택하세요.');
+  if(hostId&&!st.records.some(r=>r.id===hostId&&r.scheduleActive&&r.concrete))throw Error('공정에 포함된 RC 부재를 선택하세요.');
+  if(hostId)st.planningHostLinks[barId]=hostId;else delete st.planningHostLinks[barId];rebuild(st.model);renderIfcQuantities4();
+ }
+ function factRows(){return st.records.map(r=>({object_id:r.id,ifc_guid:r.ifcGuid,express_id:r.expressID,ifc_type:r.ifcType,name:r.name,story:r.story,object_count:1,bbox_x_m:r.dx>0?r.dx:null,bbox_y_m:r.dy>0?r.dy:null,bbox_z_m:r.dz>0?r.dz:null,bar_count:r.bar_count??null,bar_count_source:r.bar_count_source||'',bar_length_m:r.bar_length_m??null,bar_diameter_mm:r.bar_diameter_mm??null,bar_cross_section_m2:r.bar_section_m2??null,rebar_mass_kg:r.bar_kg??null,mass_source:r.rebarSource||'',volume_m3:r.volume_m3??null,volume_source:r.volumeSource,formwork_m2:r.formwork_m2??null,formwork_source:r.formSource,area_m2:r.area_m2??null,area_source:r.areaSource,ifc_host_id:r.host_ref?.guid||'',duplicate_guid:!!r.duplicateGuid,validation_status:r.validationStatus,note:r.reason||'',source_quantities:r.raw.quantities||[]}));}
+ function inventoryCSV(){const rows=factRows();if(!rows.length)return '';const cols=Object.keys(rows[0]);return [cols.join(','),...rows.map(r=>cols.map(k=>csv4(typeof r[k]==='object'&&r[k]!==null?JSON.stringify(r[k]):r[k]??'')).join(','))].join('\n');}
+ function inventoryJSON(){return {schema:'SA_IFC_FILE_QUANTITIES/1.0',source:typeof IFC_SOURCE_NAME4==='undefined'?'':IFC_SOURCE_NAME4,scope:inventorySummary().scope,missing_value:null,coefficient_estimates_included:false,summary:inventorySummary(),objects:factRows()};}
+ function renderFileQuantities(){
+  const inv=inventorySummary();$('ifcMStory4').textContent=new Set(st.records.map(r=>r.story)).size;$('ifcMElem4').textContent=inv.objects;$('ifcMVol4').textContent=inv.concrete_m3==null?'미확인':nf(inv.concrete_m3)+' m³';$('ifcMArea4').textContent=inv.formwork_m2==null?'미확인':nf(inv.formwork_m2)+' m²';
+  const groups=[...IFC_QTY_GROUP4].sort(storyOrder4(IFC_SCHED_DATA4||{})),n=(v,d=2)=>knownNumber(v)?nf(v,d):'미확인';
+  $('ifcQtyBody4').innerHTML=groups.map(g=>'<tr>'+[esc(g.story),esc(g.label),esc(g.material),g.count,n(g.bar_count,0),n(g.volume_m3),n(g.formwork_m2),n(g.rebar_kg),esc(g.methods.join(' / '))].map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('')||'<tr><td colspan="9">분석 대상 객체가 없습니다.</td></tr>';
+  const query=String($('ifcFactQuery')?.value||'').trim().toLowerCase(),rs=st.records.filter(r=>!query||[r.id,r.ifcGuid,r.name,r.ifcType,r.story].some(x=>String(x||'').toLowerCase().includes(query))),pages=Math.max(1,Math.ceil(rs.length/200)),page=clamp(Number($('ifcFactPage')?.value)||0,0,pages-1);
+  if($('ifcFactPage')){$('ifcFactPage').innerHTML=Array.from({length:pages},(_,i)=>'<option value="'+i+'">'+(i+1)+' / '+pages+'</option>').join('');$('ifcFactPage').value=page;}
+  if($('ifcFactCount'))$('ifcFactCount').textContent=rs.length+'개 검색됨 · 페이지당 200개 · 전체 데이터는 CSV/JSON 다운로드';
+  $('ifcDetailBody4').innerHTML=rs.slice(page*200,page*200+200).map(r=>'<tr>'+[esc(r.ifcGuid||r.id),esc(r.story),esc(r.ifcType),esc(r.name),r.dx>0&&r.dy>0&&r.dz>0?[r.dx,r.dy,r.dz].map(v=>n(v,3)).join(' × '):'미확인','1',n(r.bar_count,0),n(r.bar_length_m),n(r.bar_diameter_mm),n(r.bar_kg),n(r.volume_m3),esc(r.host_ref?.guid||'미확인'),esc(r.reason||r.rebarSource||r.volumeSource)].map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('');
+ }
+ function renderSeparatedSummary(){
+  const inv=inventorySummary(),b=st.building,p=st.planning;if(!b)return;
+  $('a12Building').innerHTML=[['파일 객체 수',inv.objects+'개'],['철근 객체 수',inv.rebar.objects+'개'],['파일에서 확인한 철근 본수',inv.rebar.bar_count==null?'미확인':nf(inv.rebar.bar_count,0)+'본 · 확인분'],['IFC 철근 질량',inv.rebar.mass_kg==null?'미확인':massText4(inv.rebar.mass_kg)+' · 확인분'],['철근 질량 미확인',inv.rebar.mass_unknown_objects+'개 객체'],['파일 RC 체적 · 확인분',inv.concrete_m3==null?'미확인':nf(inv.concrete_m3)+' m³'],['IFC 거푸집 수량 · 확인분',inv.formwork_m2==null?'미확인':nf(inv.formwork_m2)+' m²'],['GUID 중복 객체',inv.duplicate_guid_objects+'개']].map(x=>metric(...x)).join('');
+  $('a12Confidence').textContent=inv.scope+'. 철근이 없거나 질량이 누락된 경우 0kg로 단정하지 않습니다. 철근 객체 수와 실제 본수는 별개입니다. 생산성·철근량 계수·밀도 가정은 아래 공정표 계산에만 적용됩니다.';
+  const stories=[...new Set(st.records.map(r=>r.story))];$('a12Floors').innerHTML=table(['층','파일 객체 수','철근 객체 수','확인 본수','IFC 철근 kg · 확인분','질량 누락 객체'],stories.map(name=>{const all=st.records.filter(r=>r.story===name),bs=all.filter(r=>r.family==='rebar'),n=nullableSum(bs,'bar_count'),kg=nullableSum(bs,'bar_kg');return [esc(name),all.length,bs.length,n==null?'미확인':nf(n,0),kg==null?'미확인':nf(kg),bs.filter(r=>r.bar_kg==null).length];}));
+  if($('a12PlanningSummary'))$('a12PlanningSummary').innerHTML='<p><b>공정표에만 적용:</b> IFC 연결 질량 '+massText4(p.measuredRebar)+' + 공정용 추정 '+massText4(p.estimatedRebar)+'. 가정이 포함된 부재 '+p.assumedObjects+'개.</p><p>공정에 연결되지 않은 철근 객체 '+p.unlinkedBars.length+'개는 파일 물량표에 보존됩니다. 연결 근거가 없는 질량을 콘크리트 부재에 자동 배분하지 않습니다.</p>'+(p.errors.length?'<p class="a12-tag bad">'+esc(p.errors.slice(0,3).join(' / '))+'</p>':'');
+  const barSel=$('a12LinkBar'),hostSel=$('a12LinkHost');if(barSel&&hostSel){const selected=barSel.value;barSel.innerHTML=st.records.filter(r=>r.family==='rebar').map(r=>'<option value="'+esc(r.id)+'">'+esc(r.story+' · '+r.id+' · '+r.name)+'</option>').join('');if(st.records.some(r=>r.id===selected))barSel.value=selected;hostSel.innerHTML='<option value="">파일 관계 사용 / 사용자 연결 해제</option>'+st.records.filter(r=>r.scheduleActive&&r.concrete).map(r=>'<option value="'+esc(r.id)+'">'+esc(r.story+' · '+r.id+' · '+r.name)+'</option>').join('');hostSel.value=st.planningHostLinks[barSel.value]||'';}
+ }
+
+ const labels={wall:'벽체',column:'기둥',beam:'보',slab:'슬래브',footing:'기초',stair:'계단',roof:'지붕',opening:'개수 기반 설치',rebar:'철근',rebar_mesh:'철근망',review:'분류 검토',facade:'외장',pile:'말뚝'};
  function aggregate(records){
   const map=new Map();for(const r of records.filter(r=>r.scheduleActive)){
    const key=JSON.stringify([r.story,r.family,r.material,r.concrete]);if(!map.has(key))map.set(key,{key,story:r.story,family:r.family,label:labels[r.family]||r.family,material:r.material||'사용자 분류',concrete:r.concrete,count:0,volume_m3:0,surface_m2:0,formwork_m2:0,rebar_kg:0,area_m2:0,dx:0,dy:0,dz:0,ifcTypes:new Set(),methods:new Set(),_records:[],scheduleActive:true});
@@ -15614,9 +15738,10 @@ try{
   return [...map.values()].map(g=>({...g,dx:g.dx/g.count,dy:g.dy/g.count,dz:g.dz/g.count,ifcTypes:[...g.ifcTypes],methods:[...g.methods]}));
  }
  function buildingAnalysis(data,records){
+  const planningDomain=records.some(r=>r.quantityDomain==='schedule_assumption');
   const allFloors=(data.stories||[]).filter(s=>validStorey(s.name)).map((s,i)=>{
    const rs=records.filter(r=>r.story===s.name),active=rs.filter(r=>r.scheduleActive),rc=active.filter(r=>r.concrete),slabs=active.filter(r=>r.family==='slab'),q=quantity(s,['GrossFloorArea','NetFloorArea','GrossArea','NetArea'],'m2');
-   const areas=sum(slabs,'area_m2');return {name:s.name,elevation:Number(s.elevation)||0,height:Number(s.height)||null,basement:/지하|basement|^B\d|^地下/i.test(s.name)||Number(s.elevation)<0,area:q?.value??areas,areaSource:q?.source||'슬래브 면적 합계 · 연면적 대용 추정',concrete:sum(rc,'volume_m3'),form:sum(rc,'formwork_m2'),rebar:sum(rc,'rebar_kg'),wall:rc.filter(r=>r.family==='wall').length,column:rc.filter(r=>r.family==='column').length,beam:rc.filter(r=>r.family==='beam').length,slab:slabs.length,structural:rc.length,objects:rs.length,order:i,center:rc.filter(r=>r.center).length?rc.filter(r=>r.center).map(r=>r.center):[]};
+   const areas=sum(slabs,'area_m2');return {name:s.name,elevation:Number(s.elevation)||0,height:Number(s.height)||null,basement:/지하|basement|^B\d|^地下/i.test(s.name)||Number(s.elevation)<0,area:q?.value??areas,areaSource:q?.source||'슬래브 면적 합계 · 연면적 대용 추정',concrete:sum(rc,'volume_m3'),form:sum(rc,'formwork_m2'),rebar:planningDomain?sum(rc,'rebar_kg'):nullableSum(rs.filter(r=>r.family==='rebar'),'bar_kg'),wall:rc.filter(r=>r.family==='wall').length,column:rc.filter(r=>r.family==='column').length,beam:rc.filter(r=>r.family==='beam').length,slab:slabs.length,structural:rc.length,objects:rs.length,order:i,center:rc.filter(r=>r.center).length?rc.filter(r=>r.center).map(r=>r.center):[]};
   }).sort((a,b)=>a.elevation-b.elevation||a.order-b.order);
   const floors=allFloors.filter(f=>f.objects>0),above=floors.filter(f=>!f.basement&&f.structural>0);
   function distance(a,b){const ds=['area','concrete','wall','column','beam','slab'].filter(k=>a[k]||b[k]).map(k=>Math.abs(a[k]-b[k])/Math.max(a[k],b[k],1));return ds.length?ds.reduce((x,y)=>x+y,0)/ds.length:1;}
@@ -15632,11 +15757,11 @@ try{
   const complexity=points>=3?'high':points>=1?'medium':'low';
   let scale=A>0?(A<CFG.areaThresholds[0]?'small':A<CFG.areaThresholds[1]?'medium':'large'):(representative.concrete<CFG.volumeThresholds[0]?'small':representative.concrete<CFG.volumeThresholds[1]?'medium':'large');
   const reviews=records.filter(r=>!r.scheduleActive&&!r.evidenceOnly),confirmedQty=rc.filter(r=>r.volumeSource.startsWith('IFC Quantity')).length/Math.max(1,rc.length),hasActualRebar=rc.some(r=>r.rebarSource.startsWith('IFC 철근'));
-  const confidence=structure==='Unknown'||reviews.length/Math.max(1,records.length)>.15||!rc.length?'낮음':confirmedQty>.8&&hasActualRebar?'높음':'보통';
-  return {floors,totalStoreys:allFloors.length,above:allFloors.filter(f=>!f.basement).length,below:allFloors.filter(f=>f.basement).length,typical:typical.map(f=>f.name),representative,repetition,complexity,complexityPoints:points,scale,structure,totalArea:sum(floors,'area'),totalConcrete:sum(rc,'volume_m3'),totalRebar:sum(rc,'rebar_kg'),objects:records.length,reviews:reviews.length,confidence,hasActualRebar,confirmedQty,sourceArea:'층별 면적 합계: QTO 우선, 없으면 슬래브 면적 대용. 중복판·층별 모델 범위 검토 필요',similarityThreshold:CFG.similarity,irregularShare:irregular};
+  const confidence=!planningDomain?'모델 범위 완전성 미검증':structure==='Unknown'||reviews.length/Math.max(1,records.length)>.15||!rc.length?'낮음':confirmedQty>.8&&hasActualRebar?'높음':'보통';
+  return {floors,totalStoreys:allFloors.length,above:allFloors.filter(f=>!f.basement).length,below:allFloors.filter(f=>f.basement).length,typical:typical.map(f=>f.name),representative,repetition,complexity,complexityPoints:points,scale,structure,totalArea:sum(floors,'area'),totalConcrete:sum(rc,'volume_m3'),totalRebar:planningDomain?sum(rc,'rebar_kg'):nullableSum(records.filter(r=>r.family==='rebar'),'bar_kg'),objects:records.length,reviews:reviews.length,confidence,hasActualRebar,confirmedQty,sourceArea:'층별 면적 합계: QTO 우선, 없으면 슬래브 면적 대용. 중복판·층별 모델 범위 검토 필요',similarityThreshold:CFG.similarity,irregularShare:irregular};
  }
  function deriveSettings(b){
-  for(const k of ['ratio','curing','mep','insp','generic','roof'])setAuto(k,CFG.defaults[k],'내부 초기 예시 가정 · IFC 제공값 아님');
+  for(const k of ['ratio','density','curing','mep','insp','generic','roof'])setAuto(k,CFG.defaults[k],'내부 초기 예시 가정 · IFC 제공값 아님');
   const scale=b.scale,base=CFG.productivityDB.rc[scale],rf=CFG.repetition[b.repetition],cf=CFG.complexity[b.complexity];
   for(const k of ['form','rebar','concrete'])setAuto(k,b.totalConcrete>0?Math.round(base[k]*rf*cf*100)/100:null,`RC 범위 / ${scale} 기본 ${base[k]} × 반복성 ${b.repetition} ${rf} × 복잡도 ${b.complexity} ${cf}. 사용자 지시문 예시 DB, 현장 보정 필요.`);
   const quantityKeys={form:'form',rebar:'rebar',concrete:'concrete'};for(const k of ['form','rebar','concrete']){const q=b.representative[quantityKeys[k]],p=final(k),raw=p>0?Math.ceil(q/(p*CFG.targets[k])):1,range=CFG.crewLimits[k],key={form:'crewForm',rebar:'crewRebar',concrete:'crewConcrete'}[k];setAuto(key,clamp(raw,...range),`ceil(${nf(q,2)} ÷ (${nf(p,2)} × 목표 ${CFG.targets[k]}일)) = ${raw}조; ${range[0]}~${range[1]}조${raw>range[1]?' · 작업조 상한 적용':''}. 목표는 조 산정 기준, 최종 Cycle 고정 아님.`);}
@@ -15649,12 +15774,11 @@ try{
  function rebuild(data){
   if(st.busy)return IFC_QTY_GROUP4;st.busy=true;
   try{
-   invalidate();
-   if(st.model!==data){st.model=data;st.objectOverrides={};}
-   setAuto('ratio',CFG.defaults.ratio,'IFC 철근 데이터 부족 시 RC 체적당 추정량 (초기 예시값)');
-   st.records=classifyRecords(data);st.building=buildingAnalysis(data,st.records);deriveSettings(st.building);
+   invalidate();if(st.model!==data){st.model=data;st.objectOverrides={};st.planningHostLinks={};}
+   setAuto('ratio',CFG.defaults.ratio,'공정표에만 사용 · 철근 수량/연결 부족 시 RC 체적당 계획 가정');setAuto('density',CFG.defaults.density,'공정표에만 사용 · 질량 없는 철근 형상 정보 환산 가정');
+   st.records=classifyRecords(data);st.building=buildingAnalysis(data,st.records);st.planning=makePlanning(st.records);st.planning.building=buildingAnalysis(data,st.planning.records);deriveSettings(st.planning.building);
    st.reviews=st.records.filter(r=>!r.scheduleActive&&!r.evidenceOnly);const map=new Map();for(const r of st.reviews){const key=reviewKey(r);if(!map.has(key))map.set(key,{key,records:[]});map.get(key).records.push(r);}st.reviewGroups=[...map.values()];
-   IFC_QTY_DETAIL4=st.records.map(r=>({...r,guid:r.id,label:labels[r.family]||r.family,volMethod:r.volumeSource}));IFC_QTY_GROUP4=aggregate(st.records);
+   IFC_QTY_DETAIL4=st.records.map(r=>({...r,guid:r.ifcGuid||r.id,label:labels[r.family]||r.family,volMethod:r.volumeSource}));IFC_QTY_GROUP4=aggregateFacts(st.records);
    st.revision++;st.zoneCache.clear();st.outcome=null;syncInputs();render();return IFC_QTY_GROUP4;
   }finally{st.busy=false;}
  }
@@ -15680,9 +15804,9 @@ try{
   });st.zoneCache.set(z,result);return result;
  }
  function spatialSplit(pkg,zi,zc){
-  const wm=zoneWeights(zc),out={...pkg,zoneIndex:zi,zoneCount:zc,zoneLabel:optZoneLabel8(zi),zone_ref:`${pkg.story}-${optZoneLabel8(zi).replace(/\s+/g,'')}`,source_story:pkg.story,_records:[],splitMethods:[]};
+  const wm=zoneWeights(zc),out={...pkg,zoneIndex:zi,zoneCount:zc,zoneLabel:optZoneLabel8(zi),zone_ref:`${pkg.story}-${optZoneLabel8(zi).replace(/\s+/g,'')}`,source_story:pkg.story,_records:[],_shares:{},splitMethods:[]};
   for(const k of ['count','volume_m3','surface_m2','formwork_m2','rebar_kg','area_m2'])out[k]=0;
-  for(const r of pkg._records||[]){const v=wm.get(r.id),f=v?.w[zi]||0;if(f<=EPS)continue;out._records.push(r);out.splitMethods.push(v.method);for(const k of ['count','volume_m3','surface_m2','formwork_m2','rebar_kg','area_m2'])out[k]+=(Number(r[k])||0)*f;}
+  for(const r of pkg._records||[]){const v=wm.get(r.id),f=v?.w[zi]||0;if(f<=EPS)continue;out._records.push(r);out._shares[r.id]=f;out.splitMethods.push(v.method);for(const k of ['count','volume_m3','surface_m2','formwork_m2','rebar_kg','area_m2'])out[k]+=(Number(r[k])||0)*f;}
   out.splitMethods=[...new Set(out.splitMethods)];out._empty=out._records.length===0;return out;
  }
  function cpm(tasks,durMap){
@@ -15725,7 +15849,7 @@ try{
  }
  function optimize(){
   rebuild(IFC_SCHED_DATA4);renderIfcQuantities4();const set=scheduleSettings();
-  if(!IFC_QTY_GROUP4.length)throw Error('확인된 시공 물량이 없습니다. 검토 객체의 층·공종·단위를 먼저 확인하세요.');
+  if(st.planning.errors.length)throw Error(st.planning.errors.slice(0,4).join(' / '));if(!st.planning.groups.length)throw Error('공정에 연결할 시공 물량이 없습니다. 검토 객체의 층·공종·단위를 먼저 확인하세요.');
   for(const [k,v] of Object.entries(set)){if(v===null&&['form','rebar','concrete'].includes(k)&&!st.building.totalConcrete)continue;const f=fields[k];if(!Number.isFinite(v)||v<f[3]||(f[4]!==undefined&&v>f[4])||(integerKeys.has(k)&&!Number.isInteger(v)))throw Error(f[0]+' 적용값을 확인하세요.');}
   const soft=st.mode==='expert'&&$('a12SoftOverlap')?.checked,mode=st.mode==='expert'?$('ifcOptMode8')?.value:'auto';
   const profiles=[{key:'zone_fs',name:'구역 병행 · 구역 내 FS',verticalPct:1,horizontalPct:1,mepPct:1,nextFloorLag:0,allowWithinZoneOverlap:false}];
@@ -15741,7 +15865,7 @@ try{
   const starts=st.building.typical.map(name=>{const rs=best.rows.filter(r=>r.source_story===name&&Number(r.duration_value)>0);return {story:name,start:rs.length?Math.min(...rs.map(r=>r._startH))/H:null};}).filter(x=>x.start!==null);
   const gaps=starts.slice(1).map((x,i)=>x.start-starts[i].start),cycle=gaps.length?gaps.reduce((a,b)=>a+b,0)/gaps.length:null;
   const long=best.rows.filter(r=>Number(r.duration_value)>CFG.taskLongDays),critical=best.rows.filter(r=>r.is_critical&&Number(r.duration_value)>0).sort((a,b)=>b.duration_value-a.duration_value);
-  const warnings=[];if(st.reviews.length)warnings.push(`검토 제외 ${st.reviews.length.toLocaleString()}개: 결과는 확인된 물량의 부분 공기입니다.`);
+  const warnings=[];if(st.planning.estimatedRebar>0)warnings.push('공정표에만 추정 철근 '+massText4(st.planning.estimatedRebar)+' 적용 · IFC 파일 집계량과 구분');if(st.planning.unlinkedBars.length)warnings.push('철근 '+st.planning.unlinkedBars.length+'개 객체의 대상 부재 연결 미확인 · 파일 집계에는 보존, 일정에 질량을 자동 배분하지 않음');if(st.planning.measuredRebar>0)warnings.push('연결된 IFC 철근 수량의 모델 범위 완전성은 확인되지 않았습니다.');if(st.reviews.length)warnings.push(`검토 제외 ${st.reviews.length.toLocaleString()}개: 결과는 확인된 물량의 부분 공기입니다.`);
   if(long.length)warnings.push(`단일 작업 ${CFG.taskLongDays}일 초과 ${long.length}건: 물량·단위·생산성을 확인하세요. 기간은 자동 삭감하지 않았습니다.`);
   if(best.resourceDays>Math.max(180,st.building.totalStoreys*CFG.projectDaysPerFloor))warnings.push('전체 공기가 층수 기반 점검 기준보다 깁니다. 아래 임계작업과 자원 병목을 확인하세요.');
   if([...zoneWeights(best.zoneCount).values()].some(v=>/부족|실패/.test(v.method)))warnings.push('좌표 부족 객체에 물량/순번 분할을 적용했습니다. 실제 공구 경계가 아닙니다.');
@@ -15751,7 +15875,7 @@ try{
  }
  function metric(label,value){return `<div class="a12-metric"><small>${esc(label)}</small><b>${esc(value)}</b></div>`;}
  function table(head,body){return `<table class="a12-table"><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${body.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;}
- function massText4(kg){const n=Number(kg)||0;return n>=1000?`${nf(n/1000,2)} t (${nf(n,0)} kg)`:nf(n,1)+' kg';}
+ function massText4(kg){if(kg==null)return '미확인';const n=Number(kg)||0;return n>=1000?`${nf(n/1000,2)} t (${nf(n,0)} kg)`:nf(n,1)+' kg';}
  function render(){
   if(document.body?.dataset)document.body.dataset.a12Mode=st.mode;const b=st.building;for(const id of ['a12Analysis','a12Settings'])if($(id))$(id).hidden=!b;
   if($('a12Legacy'))$('a12Legacy').hidden=st.mode!=='expert';
@@ -15762,7 +15886,7 @@ try{
   $('a12Confidence').textContent=`산정 신뢰도: ${b.confidence} (규칙 기반 표기, 확률 아님). QTO 체적 확보 RC 객체 ${nf(b.confirmedQty*100)}%. 철근은 ${b.hasActualRebar?'IFC 질량 및 추정 혼용 가능':'체적당 계수로 추정'}. ${b.sourceArea}`;
   $('a12Floors').innerHTML=table(['층','면적 m²','RC m³','거푸집 m²','철근 t','기준층'],b.floors.map(f=>[esc(f.name),nf(f.area),nf(f.concrete),nf(f.form),nf(f.rebar/1000,2),b.typical.includes(f.name)?'선정':'—']));
   $('a12SettingBody').innerHTML=Object.entries(fields).map(([k,f])=>{const x=st.settings[k];return `<tr><td>${esc(f[0])}</td><td><b>${x?.final===null?'미확인':nf(x?.final,2)}</b> ${esc(f[1])}</td><td>${x?.override!==null?'사용자 수정':'자동 산정'}</td><td><input aria-label="${esc(f[0])} 수정" type="number" data-a12-override="${k}" min="${f[3]}" ${f[4]?'max="'+f[4]+'"':''} step="${integerKeys.has(k)?1:.01}" value="${x?.override??''}" placeholder="${x?.auto??'미확인'}"><button type="button" class="ghost" data-a12-restore="${k}">자동값 복원</button></td><td>${esc(x?.basis)}<br>자동값: ${x?.auto===null?'미확인':nf(x?.auto,2)}</td></tr>`;}).join('');
-  renderReview();
+  renderSeparatedSummary();renderReview();
  }
  function renderReview(){
   $('a12Review').hidden=!st.reviews.length;if(!st.reviews.length)return;
@@ -15799,14 +15923,16 @@ try{
   if(!labels[family]||!(st.model?.stories||[]).some(s=>s.name===story))throw Error('층과 확인한 공종을 선택하세요.');
   const group=st.reviewGroups[groupIndex];if(!group)throw Error('검토 그룹이 변경되었습니다.');for(const r of group.records)st.objectOverrides[r.id]={story,family};invalidate();rebuild(st.model);renderIfcQuantities4();
  }
- function audit(){return {schema:CFG.version,generated_at:new Date().toISOString(),source:typeof IFC_SOURCE_NAME4==='undefined'?'':IFC_SOURCE_NAME4,configuration:clone(CFG),settings:clone(st.settings),building:st.building,scope:st.reviews.length?'partial_with_exclusions':'confirmed_IFC_scope_only',objects:st.records.map(({raw,bbox,...r})=>r),candidates:IFC_OPT_CANDIDATES8.map(c=>({zoneCount:c.zoneCount,profile:c.profile,logicDays:c.logicDays,resourceDays:c.resourceDays,penalty:c.managementPenalty,score:c.score,valid:c.valid,errors:c.errors,caps:c.caps,rows:c.rows})),cycle:st.outcome?{mean:st.outcome.cycle,starts:st.outcome.starts}:null,warnings:st.outcome?.warnings||[]};}
+ function audit(){return {schema:CFG.version,generated_at:new Date().toISOString(),source:typeof IFC_SOURCE_NAME4==='undefined'?'':IFC_SOURCE_NAME4,configuration:clone(CFG),settings:clone(st.settings),file_quantities:inventoryJSON(),planning_assumptions:{allowed:st.allowPlanningEstimates,host_links:clone(st.planningHostLinks),estimated_rebar_kg:st.planning?.estimatedRebar,measured_rebar_kg:st.planning?.measuredRebar,unlinked_rebar_ids:st.planning?.unlinkedBars},building:st.building,scope:st.reviews.length?'partial_with_exclusions':'confirmed_IFC_scope_only',objects:st.records.map(({raw,bbox,...r})=>r),candidates:IFC_OPT_CANDIDATES8.map(c=>({zoneCount:c.zoneCount,profile:c.profile,logicDays:c.logicDays,resourceDays:c.resourceDays,penalty:c.managementPenalty,score:c.score,valid:c.valid,errors:c.errors,caps:c.caps,rows:c.rows})),cycle:st.outcome?{mean:st.outcome.cycle,starts:st.outcome.starts}:null,warnings:st.outcome?.warnings||[]};}
  function download(name,content,mime){const a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\uFEFF'+content],{type:mime}));a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);}
  function reviewCSV(){const cols=['id','ifcType','name','story','material','volume_m3','area_m2','quantityUnit','scheduleActive','validationStatus','reason'];return [cols.join(','),...st.reviews.map(r=>cols.map(k=>csv4(r[k]??'')).join(','))].join('\n');}
  analyzeIfcQuantities4=rebuild;scheduleSettings4=scheduleSettings;splitPkg8=spatialSplit;computeCPM=cpm;resourceLevelCandidate8=level;optimizeIfcSchedule8=optimize;
- window.SA_AUTO12={config:CFG,state:st,rebuild,optimize,afterBuild,spatialSplit,zoneWeights,cpm,level,changeOverride,reclassify,audit,reviewCSV};
+ renderIfcQuantities4=renderFileQuantities;
+ window.SA_AUTO12={config:CFG,state:st,planningGroups,taskEvidence,annotateRows,inventorySummary,inventoryCSV,inventoryJSON,setPlanningHost,rebuild,optimize,afterBuild,spatialSplit,zoneWeights,cpm,level,changeOverride,reclassify,audit,reviewCSV};
  document.addEventListener('change',e=>{
   const t=e.target;
   try{
+   if(t.id==='ifcFactPage'){renderFileQuantities();return;}if(t.id==='a12AllowPlanningEstimate'){st.allowPlanningEstimates=t.checked;if(st.model)rebuild(st.model);return;}if(t.id==='a12LinkBar'){$('a12LinkHost').value=st.planningHostLinks[t.value]||'';return;}
    if(t.name==='a12Mode'){st.mode=t.value;invalidate();render();return;}
    if(t.dataset?.a12Override){changeOverride(t.dataset.a12Override,t.value);return;}
    const entry=Object.entries(fields).find(([,f])=>f[2]===t.id);
@@ -15814,10 +15940,10 @@ try{
    if(t.id==='a12SoftOverlap')invalidate();
   }catch(err){t.setCustomValidity?.(err.message);t.reportValidity?.();if($('a12Status'))$('a12Status').textContent=err.message;}
  },true);
- document.addEventListener('input',e=>e.target.setCustomValidity?.(''));
+ document.addEventListener('input',e=>{e.target.setCustomValidity?.('');if(e.target.id==='ifcFactQuery'){$('ifcFactPage').value=0;renderFileQuantities();}});
  document.addEventListener('click',e=>{
   const t=e.target.closest?.('button');if(!t)return;
-  try{if(t.dataset.a12Restore)changeOverride(t.dataset.a12Restore,null);if(t.dataset.a12Reclassify!==undefined){const i=Number(t.dataset.a12Reclassify);reclassify(i,$('a12Story'+i).value,$('a12Trade'+i).value);}}
+  try{if(t.id==='a12InventoryCSV'){download('IFC_파일기반_객체물량.csv',inventoryCSV(),'text/csv;charset=utf-8');return;}if(t.id==='a12InventoryJSON'){download('IFC_파일기반_객체물량.json',JSON.stringify(inventoryJSON(),null,2),'application/json;charset=utf-8');return;}if(t.id==='a12ApplyLink'){setPlanningHost($('a12LinkBar').value,$('a12LinkHost').value);return;}if(t.dataset.a12Restore)changeOverride(t.dataset.a12Restore,null);if(t.dataset.a12Reclassify!==undefined){const i=Number(t.dataset.a12Reclassify);reclassify(i,$('a12Story'+i).value,$('a12Trade'+i).value);}}
   catch(err){$('a12Status').textContent=err.message;}
  });
  $('a12ReviewPage')?.addEventListener('change',renderReview);
@@ -16029,7 +16155,7 @@ function fromParent(){
  for(const t of raw.tasks){const resource=String(t.resource||'').trim(),hasResource=resource&&!['-','없음','none','None'].includes(resource),pool=hasResource?String(t.resource_group||resource):'',generated=Boolean(t.resource_group||t.optimization_profile||t.source_story),seq=list(t.resource_sequence_added),links=typeof taskPredLinks==='function'?taskPredLinks(t):(t.predecessor_ids||[]).map(id=>({id,type:'FS',lag:0}));
   if(pool){if(!resources.has(pool))resources.set(pool,{id:pool,capacity:1,from:0,until:null,capability:pool,lanes:new Set()});resources.get(pool).lanes.add(resource);}
   const q=n(t.quantity_value),dur=k=>Number(t[k])*(t.dur_unit==='day'?8:1);
-  s.tasks.push({id:String(t.task_id),name:String(t.name||t.task_id),zone:String(t.zone_ref||'미지정'),resources:pool?[pool]:[],links:links.map(l=>({id:String(l.id),type:l.type||'FS',lag:Number(l.lag||0)*(l.lag_unit==='hour'?1:8),origin:'physical',generatedCandidate:seq.includes(String(l.id)+'FS')||seq.includes(String(l.id))})),duration:[dur('dur_min'),dur('dur_mode'),dur('dur_max')],dist:t.dist==='pert'?'pert':'triangular',releaseDate13:!generated&&t.start_date?t.start_date:null,release:!generated&&t.start_date?cal.offset(t.start_date):0,status:'not_started',actualStart:null,actualFinish:null,progress:0,design:'ready',inspection:'ready',preemptible:!/(타설|concrete pour)/i.test(t.name||''),restart:0,costPerHour:Number(t.cost_per_day||0)/8,materials:[],quantity:q,unit:String(t.quantity_unit||''),assumedReadiness:true,source:{resource,start_date:t.start_date||'',end_date:t.end_date||'',resource_sequence_added:t.resource_sequence_added||'',source_story:t.source_story||'',quantity_method:t.quantity_method||''}});
+  s.tasks.push({id:String(t.task_id),name:String(t.name||t.task_id),zone:String(t.zone_ref||'미지정'),resources:pool?[pool]:[],links:links.map(l=>({id:String(l.id),type:l.type||'FS',lag:Number(l.lag||0)*(l.lag_unit==='hour'?1:8),origin:'physical',generatedCandidate:seq.includes(String(l.id)+'FS')||seq.includes(String(l.id))})),duration:[dur('dur_min'),dur('dur_mode'),dur('dur_max')],dist:t.dist==='pert'?'pert':'triangular',releaseDate13:!generated&&t.start_date?t.start_date:null,release:!generated&&t.start_date?cal.offset(t.start_date):0,status:'not_started',actualStart:null,actualFinish:null,progress:0,design:'ready',inspection:'ready',preemptible:!/(타설|concrete pour)/i.test(t.name||''),restart:0,costPerHour:Number(t.cost_per_day||0)/8,materials:[],quantity:q,unit:String(t.quantity_unit||''),assumedReadiness:true,source:{resource,start_date:t.start_date||'',end_date:t.end_date||'',resource_sequence_added:t.resource_sequence_added||'',source_story:t.source_story||'',quantity_method:t.quantity_method||'',quantity_origin:t.quantity_origin||'',measured_quantity:t.measured_quantity??null,estimated_quantity:t.estimated_quantity??null,quantity_source_ids:t.quantity_source_ids||'',quantity_assumptions:t.quantity_assumptions||''}});
  }
  for(const r of resources.values()){r.capacity=Math.max(r.lanes.size,Number(raw.settings.capacities?.[r.id])||1);delete r.lanes;s.resources.push(r);}
  for(const z of new Set(s.tasks.map(t=>t.zone)))s.workspace[z]=Math.max(1,s.resources.reduce((a,r)=>a+r.capacity,0));
@@ -16072,7 +16198,7 @@ function workerSource(){return $('sa-adaptive13-engine').textContent+'\n('+worke
 function workerCount(s,count){const hw=typeof navigator!=='undefined'?navigator.hardwareConcurrency||2:2;return Math.min(count,4,Math.max(1,s.workers==='auto'||s.workers===undefined?hw-1:Number(s.workers)||1));}
 function runWorker(snapshot,reference,candidates,start=0,count=snapshot.settings.iterations,onProgress=()=>{}){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(new Blob([workerSource()],{type:'text/javascript'})),workers=[],n=workerCount(snapshot.settings,count),progress=Array(n).fill(0),parts=Array(n),out=candidates.map(()=>[]);let finished=0,closed=false;const finish=(err)=>{if(closed)return;closed=true;for(const w of workers)w.terminate();URL.revokeObjectURL(url);st.workerCancel=null;if(err)reject(err);else{for(const part of parts)part.forEach((ts,j)=>out[j].push(...ts));for(const ts of out)ts.sort((a,b)=>a.iteration-b.iteration);resolve({trials:out,workers:n});}};st.workerCancel=()=>finish(Error('CANCELLED'));try{for(let k=0;k<n;k++){const a=start+Math.floor(count*k/n),b=start+Math.floor(count*(k+1)/n),w=new Worker(url);workers.push(w);w.onerror=e=>finish(Error(e.message||'Worker 실행 실패'));w.onmessage=e=>{if(closed)return;const m=e.data;if(m.type==='error'){finish(Error(m.message));return;}progress[k]=m.done||0;onProgress(progress.reduce((a,b)=>a+b,0),count*candidates.length,n);if(m.type==='done'){parts[k]=m.results;if(++finished===n)finish();}};w.postMessage({snapshot,reference,candidates:candidates.map(c=>({name:c.name,policyIds:c.policyIds})),iterationStart:a,iterationCount:b-a});}}catch(e){finish(e);}});}
 function rankCandidates(a,b){return b.stats.completionRate-a.stats.completionRate||(a.stats.p80??Infinity)-(b.stats.p80??Infinity)||a.stats.avgCost-b.stats.avgCost||a.stats.avgDisruption-b.stats.avgDisruption||a.id.localeCompare(b.id);}
-function makeCandidates(s){const out=[{id:'none',name:'무대응',policyIds:[]}];if(s.settings.mode==='quick')return out;const ps=s.policies.filter(p=>p.enabled);for(const p of ps)out.push({id:p.id,name:p.name,policyIds:[p.id]});if(s.settings.pairwise)for(let i=0;i<ps.length;i++)for(let j=i+1;j<ps.length;j++)out.push({id:'pair:'+JSON.stringify([ps[i].id,ps[j].id]),name:ps[i].name+' + '+ps[j].name,policyIds:[ps[i].id,ps[j].id]});if(s.settings.bundle&&ps.length>1&&!out.some(c=>c.policyIds.length===ps.length))out.push({id:'bundle',name:'선택 정책 전체 조합',policyIds:ps.map(p=>p.id)});return out;}
+function makeCandidates(s){const out=[{id:'none',name:'대응 없음 (현 상태)',policyIds:[]}];if(s.settings.mode==='quick')return out;const ps=s.policies.filter(p=>p.enabled);for(const p of ps)out.push({id:p.id,name:p.name,policyIds:[p.id]});if(s.settings.pairwise)for(let i=0;i<ps.length;i++)for(let j=i+1;j<ps.length;j++)out.push({id:'pair:'+JSON.stringify([ps[i].id,ps[j].id]),name:ps[i].name+' + '+ps[j].name,policyIds:[ps[i].id,ps[j].id]});if(s.settings.bundle&&ps.length>1&&!out.some(c=>c.policyIds.length===ps.length))out.push({id:'bundle',name:'선택 정책 전체 조합',policyIds:ps.map(p=>p.id)});return out;}
 async function phase(snapshot,reference,candidates,start,count,label,lower,upper){const progress=(done,total,workers)=>{$('ad13Progress').value=lower+(upper-lower)*done/total;$('ad13ProgressText').textContent=`${label} · ${count}개 상황 × ${candidates.length}개 대안 · ${done.toLocaleString()}/${total.toLocaleString()} · ${workers?'동시 계산 '+workers+'개':'기본 계산'}`;};if(typeof Worker!=='undefined'){try{return await runWorker(snapshot,reference,candidates,start,count,progress);}catch(e){if(e.message==='CANCELLED')throw e;notice('백그라운드 병렬 실행이 지원되지 않아 동일한 표본으로 순차 계산합니다.');}}const out=candidates.map(()=>[]);let done=0,last=performance.now();for(let i=start;i<start+count;i++){const world=E.makeWorld(snapshot,i);for(let j=0;j<candidates.length;j++){if(st.cancel)throw Error('CANCELLED');out[j].push({iteration:i,...compact(E.simulate(snapshot,world,candidates[j].policyIds,{detailed:false,reference}))});done++;if(performance.now()-last>30){progress(done,count*candidates.length,0);await wait();last=performance.now();}}}progress(done,count*candidates.length,0);return {trials:out,workers:0};}
 function pairedStats(candidate,none){let improve=0,worse=0,comparable=0,saved=0;const bm=new Map(none.trials.map(t=>[t.iteration,t]));for(const a of candidate.trials){const b=bm.get(a.iteration);if(!b)continue;const af=a.status==='completed',bf=b.status==='completed';if(af&&bf){const d=b.completion-a.completion;saved+=d;comparable++;if(d>1e-7)improve++;else if(d< -1e-7)worse++;}else if(af&&!bf)improve++;else if(!af&&bf)worse++;}return {improvementRate:improve/candidate.trials.length,worseningRate:worse/candidate.trials.length,meanSavedHoursBothCompleted:comparable?saved/comparable:null,completedPairs:comparable};}
 async function run(){if(window.SA_V12)return window.SA_V12.runFromEditor();if(st.busy)return;const v=validation();if(v.errors.length){step('run');return;}const snapshot=clone(st.input),s=snapshot.settings,all=makeCandidates(snapshot);if(all.length>64){notice('비교 대안이 64개를 넘습니다. 정책 수를 줄이거나 2개 정책 조합을 해제하세요.','error');return;}const staged=s.strategy==='screen_refine'&&all.length>1,screenN=staged?s.screenIterations:0,finalCount=staged?Math.min(all.length,s.keepCandidates+1):all.length,totalWork=snapshot.tasks.length*(screenN*all.length+s.iterations*finalCount);if(totalWork>600000){notice('예상 작업 평가가 600,000회를 넘습니다. 시행 수·정밀 비교 후보 수를 줄여 주세요.','error');return;}st.busy=true;st.cancel=false;const revision=st.revision,signature=st.sourceSignature;root.querySelectorAll('input,select,button,textarea').forEach(el=>{if(!el.hasAttribute?.('data-fold15')&&!el.hasAttribute?.('data-fold-all15'))el.disabled=true;});$('ad13Cancel').disabled=false;$('ad13Progress').value=0;$('ad13ProgressText').textContent='기준계획 계산 중…';refreshStale();
@@ -16099,7 +16225,7 @@ function csvText(){const r=getExport(),x=r.selectedRun||selectRun();if(x.run.sta
 function jsonData(){const r=getExport();return {schema:r.schema,engineVersion:E.version,createdAt:r.createdAt,timeBasis:{unit:'work_hour',hoursPerDay:8,timezone:'browser_local',calendar:r.snapshot.settings},execution:r.execution,screening:r.screening,input:r.snapshot,reference:r.reference,baseline:r.baseline,comparison:r.candidates.map(({id,name,policyIds,stats,paired})=>({id,name,policyIds,stats,paired})),selected:r.selectedRun||selectRun(),interpretation:['P80은 입력 가정에 따른 모의 시행 분위수이며 신뢰구간이 아닙니다.','선택 공정표는 한 시행의 일관된 결과입니다.','CSV는 달력 표시용 결과이며 정확한 사건·중단·배정 정보는 이 JSON을 사용합니다.']};}
 function reportHTML(){const r=getExport(),x=r.selectedRun||selectRun();return '<!DOCTYPE html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Adaptive 공정 비교 보고서</title><style>'+($('ad13Style')?.textContent||'')+'body{margin:24px;background:#f7f8fa}.ad13{max-width:1280px;margin:auto}.ad13scroll{max-height:none}@media print{.ad13scroll{overflow:visible}.ad13 table{white-space:normal}button{display:none}}</style><body><main class="ad13"><h1>현장 사건 · 조건부 대응 비교</h1><p>'+esc(r.createdAt)+' · '+esc(x.candidateName)+' · 시행 '+(x.iteration+1)+'</p><div class="ad13note">'+esc($('ad13PlanInfo').textContent)+'<br>모든 수치는 입력 가정에 따른 시뮬레이션 결과입니다. 외부 현장 조치를 실행하지 않습니다.</div><div class="card"><h3>대안 비교</h3><div class="ad13scroll">'+$('ad13Comparison').innerHTML+($('ad15MultiResults')?.innerHTML||'')+'</div></div><div class="card">'+gantt(x.run,r.reference,r.snapshot)+'<div class="ad13scroll">'+$('ad13Rows').innerHTML+'</div></div><div class="card"><h3>정책 판단 이력</h3>'+historyTable(x.run,r.snapshot)+'<h3>원인 추적</h3>'+traceTable(x.run,r.snapshot)+'<h3>자재 입출고</h3>'+ledgerTable(x.run,r.snapshot)+'</div><div class="card"><h3>입력 가정</h3><ul>'+r.snapshot.assumptions.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><p>8시간 작업달력, 물리적 선후행·공유자원·입력 착수조건을 반영합니다. 자원 중단 중 점유 유지, 음수 lag 보수 처리, 대응 효과는 사용자 가정입니다.</p></div></main></body></html>';}
 function download(name,content,type){const url=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);}
-async function action(k){if(st.busy&&k!=='cancel')return;if(k==='cancel'){st.cancel=true;if(st.workerCancel)st.workerCancel();return;}if(k==='sync'){install(fromParent(),'parent');return;}if(k==='demo'){install(demo(),'demo');return;}if(k==='import'){$('ad13File').click();return;}if(k==='saveInput'){download('SA_Adaptive_Input.json',JSON.stringify(st.input,null,2),'application/json');return;}if(k==='run'){await run();return;}if(k==='validate'){validation();return;}if(k==='next'||k==='prev'){const pages=['inputs','events','policies','run','results'];step(pages[Math.max(0,Math.min(4,pages.indexOf(st.step)+(k==='next'?1:-1)))]);return;}if(k==='csv'){download('SA_Adaptive_Schedule.csv',csvText(),'text/csv;charset=utf-8');return;}if(k==='json'){download('SA_Adaptive_Result.json',JSON.stringify(jsonData(),null,2),'application/json');return;}if(k==='report'){download('SA_Adaptive_Report.html',reportHTML(),'text/html;charset=utf-8');return;}if(k==='addResource')st.input.resources.push({id:id('RESOURCE',st.input.resources),capacity:1,from:st.input.settings.asOf,until:null,capability:'분류 입력'});else if(k==='addMaterial')st.input.materials.push({id:id('MATERIAL',st.input.materials),stock:0});else if(k==='addEvent')st.input.events.push({id:id('E',st.input.events),name:'새 현장 사건',enabled:true,type:'MATERIAL_DELAY',probability:1,start:st.input.settings.asOf,observe:st.input.settings.asOf,duration:[8,16,24],targets:st.input.tasks[0]?[st.input.tasks[0].id]:[],resource:'',material:'',quantity:0,commonCause:'',note:''});else if(k==='addPolicy')st.input.policies.push(newPolicy(id('P',st.input.policies)));else if(k==='addTaskMaterial'){const t=st.input.tasks.find(t=>t.id===st.selectedTask);if(!t)throw Error('작업을 먼저 선택하세요.');if(!st.input.materials.length)throw Error('아래에서 자재를 먼저 추가하세요.');t.materials.push({id:st.input.materials[0].id,qty:0});}else return;stale();render();}
+async function action(k){if(st.busy&&k!=='cancel')return;if(k==='cancel'){st.cancel=true;if(st.workerCancel)st.workerCancel();return;}if(k==='sync'){install(fromParent(),'parent');return;}if(k==='demo'){install(demo(),'demo');return;}if(k==='import'){$('ad13File').click();return;}if(k==='saveInput'){download('SA_Adaptive_Input.json',JSON.stringify(st.input,null,2),'application/json');return;}if(k==='run'){await run();return;}if(k==='validate'){validation();return;}if(k==='next'||k==='prev'){const pages=['inputs','events','policies','run','results'];step(pages[Math.max(0,Math.min(4,pages.indexOf(st.step)+(k==='next'?1:-1)))]);return;}if(k==='csv'){if(window.SA_RESULT_CENTER13)return window.SA_RESULT_CENTER13.exportFile('schedule');download('SA_Adaptive_Schedule.csv',csvText(),'text/csv;charset=utf-8');return;}if(k==='json'){if(window.SA_RESULT_CENTER13)return window.SA_RESULT_CENTER13.exportFile('json');download('SA_Adaptive_Result.json',JSON.stringify(jsonData(),null,2),'application/json');return;}if(k==='report'){if(window.SA_RESULT_CENTER13)return window.SA_RESULT_CENTER13.exportFile('report');download('SA_Adaptive_Report.html',reportHTML(),'text/html;charset=utf-8');return;}if(k==='addResource')st.input.resources.push({id:id('RESOURCE',st.input.resources),capacity:1,from:st.input.settings.asOf,until:null,capability:'분류 입력'});else if(k==='addMaterial')st.input.materials.push({id:id('MATERIAL',st.input.materials),stock:0});else if(k==='addEvent')st.input.events.push({id:id('E',st.input.events),name:'새 현장 사건',enabled:true,type:'MATERIAL_DELAY',probability:1,start:st.input.settings.asOf,observe:st.input.settings.asOf,duration:[8,16,24],targets:st.input.tasks[0]?[st.input.tasks[0].id]:[],resource:'',material:'',quantity:0,commonCause:'',note:''});else if(k==='addPolicy')st.input.policies.push(newPolicy(id('P',st.input.policies)));else if(k==='addTaskMaterial'){const t=st.input.tasks.find(t=>t.id===st.selectedTask);if(!t)throw Error('작업을 먼저 선택하세요.');if(!st.input.materials.length)throw Error('아래에서 자재를 먼저 추가하세요.');t.materials.push({id:st.input.materials[0].id,qty:0});}else return;stale();render();}
 root.addEventListener('click',e=>{const el=e.target.closest('button');if(!el||el.disabled)return;try{if(el.dataset.adStep){step(el.dataset.adStep);return;}if(el.dataset.adTask){st.selectedTask=el.dataset.adTask;renderTaskList();renderTask();return;}if(el.dataset.adSelect){st.selected=el.dataset.adSelect;renderSelected();return;}if(el.dataset.adDelete){if(st.busy)return;const parts=el.dataset.adDelete.split('.');let x=st.input;for(const k of parts.slice(0,-1))x=x[k];x.splice(Number(parts.at(-1)),1);stale();render();return;}if(el.dataset.adAction)Promise.resolve(action(el.dataset.adAction)).catch(err=>notice(err.message,'error'));}catch(err){notice(err.message,'error');}});
 root.addEventListener('change',e=>{try{if(e.target.dataset.adPath){change(e.target);const F=window.SA_V13_INPUT,p=e.target.dataset.adPath.split('.'),s=st.input;if(F){if(['tasks','events'].includes(p[0])){const o=s[p[0]][Number(p[1])];F.lock(o,p[2]);if(e.target.type==='datetime-local'&&['actualStart','actualFinish','resumeAt'].includes(p[2]))o[p[2]+'Date13']=e.target.value||'';if(p[0]==='events'&&p[2]==='duration'){o.durationBasis12='remaining';o.remainingAsOf13=F.asOf(s);}}F.prepare(s,{});render();window.SA_V12?.onInput();}}else if(e.target.id==='ad13Selected'){st.selected=e.target.value;renderSelected();}else if(e.target.id==='ad13Percentile'){st.percentile=Number(e.target.value);renderSelected();}}catch(err){notice(err.message,'error');render();}});
 $('ad13TaskSearch').addEventListener('input',renderTaskList);
@@ -16360,7 +16486,7 @@ function normalize(input,options={}){
  const v=E.validate(s);if(v.errors.length)throw Error(v.errors.join('\n'));
  return {snapshot:s,warnings:[...new Set([...warnings,...v.warnings])],engine:E.version};
 }
-function candidates(s){const out=[{id:'none',name:'무대응',policyIds:[]}],ps=s.policies.filter(p=>p.enabled!==false);for(const p of ps)out.push({id:p.id,name:p.name,policyIds:[p.id]});if(s.settings.pairwise)for(let i=0;i<ps.length;i++)for(let j=i+1;j<ps.length;j++)out.push({id:'pair:'+JSON.stringify([ps[i].id,ps[j].id]),name:ps[i].name+' + '+ps[j].name,policyIds:[ps[i].id,ps[j].id]});if(s.settings.bundle&&ps.length>1&&!out.some(c=>c.policyIds.length===ps.length))out.push({id:'bundle',name:'전체 대응 조합',policyIds:ps.map(p=>p.id)});return out;}
+function candidates(s){const out=[{id:'none',name:'대응 없음 (현 상태)',policyIds:[]}],ps=s.policies.filter(p=>p.enabled!==false);for(const p of ps)out.push({id:p.id,name:p.name,policyIds:[p.id]});if(s.settings.pairwise)for(let i=0;i<ps.length;i++)for(let j=i+1;j<ps.length;j++)out.push({id:'pair:'+JSON.stringify([ps[i].id,ps[j].id]),name:ps[i].name+' + '+ps[j].name,policyIds:[ps[i].id,ps[j].id]});if(s.settings.bundle&&ps.length>1&&!out.some(c=>c.policyIds.length===ps.length))out.push({id:'bundle',name:'전체 대응 조합',policyIds:ps.map(p=>p.id)});return out;}
 function interval(values,p=.8){
  const a=values.slice().sort((x,y)=>x-y),n=a.length;if(!n)return {low:null,high:null,width:null};
  const spread=1.96*Math.sqrt(n*p*(1-p)),lo=a[Math.max(0,Math.floor(n*p-spread)-1)],hi=a[Math.min(n-1,Math.ceil(n*p+spread)-1)];
@@ -16534,7 +16660,7 @@ const current=()=>A.state.input;
 const fingerprint=()=>JSON.stringify(current());
 function options(){return {scope:$('v12Scope').value,eventId:$('v12Event').value,unknownPolicy:$('v12Unknown').value,occurrence:$('v12Occurrence').value,multCap:$('v12Cap').value===''?null:Number($('v12Cap').value)};}
 function step(n){state.step=Math.max(1,Math.min(4,Number(n)));root.querySelectorAll('[data-v12-page]').forEach(e=>e.hidden=Number(e.dataset.v12Page)!==state.step);root.querySelectorAll('[data-v12-step]').forEach(e=>{const on=Number(e.dataset.v12Step)===state.step;e.classList.toggle('active',on);e.setAttribute('aria-current',on?'step':'false');});}
-function dirty(){if(state.result){state.stale=true;$('v12Status').textContent='入力変更 · 재계산 필요'.replace('入力変更','입력 변경');}state.calibration=null;}
+function dirty(){window.SA_RESULT_CENTER13?.syncStatus();if(state.result){state.stale=true;$('v12Status').textContent='入力変更 · 재계산 필요'.replace('入力変更','입력 변경');}state.calibration=null;window.SA_RESULT_CENTER13?.syncStatus();}
 function inputCell(path,label,value,type='text',opts){return '<label>'+esc(label)+(opts?'<select data-v12-path="'+esc(path)+'">'+Object.entries(opts).map(([v,t])=>'<option value="'+esc(v)+'"'+(String(value)===v?' selected':'')+'>'+esc(t)+'</option>').join('')+'</select>':'<input data-v12-path="'+esc(path)+'" type="'+type+'" value="'+esc(value??'')+'" '+(type==='number'?'step="any"':type==='datetime-local'?'step="1"':'')+'>')+'</label>';}
 function renderTasks(){
  const s=current(),old=$('v12Task').value;$('v12Task').innerHTML=s.tasks.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.id+' · '+t.name)+'</option>').join('');if(s.tasks.some(t=>t.id===old))$('v12Task').value=old;taskEditor();
@@ -16602,7 +16728,7 @@ function load(){const s=parentInput();if(current().tasks.length){state.pending=s
 function merge(){const s=state.pending,old=current();for(const t of s.tasks){const prev=old.tasks.find(x=>x.id===t.id);if(prev)for(const k of ['status','progress','actualStart','actualFinish','remainingDuration','resumeAt','design','inspection','assumedReadiness','timeBasis','materials','actualSource','auto13','anchorStart13','anchorDate13','actualStartDate13','actualFinishDate13','resumeAtDate13'])if(prev[k]!==undefined)t[k]=C(prev[k]);}for(const e of s.events){const prev=old.events.find(x=>x.source?.key&&x.source.key===e.source?.key);if(prev){const newSource=e.source;Object.assign(e,C(prev));e.source=newSource;}}s.policies=C(old.policies);s.settings={...s.settings,...old.settings};for(const k of ['automation13','siteEvidence13','weather15'])if(old[k])s[k]=C(old[k]);install(s,'v13-merged');state.pending=null;$('v12ImportReview').innerHTML='';msg('작업 상태·잔여기간·동일 근거 사건·대응안을 유지했습니다. 달라진 작업·자원 ID는 실행 전 검증됩니다.');}
 function download(name,data,type='application/json'){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);}
 const wait=()=>new Promise(r=>setTimeout(r,0));
-function setBusy(b){state.busy=b;A.state.busy=b;root.querySelectorAll('input,select,button').forEach(el=>el.disabled=b||el.dataset.v13Readonly==='1');root.querySelector('[data-v12="cancel"]').disabled=!b;$('v12Status').textContent=b?'계산 중':state.stale?'재계산 필요':state.result?'계산 완료':'입력 준비';}
+function setBusy(b){state.busy=b;A.state.busy=b;root.querySelectorAll('input,select,button').forEach(el=>el.disabled=b||el.dataset.v13Readonly==='1');root.querySelector('[data-v12="cancel"]').disabled=!b;$('v12Status').textContent=b?'계산 중':state.stale?'재계산 필요':state.result?'계산 완료':'입력 준비';window.SA_RESULT_CENTER13?.syncStatus();}
 async function phase(s,cs,start,count,ref,label){
  if(state.cancel)throw Error('중단');
  if(typeof Worker!=='undefined')try{return (await A.runWorker(s,ref,cs,start,count,(done,total)=>{$('v12ProgressText').textContent=label+' · '+done+'/'+total+' 대안 계산';})).trials;}catch(e){if(state.cancel||e.message==='CANCELLED')throw Error('중단');msg('병렬 계산을 사용할 수 없어 같은 표본으로 순차 계산합니다.');}
@@ -16638,8 +16764,8 @@ async function run(){
 }
 function archive(r){return {schema:'SA_FORECAST_ARCHIVE/1.2',id:r.id,createdAt:r.createdAt,engine:r.engine,input:r.input,forecasts:r.forecastsByCandidate.none,forecastsByCandidate:r.forecastsByCandidate,candidates:r.candidates.map(({id,name,policyIds})=>({id,name,policyIds})),warnings:r.warnings,iterations:r.iterations,converged:r.converged,calibration:r.input.calibration12||null};}
 function requireResult(){if(!state.result)throw Error('먼저 계산하세요.');if(state.stale||state.result.sourceFingerprint!==fingerprint())throw Error('입력 변경: 다시 계산한 뒤 내보내세요.');return state.result;}
-function selectedRun(){const r=requireResult(),c=r.candidates.find(c=>c.id===state.selected)||r.candidates[0],q=c.stats.p80;if(q===null)throw Error('선택 대안의 P80이 미완료 시행을 포함합니다. 완료 공정표를 만들 수 없습니다.');const distance=t=>c.stats.p80Clock!==null&&Number.isFinite(t.completionClockHours)?Math.abs(t.completionClockHours-c.stats.p80Clock):Math.abs(t.completion-q);const t=c.trials.filter(t=>t.status==='completed').reduce((a,b)=>distance(b)<distance(a)?b:a);const run=E.simulate(r.input,E.makeWorld(r.input,t.iteration),c.policyIds,{reference:r.reference,detailed:true});if(run.status!=='completed')throw Error('완료 공정표 재현 실패');return {candidate:c,iteration:t.iteration,run};}
-function renderResults(){const r=state.result;if(!r)return;const none=r.candidates.find(c=>c.id==='none'),best=r.candidates[0],cal=E.calendar(r.input.settings),date=h=>h==null?'산정 불가':cal.stamp(h,'finish').replace('T',' '),deadline=r.input.settings.deadline;
+function selectedRun(){if(window.SA_RESULT_CENTER13)return window.SA_RESULT_CENTER13.selectedRun();const r=requireResult(),c=r.candidates.find(c=>c.id===state.selected)||r.candidates[0],q=c.stats.p80;if(q===null)throw Error('선택 대안의 P80이 미완료 시행을 포함합니다. 완료 공정표를 만들 수 없습니다.');const distance=t=>c.stats.p80Clock!==null&&Number.isFinite(t.completionClockHours)?Math.abs(t.completionClockHours-c.stats.p80Clock):Math.abs(t.completion-q);const t=c.trials.filter(t=>t.status==='completed').reduce((a,b)=>distance(b)<distance(a)?b:a);const run=E.simulate(r.input,E.makeWorld(r.input,t.iteration),c.policyIds,{reference:r.reference,detailed:true});if(run.status!=='completed')throw Error('완료 공정표 재현 실패');return {candidate:c,iteration:t.iteration,run};}
+function renderResults(){if(window.SA_RESULT_CENTER13){window.SA_RESULT_CENTER13.render();renderArchiveOptions();return;}const r=state.result;if(!r)return;const none=r.candidates.find(c=>c.id==='none'),best=r.candidates[0],cal=E.calendar(r.input.settings),date=h=>h==null?'산정 불가':cal.stamp(h,'finish').replace('T',' '),deadline=r.input.settings.deadline;
  $('v12ResultSummary').innerHTML='<div class="v12kpis"><div>입력 근거<strong>'+r.warnings.length+'개 가정/확인사항</strong></div><div>계산 안정성<strong>'+(r.converged?'표본오차 기준 충족':'반복 한도 · 미수렴')+'</strong></div><div>실적 검증<strong>별도 평가 필요</strong></div><div>무대응 완료 P80<strong>'+esc(none.stats.p80Clock==null?date(none.stats.p80):new Date(cal.parse(r.input.settings.start)+none.stats.p80Clock*3600000).toISOString().slice(0,19).replace('T',' '))+'</strong>'+(deadline==null?'최초 준공일 미입력':'최초 계획 대비 '+fmt(none.stats.p80==null?null:(none.stats.p80-deadline)/8)+' 작업일')+'</div></div><p>우선 검토: '+esc(best.name)+' · 입력한 후보 내 비교입니다. 비용·대응효과가 추정이면 경제성도 조건부입니다.</p>'+(r.warnings.length?'<details><summary>입력 가정 '+r.warnings.length+'건</summary><ul>'+r.warnings.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>':'');
  $('v12Results').innerHTML=table(['대안','완료율','P50 작업일','P80 작업일','P80 표본오차 폭(h)','동일 상황 평균 절감(h)','절감 평균 근사95% 구간(h)','악화 비율','입력 비용','변경량'],r.candidates.map(c=>[c.name,fmt(c.stats.completionRate*100)+'%',fmt(c.stats.p50==null?null:c.stats.p50/8),fmt(c.stats.p80==null?null:c.stats.p80/8),fmt(c.mc.width),fmt(c.paired.mean),fmt(c.paired.low)+' ~ '+fmt(c.paired.high),fmt(c.paired.worse*100)+'%',fmt(c.stats.avgCost),fmt(c.stats.avgDisruption)]))+'<p>절감 평균은 양쪽 모두 완료한 시행의 비교입니다. 미완료 쌍은 제외 사실을 기록하며 완료율에서 확인합니다. P80 표본오차는 현실 예측오차가 아닙니다.</p>';
  if(r.sensitivity.length){const base=r.sensitivity.find(x=>x.id==='base'),wins=r.sensitivity.filter(x=>x.winner===best.id).length;
@@ -16647,8 +16773,8 @@ function renderResults(){const r=state.result;if(!r)return;const none=r.candidat
  }else $('v12Robust').textContent='가정 변화 분석을 실행하지 않았습니다.';
  $('v12Candidate').innerHTML=r.candidates.map(c=>'<option value="'+esc(c.id)+'"'+(c.id===state.selected?' selected':'')+'>'+esc(c.name)+'</option>').join('');renderSchedule();renderArchiveOptions();
 }
-function renderSchedule(){try{const {run,candidate,iteration}=selectedRun(),s=state.result.input,cal=E.calendar(s.settings);$('v12Schedule').innerHTML='<p>'+esc(candidate.name)+' · 시행 '+(iteration+1)+' · 선후행/자원을 만족하는 한 일정</p>'+table(['작업','착수','완료/후속작업 가능','시각 근거 / 경과 대기 종료','자원','원인'],run.rows.map(t=>[t.id+' '+t.name,t.startDate13||cal.stamp(t.start),t.actualFinishDate13||t.elapsedFinish||cal.stamp(t.finish,'finish'),t.startBasis13==='estimated_anchor'?'착수 미확인 · 잔여작업 계산 기준':t.elapsedFinish||'',t.resources.join(';'),t.cause_ids.join(';')]));}catch(e){$('v12Schedule').textContent=e.message;}}
-function exportCSV(){const {run,candidate,iteration}=selectedRun(),r=state.result,cal=E.calendar(r.input.settings),quote=v=>'"'+String(v??'').replace(/^[=+@\-\t\r]/,"'$&").replace(/"/g,'""')+'"';const rows=[['task_id','task_name','start_datetime','finish_datetime','elapsed_finish_datetime','resource','zone_ref','cause_ids','scenario','iteration','engine_version','start_basis','as_of_datetime'],...run.rows.map(t=>[t.id,t.name,t.startDate13||cal.stamp(t.start),t.actualFinishDate13||t.elapsedFinish||cal.stamp(t.finish,'finish'),t.elapsedFinish||'',t.resources.join(';'),t.zone,t.cause_ids.join(';'),candidate.name,iteration+1,E.version,t.startBasis13||'simulated',F.asOf(r.input)])];download('SA_V13_수정공정표.csv','\ufeff'+rows.map(r=>r.map(quote).join(',')).join('\r\n'),'text/csv;charset=utf-8');}
+function renderSchedule(){if(window.SA_RESULT_CENTER13)return window.SA_RESULT_CENTER13.render();try{const {run,candidate,iteration}=selectedRun(),s=state.result.input,cal=E.calendar(s.settings);$('v12Schedule').innerHTML='<p>'+esc(candidate.name)+' · 시행 '+(iteration+1)+' · 선후행/자원을 만족하는 한 일정</p>'+table(['작업','착수','완료/후속작업 가능','시각 근거 / 경과 대기 종료','자원','원인'],run.rows.map(t=>[t.id+' '+t.name,t.startDate13||cal.stamp(t.start),t.actualFinishDate13||t.elapsedFinish||cal.stamp(t.finish,'finish'),t.startBasis13==='estimated_anchor'?'착수 미확인 · 잔여작업 계산 기준':t.elapsedFinish||'',t.resources.join(';'),t.cause_ids.join(';')]));}catch(e){$('v12Schedule').textContent=e.message;}}
+function exportCSV(){if(window.SA_RESULT_CENTER13)return window.SA_RESULT_CENTER13.exportFile("schedule");const {run,candidate,iteration}=selectedRun(),r=state.result,cal=E.calendar(r.input.settings),quote=v=>'"'+String(v??'').replace(/^[=+@\-\t\r]/,"'$&").replace(/"/g,'""')+'"';const rows=[['task_id','task_name','start_datetime','finish_datetime','elapsed_finish_datetime','resource','zone_ref','cause_ids','scenario','iteration','engine_version','start_basis','as_of_datetime'],...run.rows.map(t=>[t.id,t.name,t.startDate13||cal.stamp(t.start),t.actualFinishDate13||t.elapsedFinish||cal.stamp(t.finish,'finish'),t.elapsedFinish||'',t.resources.join(';'),t.zone,t.cause_ids.join(';'),candidate.name,iteration+1,E.version,t.startBasis13||'simulated',F.asOf(r.input)])];download('SA_V13_수정공정표.csv','\ufeff'+rows.map(r=>r.map(quote).join(',')).join('\r\n'),'text/csv;charset=utf-8');}
 function renderArchiveOptions(){const a=state.archive;if(!a)return;$('v12ObservedCandidate').innerHTML=a.candidates.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');}
 function renderVerification(){const v=state.verification;if(!v){$('v12Verification').textContent=state.archive?'예측 기록 '+state.archive.id+' 준비됨. 실제 시행한 대안을 선택하고 검증 실적을 불러오세요.':'예측 기록을 먼저 불러오세요.';return;}
  $('v12Verification').innerHTML='<p>'+esc(v.runId)+' · '+(v.reconstructed?'과거 재구성 · 정식 예측성능과 분리':'저장된 예측과 비교')+'</p>'+table(['검증 작업 수','착수 MAE(h)','완료 MAE(h)','편향(h)','중앙80% 구간 포함률','평균 구간 폭(h)','P80 이내 완료','단순 기준 MAE(h)'],[[v.n,fmt(v.startMAE),fmt(v.mae),fmt(v.bias),fmt(v.coverage80==null?null:v.coverage80*100)+'%',fmt(v.meanWidth),fmt(v.p80Rate==null?null:v.p80Rate*100)+'%',fmt(v.baselineMAE)]])+'<p>'+esc(v.warning)+' 표본 수와 현장 구성을 함께 판단하세요.</p>'+table(['작업','완료 예측오차(h)','구간 내 실제 완료'],v.pairs.map(p=>[p.id,fmt(p.error),p.covered?'포함':'벗어남']))+'<p>'+v.errors.map(esc).join(' · ')+'</p><button data-v12="saveValidation">검증 결과 JSON</button>';
@@ -16669,8 +16795,8 @@ async function action(k){
  if(k==='next')return step(state.step+1);if(k==='prev')return step(state.step-1);if(k==='run')return run();if(k==='csv')return exportCSV();
  if(k==='saveInput')return download('SA_V13_Input.json',JSON.stringify({schema:'SA_V13_CONFIGURATION/1.2',input:current(),options:options(),settings12:{max:Number($('v12Max').value),tolerance:Number($('v12Tolerance').value),spread:Number($('v12Spread').value),sensitivity:$('v12Sensitivity').checked,objective:$('v12Objective').value,deadline:$('v12Deadline').value}},null,2));
  if(k==='importInput')return $('v12JSONFile').click();if(k==='loadArchive')return $('v12ArchiveFile').click();
- if(k==='resultJSON'){const r=requireResult();return download('SA_V13_Result.json',JSON.stringify({...r,selected:state.selected,verification:state.verification,interpretation:['가정 내 모의 결과이며 실제 정확도 보장이 아닙니다.','기간 단위: 작업시간 / elapsed 표기만 실제 경과시간.','가정 변화 유지비율은 현실 성공확률이 아닙니다.']},null,2));}
- if(k==='archive'){const r=requireResult();return download('SA_V13_Forecast_'+r.id+'.json',JSON.stringify(archive(r),null,2));}
+ if(k==='resultJSON'){if(window.SA_RESULT_CENTER13)return window.SA_RESULT_CENTER13.exportFile('json');const r=requireResult();return download('SA_V13_Result.json',JSON.stringify({...r,selected:state.selected,verification:state.verification,interpretation:['가정 내 모의 결과이며 실제 정확도 보장이 아닙니다.','기간 단위: 작업시간 / elapsed 표기만 실제 경과시간.','가정 변화 유지비율은 현실 성공확률이 아닙니다.']},null,2));}
+ if(k==='archive'){if(window.SA_RESULT_CENTER13)return window.SA_RESULT_CENTER13.exportFile('archive');const r=requireResult();return download('SA_V13_Forecast_'+r.id+'.json',JSON.stringify(archive(r),null,2));}
  if(k==='saveValidation')return download('SA_V13_Validation.json',JSON.stringify(state.verification,null,2));
  if(k==='actualTemplate')return download('SA_V13_현재실적_양식.csv','\ufefftask_id,status,actual_start,actual_finish,progress_percent,remaining_min_hours,remaining_mode_hours,remaining_max_hours,design,inspection,resume_at,known_at,source\r\n','text/csv');
  if(k==='verifyTemplate')return download('SA_V13_검증실적_양식.csv','\ufefftask_id,actual_start,actual_finish,known_at,source\r\n','text/csv');
@@ -16714,6 +16840,26 @@ onInput();step(1);
 })();
 
 </script>
+<style id="simDevelop6">
+/* [3번 탭 정리] A 헤더 압축: 상태 4칸을 한 줄 칩으로, 단계 버튼 여백 축소 */
+#tab5 .v13context{margin:0 0 10px}#tab5 .v13context>div{padding:7px 12px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+#tab5 .v13context small{font-size:10px;letter-spacing:.04em}#tab5 .v13context b{font-size:12.5px}#tab5 .v13context span{font-size:11px;color:#647080}
+#tab5 .v12steps{margin-bottom:10px}#tab5 #simGuide6{margin-bottom:10px}
+/* F 예전 상태줄 숨김 */
+#tab5.v12enabled #t1Subtabs,#tab5.v12enabled #t1SubHint,#tab5.v12enabled #liveCaption1{display:none!important}
+/* C 대상 작업 id 나열 표 가로 넘침 */
+#v12Priority table{white-space:normal}#v12Priority td:nth-child(2){max-width:380px;word-break:break-all;font-size:11px;color:#647080}
+/* 사건 카드 목록 */
+.evtList6{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin:8px 0 12px}
+.evtList6>button{text-align:left;padding:9px 11px;border:1px solid #dde1e7;border-radius:8px;background:#fff;cursor:pointer;font:inherit;color:#242a32}
+.evtList6>button.sel{border-color:#303946;box-shadow:inset 0 0 0 1px #303946}.evtList6>button.off{opacity:.5}
+.evtList6 b{display:block;font-size:13px;margin-bottom:3px}.evtList6 small{color:#647080;font-size:11.5px}
+.evtList6 .st{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10.5px;margin-right:5px;border:1px solid #cbd1db}
+.evtList6 .st.active{border-color:#b54c46;color:#b54c46}.evtList6 .st.resolved{color:#647080}
+.v12 details.simFold6{border:1px solid #dce0e6;border-radius:9px;padding:10px 14px;margin:12px 0}.v12 details.simFold6>summary{font-weight:600;cursor:pointer}
+/* 결과 WBS 간트 */
+#rc13Wbs{overflow:auto;max-height:560px;border:1px solid #dde1e7;border-radius:8px;margin:10px 0;background:#fff}
+</style>
 <script id="scenarioCompare6">
 /* [3번 탭] 시나리오 비교 — 같은 공정표·같은 엔진(SA_ADAPTIVE13_ENGINE)으로 조건만 바꾼 5개 안을 나란히 본다.
    확률 분포(몬테카를로 상세)는 ③④에 그대로 있고, 여기는 의사결정용 요약. */
@@ -16723,7 +16869,8 @@ onInput();step(1);
   card.innerHTML=`<h3>시나리오 비교 — 조건만 바꿔 준공일을 나란히 봅니다</h3>
     <p>회의에서 나오는 질문 순서대로: 체크한 리스크가 다 터지면? 다 해소되면? 우기로 N일 서면? 병목 작업조를 하나 더 붙이면? 같은 공정표·같은 달력·같은 엔진으로 계산하며, 리스크 확률·기간은 2번 탭 체크리스트와 유형별 기본 분포표(출처 표기)를 그대로 씁니다.</p>
     <div class="v12grid"><label>우기 작업중지 (일, 지금부터)<input id="scnRainDays" type="number" min="1" max="60" value="10"></label><label>시행 수 (시나리오당)<input id="scnIters" type="number" min="10" max="300" value="60"></label><label>작업조 +1 대상 자원<select id="scnRes"></select></label></div>
-    <div class="v12buttons"><button type="button" class="v12primary" id="scnRun">5개 시나리오 실행</button></div>
+    <div class="v12buttons"><button type="button" class="v12primary" id="scnRun">5개 시나리오 실행</button><button type="button" id="scnPolicyZone">대응안 추가 · 영향 구역 우선</button><button type="button" id="scnPolicyBackup">대응안 추가 · 예비 작업조 투입</button><button type="button" id="scnPolicyExpedite">대응안 추가 · 납품·승인 앞당기기(지연형 사건만)</button></div>
+    <p class="ad13muted">대응안은 ③ 통합 계산에서 "대응 없음"과 나란히 비교됩니다. 추가 후 ① 상세 편집 › 대응안에서 비용·조건을 고칠 수 있습니다.</p>
     <div id="scnStatus" class="ad13muted"></div><div id="scnOut"></div>`;
   host.insertBefore(card, host.querySelector('.card'));
   const $=id=>document.getElementById(id), clone=x=>JSON.parse(JSON.stringify(x)), wait=()=>new Promise(r=>setTimeout(r,0));
@@ -16769,6 +16916,223 @@ onInput();step(1);
     st.textContent=`완료 — 기준안 P80 ${f(base.p80)} · 최악 ${f(rows[1].stats.p80)} · 최선 ${f(rows[2].stats.p80)}`+((opt.occurrence||s0.settings.occurrence)==='all'?' · 주의: 분석 설정이 "모든 사건 발생"이라 기준안 = 최악입니다(① 현재 공정표와 분석 기준에서 확률 발생으로 바꾸면 달라집니다)':'');
   }
   $('scnRun').addEventListener('click',run);
+  // 대응안 프리셋 — 엔진 정책 스키마(newPolicy 기본값과 동일 필드)로 추가한다
+  const basePolicy=(id,name,eventId)=>({id,name,enabled:true,eventId,action:'prioritize_zone',zone:'',fromResource:'',toResource:'',threshold:8,slackMax:null,cooldown:8,minActive:8,mobilize:0,cost:0,holdCost:0,priority:1,reduction:8,deadline:8000});
+  function addPolicies(kind){
+    const A=window.SA_ADAPTIVE13, s=A&&A.state.input, st=$('scnStatus'); if(!s||!s.tasks.length){ st.textContent='먼저 공정표를 가져오세요.'; return; }
+    const evs=s.events.filter(e=>e.enabled!==false&&e.status12!=='resolved'); if(!evs.length){ st.textContent='대응할 리스크(사건)가 없습니다 — 2번 탭 체크리스트에서 △/✗ 를 확정하세요.'; return; }
+    let n=0;
+    evs.forEach((e,i)=>{
+      if(kind==='expedite'){ if(['DURATION_MULTIPLIER','ADDITIONAL_WORK'].includes(e.type)) return; const id='PX_'+e.id; if(s.policies.some(p=>p.id===id)) return;
+        const mode=Array.isArray(e.duration)?Number(e.duration[1])||8:8; s.policies.push({...basePolicy(id,'앞당기기: '+e.name.slice(0,40),e.id),action:'expedite_release',reduction:Math.max(1,Math.round(mode/2)),mobilize:8,priority:i+1}); n++; }
+      else if(kind==='backup'){ const id='PB_'+e.id; if(s.policies.some(p=>p.id===id)) return; const t=s.tasks.find(t=>(e.targets||[]).includes(t.id)&&(t.resources||[]).length); if(!t) return;
+        const from=t.resources[0], src=s.resources.find(r=>r.id===from); if(!src) return; const to=from+'_예비';
+        if(!s.resources.some(r=>r.id===to)) s.resources.push({id:to,capacity:1,from:8,until:null,capability:src.capability||from});   // 예비 작업조: 8시간 뒤 투입 가능(가정)
+        s.policies.push({...basePolicy(id,'예비 작업조: '+from+' → '+to+' ('+e.name.slice(0,24)+')',e.id),action:'backup_resource',fromResource:from,toResource:to,mobilize:8,priority:i+1}); n++; }
+      else{ const id='PZ_'+e.id; if(s.policies.some(p=>p.id===id)) return; const t=s.tasks.find(t=>(e.targets||[]).includes(t.id)); if(!t||!t.zone) return;
+        s.policies.push({...basePolicy(id,'구역 우선: '+t.zone+' ('+e.name.slice(0,30)+')',e.id),action:'prioritize_zone',zone:t.zone,priority:i+1}); n++; }
+    });
+    A.markChanged&&A.markChanged(); window.SA_V12&&window.SA_V12.onInput&&window.SA_V12.onInput();
+    st.textContent=n?`대응안 ${n}개 추가 — ③ 통합 계산을 실행하면 "대응 없음"과 비교됩니다. (비용은 0으로 두었으니 상세 편집에서 입력)`:'추가할 대응안이 없습니다(이미 추가됐거나 대상 구역 없음).';
+  }
+  $('scnPolicyExpedite').addEventListener('click',()=>addPolicies('expedite'));
+  $('scnPolicyBackup').addEventListener('click',()=>addPolicies('backup'));
+  $('scnPolicyZone').addEventListener('click',()=>addPolicies('zone'));
+})();
+</script>
+<script id="simDevelop6js">
+/* [3번 탭 정리] B ① 재배치 · C ② 사건 카드 목록·기상 접기 · D ③ 고급 설정 접기 · E1 결과 WBS 간트 */
+(function(){
+  const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const hub=$('saV12Hub'); if(!hub) return;
+  const fold=(title,els)=>{ const d=document.createElement('details'); d.className='simFold6'; d.innerHTML='<summary>'+title+'</summary>'; els.filter(Boolean).forEach(e=>d.appendChild(e)); return d; };
+  // B: ① — 공정표 카드는 버튼 + 현황표만, 나머지는 접기. 시나리오 카드는 그 뒤로.
+  const p1=hub.querySelector('[data-v12-page="1"]'); const schedCard=p1&&[...p1.querySelectorAll(':scope > .card')].find(c=>/현재 공정표와 분석 기준/.test(c.querySelector('h3')?.textContent||''));
+  if(schedCard){
+    const body=$('v12InputSummary')?$('v12InputSummary').parentElement:schedCard;   // 동업자의 카드 접기 기능이 본문을 래퍼로 감싸 두므로 그 안에서 작업한다
+    const kids=[...body.children]; const keep=new Set([body.querySelector(':scope > h3'), body.querySelector(':scope > .v12buttons'), $('v12ImportReview'), $('v12InputSummary')]);
+    const rest=kids.filter(k=>!keep.has(k));
+    body.appendChild(fold('분석 시점 · 실적 CSV · 작업별 현재 상태 수정', rest));
+    const scn=$('scnCard6'); if(scn) schedCard.after(scn);
+  }
+  // C: ② — 기상 카드 접기, 사건 카드 목록
+  const wx=hub.querySelector('details.v13weather'); if(wx) wx.removeAttribute('open');
+  const evSel=$('v12Event'); const evLabel=evSel&&evSel.closest('label');
+  if(evLabel){ const list=document.createElement('div'); list.id='evtList6'; list.className='evtList6'; evLabel.before(list);
+    const render=()=>{ const A=window.SA_ADAPTIVE13, s=A&&A.state.input; if(!s) return;
+      list.innerHTML=s.events.length?s.events.map(e=>{ const d=Array.isArray(e.duration)?e.duration:[0,0,0]; const st=e.status12==='active'?'진행 중':e.status12==='resolved'?'해소':'예상'; const p=e.status12==='active'?1:Number(e.probability)||0;
+        return `<button type="button" data-ev="${esc(e.id)}" class="${evSel.value===e.id?'sel':''}${e.enabled===false||e.status12==='resolved'?' off':''}"><b>${esc(e.name)}</b><span class="st ${e.status12||''}">${st}</span><small>확률 ${Math.round(p*100)}% · 영향 ${(d[0]/8).toFixed(1)}~${(d[2]/8).toFixed(1)}일 (대표 ${(d[1]/8).toFixed(1)}) · 대상 ${(e.targets||[]).length}개</small></button>`; }).join(''):'<div class="ad13muted">사건이 없습니다 — 2번 탭 체크리스트에서 △/✗ 를 확정하면 여기에 들어옵니다.</div>';
+      list.querySelectorAll('[data-ev]').forEach(b=>b.addEventListener('click',()=>{ evSel.value=b.dataset.ev; evSel.dispatchEvent(new Event('change',{bubbles:true})); render(); })); };
+    let t=null; window.addEventListener('sa-adaptive-render',()=>{ clearTimeout(t); t=setTimeout(render,200); }); evSel.addEventListener('change',()=>setTimeout(render,0)); render(); }
+  // D: ③ — 목표 준공일 · 발생 방식만 남기고 고급 설정 접기
+  const p3=hub.querySelector('[data-v12-page="3"]'); const grid=p3&&p3.querySelector('.v12grid');
+  if(grid){ const keepIds=new Set(['v12Deadline','v12Occurrence']); const labels=[...grid.querySelectorAll(':scope > label')]; const adv=labels.filter(l=>!keepIds.has((l.querySelector('input,select')||{}).id));
+    if(adv.length){ const inner=document.createElement('div'); inner.className='v12grid'; adv.forEach(l=>inner.appendChild(l)); grid.after(fold('고급 설정 — 분석 범위 · 우선 기준 · 반복 수 · 표본오차 · 배수 상한 · 가정 변화',[inner])); } }
+  // E1: ④ 변경 공정표 탭 — WBS 간트 (기준 점선 vs 결과 막대, 지연 작업은 임계색)
+  const g=$('rc13Gantt'); if(g){ const wrap=document.createElement('div'); wrap.id='rc13Wbs'; wrap.className='ifcGanttWrap4 wbsGantt6';
+    const bar=document.createElement('div'); bar.className='legend'; bar.style.margin='6px 0'; bar.innerHTML='<span class="gLvl4" data-scope="rc13">보기 <button type="button" class="ghost" data-glvl="0">층</button><button type="button" class="ghost active" data-glvl="1">공종</button><button type="button" class="ghost" data-glvl="2">세부 작업</button></span><span><span class="sw" style="border:1px dashed var(--border-strong);background:none;"></span>기준 계획</span><span><span class="sw" style="background:var(--gantt-bar);"></span>결과(정상)</span><span><span class="sw" style="background:var(--critical);"></span><span class="lateLbl6">결과(더 밀린 작업)</span></span>';
+    g.before(bar); g.before(wrap); g.style.display='none';
+    const store={open:null,lw:null}; let lastItems=[];
+    const rc13Opts=()=>({baseline:true,lateIsCrit:true,tick:d=>{ try{ const A=window.SA_ADAPTIVE13, s=A.state.input, cal=A.engine.calendar(s.settings); return cal.stamp(d*8).slice(5,10).replace('-','/'); }catch(e){ return d+'일'; } },emptyText:'계산 결과가 없습니다.'});
+    bar.querySelectorAll('[data-glvl]').forEach(b=>b.addEventListener('click',()=>{ bar.querySelectorAll('[data-glvl]').forEach(x=>x.classList.toggle('active',x===b)); wbsSetLevel6(store,lastItems,Number(b.dataset.glvl),()=>renderWbsGantt6(wrap,lastItems,store,rc13Opts())); }));
+    window.SA_RC13_WBS6={render(rows){ const byId=new Map((typeof IFC_GENERATED_ROWS4!=='undefined'?IFC_GENERATED_ROWS4:[]).map(r=>[r.task_id,r]));
+      lastItems=rows.map(x=>{ const src=x.input&&x.input.source||{}, ifc=byId.get(x.id)||{}; const es=Number(x.row.start)/8, ef=Number(x.row.finish)/8, bes=Number.isFinite(Number(x.baselineStartHour))?Number(x.baselineStartHour)/8:null, bef=Number.isFinite(Number(x.baselineFinishHour))?Number(x.baselineFinishHour)/8:null;
+        return {task_id:x.id,task_name:x.name,zone_ref:src.zone_ref||ifc.zone_ref||x.zone||'',source_story:src.source_story||ifc.source_story||'',ifc_element_type:src.ifc_element_type||ifc.ifc_element_type||'',resource:(x.row.resources||[]).join(';'),ES:es,EF:ef,base_ES:bes,base_EF:bef,delay:bef!==null?ef-bef:null}; }).filter(x=>Number.isFinite(x.ES)&&Number.isFinite(x.EF));
+      // '지연' 표시: 전체가 같이 밀린 몫(중앙값)은 빼고, 그보다 반나절 이상 더 밀린 작업만 강조한다 — 기준 대비 절대 지연은 툴팁·표에 있다
+      const ds=lastItems.map(x=>x.delay).filter(Number.isFinite).sort((a,b)=>a-b), med=ds.length?ds[Math.floor(ds.length/2)]:0;
+      lastItems.forEach(x=>{ x.late=Number.isFinite(x.delay)&&x.delay>med+.5; });
+      const lg=bar.querySelector('.lateLbl6'); if(lg) lg.textContent=`결과(전체 이동 ${med.toFixed(1)}일보다 더 밀림)`;
+      renderWbsGantt6(wrap,lastItems,store,rc13Opts()); }};
+  }
+})();
+</script>
+<script id="sa-result-center13">/* Result center: reads one immutable simulation snapshot; never edits input or the engine. */
+(()=>{'use strict';
+const V=window.SA_V12,A=window.SA_ADAPTIVE13,E=A?.engine,F=window.SA_V13_INPUT;
+const $=id=>document.getElementById(id),root=$('rc13Root');if(!root||!V||!E)return;
+const ui={page:'overview',percentile:.8,baseline:'reference',search:'',changedOnly:false,rowPage:0,task:'',result:null,cache:new Map()},PAGE=80;
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const finite=x=>typeof x==='number'&&Number.isFinite(x),fmt=(x,d=1)=>finite(x)?x.toLocaleString('ko-KR',{maximumFractionDigits:d}):'미확인';
+const stamp=x=>x?String(x).replace('T',' ').slice(0,16):'미확인',signed=x=>finite(x)?(x>0?'+':'')+fmt(x)+' h':'미확인';
+const clone=x=>JSON.parse(JSON.stringify(x)),state=()=>V.state,result=()=>state().result;
+const names={reference:'보통기간 기준계획',none:'대응 없음 · 동일 시행',original:'입력된 최초 일정'};
+function table(headers,rows){return '<table><thead><tr>'+headers.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+(rows.length?rows.map(a=>'<tr>'+a.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="'+headers.length+'">해당 항목이 없습니다.</td></tr>')+'</tbody></table>';}
+const badge=(s,k='')=>'<span class="rc13status '+k+'">'+esc(s)+'</span>';
+function isStale(){const r=result();return !!r&&(state().stale||r.sourceFingerprint!==JSON.stringify(A.state.input));}
+function requireResult(){if(!result())throw Error('먼저 통합 시뮬레이션을 실행하세요.');if(state().busy)throw Error('계산이 끝난 뒤 결과를 저장하세요.');if(isStale())throw Error('입력 변경: 다시 계산한 뒤 내보내세요.');return result();}
+function activeCandidate(r=result()){return r?.candidates.find(c=>c.id===state().selected)||r?.candidates[0];}
+function chooseRun(r,c,p){
+ const key=c.id+'|'+p;if(ui.result===r&&ui.cache.has(key))return ui.cache.get(key);
+ const complete=c.trials.filter(t=>t.status==='completed');
+ const clock=complete.length>0&&complete.every(t=>finite(t.completionClockHours));
+ const val=t=>t.status==='completed'?(clock?t.completionClockHours:t.completion):Infinity;
+ const quantile=E.quantile(c.trials.map(val),p);
+ if(!finite(quantile))throw Error('선택 대안의 P'+Math.round(p*100)+' 구간에 미완료 시행이 포함됩니다. 완료 일정 대신 완료율·차단 원인을 확인하세요.');
+ const t=complete.reduce((best,x)=>!best||Math.abs(val(x)-quantile)<Math.abs(val(best)-quantile)?x:best,null);
+ if(!t)throw Error('완료된 시행이 없습니다.');
+ const run=E.simulate(r.input,E.makeWorld(r.input,t.iteration),c.policyIds,{reference:r.reference,detailed:true});
+ if(run.status!=='completed')throw Error('완료 공정표 재현 실패');
+ const out={candidate:c,iteration:t.iteration,run,percentile:p,quantile,quantileBasis:clock?'elapsed_hour':'work_hour'};
+ if(ui.result===r)ui.cache.set(key,out);return out;
+}
+function selectedRun(){const r=requireResult();if(ui.result!==r){ui.result=r;ui.cache.clear();}return chooseRun(r,activeCandidate(r),ui.percentile);}
+function clockDate(h,r){if(!finite(h))return '';return new Date(E.calendar(r.input.settings).parse(r.input.settings.start)+h*3600000).toISOString().slice(0,19);}
+function workDate(h,r,edge='finish'){if(!finite(h))return '';try{return E.calendar(r.input.settings).stamp(h,edge);}catch{return '';}}
+function percentileDate(c,r,p=.8){const done=c.trials.filter(x=>x.status==='completed'),clock=done.length&&done.every(x=>finite(x.completionClockHours));const q=E.quantile(c.trials.map(x=>x.status==='completed'?(clock?x.completionClockHours:x.completion):Infinity),p);return clock?clockDate(q,r):workDate(q,r);}
+function rowDate(t,r,edge){return edge==='start'?(t.startDate13||workDate(t.start,r,'start')):(t.actualFinishDate13||t.elapsedFinish||workDate(t.finish,r));}
+function getNoneRun(r,sel){const key='counterfactual|'+sel.iteration;if(ui.cache.has(key))return ui.cache.get(key);const none=E.simulate(r.input,E.makeWorld(r.input,sel.iteration),[],{reference:r.reference,detailed:true});ui.cache.set(key,none);return none;}
+function originalDate(t,r,edge){const v=edge==='start'?t?.source?.start_date:t?.source?.end_date;if(!v)return '';if(v.includes('T'))return v;const parts=(r.input.settings.shift||'08:00').split(':').map(Number),hour=parts[0]+(edge==='finish'?8:0);return v+'T'+String(hour).padStart(2,'0')+':'+String(parts[1]).padStart(2,'0')+':00';}
+function rowsFor(r,sel,basis=ui.baseline){
+ const tasks=new Map(r.input.tasks.map(t=>[t.id,t])),cal=E.calendar(r.input.settings),counter=basis==='none'?getNoneRun(r,sel):null,byNone=new Map((counter?.rows||[]).map(t=>[t.id,t]));
+ const offset=date=>{try{return date?cal.offset(date):null;}catch{return null;}};
+ return sel.run.rows.map(t=>{
+  const input=tasks.get(t.id),n=byNone.get(t.id);let bs,bf,bd,be,br;
+  if(basis==='none'){bs=n?.start??null;bf=n?.finish??null;bd=n?rowDate(n,r,'start'):'';be=n?rowDate(n,r,'finish'):'';br=n?.resources||[];}
+  else if(basis==='original'){bd=originalDate(input,r,'start');be=originalDate(input,r,'finish');bs=offset(bd);bf=offset(be);br=input?.resources||[];}
+  else{bs=r.reference.ES[t.id]??null;bf=r.reference.EF[t.id]??null;bd=workDate(bs,r,'start');be=workDate(bf,r);br=input?.resources||[];}
+  const start=rowDate(t,r,'start'),finish=rowDate(t,r,'finish'),ds=finite(bs)&&finite(t.start)?t.start-bs:null,df=finite(bf)&&finite(t.finish)?t.finish-bf:null;
+  const ms=x=>{try{return x?cal.parse(x):null;}catch{return null;}};const bsm=ms(bd),bfm=ms(be),sm=ms(start),fm=ms(finish);
+  const clockStart=finite(bsm)&&finite(sm)?(sm-bsm)/3600000:null,clockFinish=finite(bfm)&&finite(fm)?(fm-bfm)/3600000:null;
+  const resourceChanged=JSON.stringify([...br].sort())!==JSON.stringify([...(t.resources||[])].sort());
+  const changed=resourceChanged||[ds,df,clockStart,clockFinish].some(x=>finite(x)&&Math.abs(x)>.01);
+  return {id:t.id,name:t.name,zone:t.zone,row:t,input,start,finish,baselineStart:bd,baselineFinish:be,baselineStartHour:bs,baselineFinishHour:bf,baselineResources:br,startChange:ds,finishChange:df,startClockChange:clockStart,finishClockChange:clockFinish,changed,resourceChanged,baselineMissing:!bd||!be,baselineDateOnly:basis==='original'&&[input?.source?.start_date,input?.source?.end_date].some(v=>v&&!v.includes('T')),cause_ids:t.cause_ids||[]};
+ });
+}
+function actionText(p){if(p.action==='expedite_release')return '자재·검사·승인 등의 준비 완료를 '+fmt(p.reduction)+' 작업시간 앞당기는 방안 협의';if(p.action==='backup_resource')return (p.fromResource||'기존 자원')+' → '+(p.toResource||'대체 자원')+' 전환 가능 여부와 예약 확인';if(p.action==='prioritize_zone')return (p.zone||'대상')+' 구역의 착수 가능한 작업을 우선 배치';return p.action||'대응 내용 확인';}
+function actionsFor(r,sel){return sel.candidate.policyIds.map(id=>{
+ const p=r.input.policies.find(x=>x.id===id);if(!p)return null;const history=sel.run.history.filter(x=>x.policy_id===id),applied=history.filter(x=>x.kind==='대응 적용'),trigger=history.find(x=>x.kind==='Trigger 충족');
+ const eventIds=[...new Set(history.map(x=>x.event_id).filter(Boolean))],events=r.input.events.filter(e=>eventIds.includes(e.id)),targets=[...new Set(events.flatMap(e=>e.targets||[]))];
+ return {id,name:p.name,action:actionText(p),status:applied.length?'선택 시행에서 모의 적용':history.some(x=>x.kind==='실행 보류'||x.kind==='정책 충돌')?'선택 시행에서 보류·충돌':'선택 시행에서 미적용',eventIds,targets,trigger:'설정 지연 임계 '+fmt(p.threshold)+' h'+(p.slackMax!=null?' · 참조 여유 '+fmt(p.slackMax)+' h 이하':''),triggerAt:trigger?workDate(trigger.time,r,'start'):'',appliedAt:applied.map(x=>workDate(x.time,r,'start')).join(';'),owner:p.owner||p.assignee||'미지정',deadline:p.change_deadline||p.reservation_expire||'현장 마감 미입력',modelDeadline:finite(p.deadline)?workDate(p.deadline,r,'start'):'',note:history.map(x=>x.kind+': '+x.note).join(' / '),policy:p};
+ }).filter(Boolean);}
+function model(r=result()){
+ const candidate=activeCandidate(r);let selection=null,error='';try{selection=chooseRun(r,candidate,ui.percentile);}catch(e){error=e.message;}
+ return {r,candidate,selection,error,rows:selection?rowsFor(r,selection):[],actions:selection?actionsFor(r,selection):[]};
+}
+function changeLabel(x){if(x.baselineMissing)return '비교 정보 부족';if(!x.changed)return '변경 없음';if(x.resourceChanged)return '자원 변경';if(finite(x.finishClockChange)&&x.finishClockChange>.01)return '완료 지연';if(finite(x.finishClockChange)&&x.finishClockChange<-.01)return '완료 앞당김';return '착수 변경';}
+function targetDate(r){return r.input.settings.deadlineDate12||workDate(r.input.settings.deadline,r);}
+function summaryHTML(m){const {r,candidate:c}=m,none=r.candidates.find(x=>x.id==='none'),deadline=targetDate(r),p80=percentileDate(c,r),none80=none?percentileDate(none,r):'',saved=c.paired.mean;return '<div class="rc13kpis">'+[
+ ['목표 준공일',deadline?stamp(deadline):'미입력','계약·관리 목표 — ③에서 입력'],
+ ['P80 준공 · 대응 없음',none80?stamp(none80):'완료 전망 산정 불가','체크한 리스크만 반영한 현 상태'],
+ ['P80 준공 · 선택 대안',p80?stamp(p80):'완료 전망 산정 불가',c.name],
+ ['대응 효과 · 평균 단축',finite(saved)?fmt(saved/8)+' 작업일':'비교 가능한 완료 쌍 없음',finite(saved)?fmt(saved)+' 작업시간 · 하루 8h':'완료율과 차단 원인 확인'],
+ ['신뢰도',(c.stats?.n||0)+'회 반복 · 완료율 '+Math.round((c.stats?.completionRate||0)*100)+'%','같은 난수로 대안 비교 · 실적 검증 전']
+ ].map(([label,value,note])=>'<div><small>'+esc(label)+'</small><b>'+esc(value)+'</b><span>'+esc(note)+'</span></div>').join('')+'</div>';}
+function decisionText(m){const {r,candidate:c,selection:s}=m,none=r.candidates.find(x=>x.id==='none'),saved=c.paired.mean;let out=c.name+'을 검토 중입니다. ';
+ if(c.id==='none')out+='추가 대응을 하지 않았을 때의 일정과 지연을 확인합니다.';else if(finite(saved))out+='양쪽 모두 완료한 동일 상황에서 무대응 대비 평균 '+fmt(Math.abs(saved)/8)+' 작업일 '+(saved>=0?'단축':'증가')+'되었습니다.';else out+='완료된 비교 표본이 부족하여 기간 절감을 산정하지 못했습니다.';
+ if(none&&c.id!=='none')out+=' 입력된 비용의 평균 차이는 '+(c.stats.avgCost-none.stats.avgCost>=0?'+':'')+fmt(c.stats.avgCost-none.stats.avgCost,0)+'원입니다.';
+ if(s)out+=' 공정표에서는 '+names[ui.baseline]+' 대비 '+m.rows.filter(x=>x.changed).length+'개 작업이 변경됩니다.';
+ return out;
+}
+function comparisonTable(r,interactive=true){return table(['대안','완료율','준공 전망 P80','P80 작업일','동일 상황 평균 절감','입력 비용 평균','변경 지표'],r.candidates.map(c=>[
+ (interactive?'<button data-rc13-select="'+esc(c.id)+'">'+esc(c.name)+'</button>':esc(c.name))+(c.id===state().selected?' '+badge('선택'):'')+(c.id===r.candidates[0].id?' '+badge('우선 검토'):'') ,esc(fmt(c.stats.completionRate*100)+'%'),esc(stamp(percentileDate(c,r))),esc(fmt(finite(c.stats.p80)?c.stats.p80/8:null)+' 일'),esc(fmt(c.paired.mean)+' h'),esc(fmt(c.stats.avgCost,0)+' 원'),esc(fmt(c.stats.avgDisruption))]));}
+function robustHTML(r){if(!r.sensitivity.length)return '<p>가정 변화 분석을 실행하지 않았습니다.</p>';const c=activeCandidate(r),wins=r.sensitivity.filter(x=>x.winner===c.id).length;return '<p>선택안 우선순위 유지 '+wins+'/'+r.sensitivity.length+'개 조건. 현실 성공확률이 아닙니다.</p>'+table(['검토 조건','우선 대안','선택안 P80(h)','우선안 변경'],r.sensitivity.map(x=>[esc(x.label),esc(x.results[0].name),esc(fmt(x.results.find(a=>a.id===c.id)?.stats.p80)),x.winner===c.id?'선택안 유지':'다른 안 우선']));}
+function qualityHTML(m){const {r,candidate:c}=m;return '<div class="rc13quality"><div>'+badge(r.converged?'표본오차 기준 충족':'반복 한도 · 미수렴',r.converged?'good':'warn')+'<small>'+r.iterations+'회 · P80 표본오차 폭 '+fmt(c.mc.width)+' h. 현장 예측 정확도와 다릅니다.</small></div><div>'+badge('현장 정확도 · 별도 검증')+'<small>실제 착수·완료 기록과 비교해야 예측오차를 평가할 수 있습니다.</small></div><div>'+badge('입력 비용 범위만 비교','warn')+'<small>작업·대응 비용의 누락 여부를 확인하세요. 총공사비나 확정 견적이 아닙니다.</small></div></div>'+table(['같은 상황 비교 근거','값'],[['완료한 비교 쌍',esc(c.paired.completedPairs+' / '+r.iterations)],['미완료 비교 쌍',esc(c.paired.incompletePairs)],['기간이 악화된 시행 비율',esc(fmt(c.paired.worse*100)+'%')],['평균 절감의 근사95% 구간',esc(fmt(c.paired.low)+' ~ '+fmt(c.paired.high)+' h')],['4D 일정 연계','현재 4D의 진행률 재생에는 이 결과의 날짜가 자동 반영되지 않습니다.']]);}
+function ganttHTML(rows,r){const cal=E.calendar(r.input.settings),ms=d=>{try{return d?cal.parse(d):null;}catch{return null;}},valid=rows.flatMap(x=>[x.baselineStart,x.baselineFinish,x.start,x.finish]).map(ms).filter(finite);if(!valid.length)return '<p>표시할 날짜가 없습니다.</p>';const lo=Math.min(...valid),hi=Math.max(...valid),span=Math.max(3600000,hi-lo),date=x=>new Date(x).toISOString().slice(5,16).replace('T',' ');const bar=(start,end,cls,title)=>{const a=ms(start),b=ms(end);if(!finite(a)||!finite(b))return '';return '<span class="rc13gbar '+cls+'" style="left:'+Math.max(0,100*(a-lo)/span).toFixed(4)+'%;width:'+Math.max(.15,100*(b-a)/span).toFixed(4)+'%" title="'+esc(title+' · '+stamp(start)+' ~ '+stamp(end))+'"></span>';};return '<div class="rc13gantt"><div class="rc13axis">'+[0,.25,.5,.75,1].map(p=>'<span>'+date(lo+span*p)+'</span>').join('')+'</div>'+rows.map(x=>'<div class="rc13grow"><div class="rc13glabel" title="'+esc(x.id+' '+x.name)+'">'+esc(x.name)+'<small>'+esc(x.id+' · '+x.zone)+'</small></div><div class="rc13gtrack">'+bar(x.baselineStart,x.baselineFinish,'rc13base',names[ui.baseline])+bar(x.start,x.finish,'revised '+(x.finishClockChange>.01?'rc13late':'rc13revised'),'선택 시행')+'</div></div>').join('')+'</div>';}
+function scheduleTable(rows,interactive=true){return table(['작업','구역','비교 착수 / 완료','수정 착수 / 완료','차이 · 작업시간','자원','상태 / 관련 사건'],rows.map(x=>[
+ (interactive?'<button data-rc13-task="'+esc(x.id)+'">'+esc(x.id)+'</button>':esc(x.id))+'<small>'+esc(x.name)+'</small>',esc(x.zone),esc(stamp(x.baselineStart))+'<br>'+esc(stamp(x.baselineFinish)),esc(stamp(x.start))+'<br>'+esc(stamp(x.finish)),esc(signed(x.startChange))+'<br>'+esc(signed(x.finishChange))+(x.row.timeBasis==='elapsed'?'<small>실제 경과 대기</small>':''),esc(x.row.resources.join('; ')||'무자원'),badge(changeLabel(x),x.finishClockChange>.01?'warn':'')+'<small>'+esc(x.cause_ids.join('; ')||'직접 사건 없음')+'</small>'
+ ]));}
+function taskDetail(x,m){if(!x)return '';const s=x.input||{},events=new Map(m.r.input.events.map(e=>[e.id,e.name])),links=(x.row.links||[]).map(l=>l.id+' '+l.type+' '+signed(l.lag)).join('; ');return '<div class="rc13detail"><h4>'+esc(x.id+' · '+x.name)+'</h4><dl>'+[
+ ['시각 근거',x.row.startBasis13==='estimated_anchor'?'실제 착수 미확인 · 잔여작업 기준시각 사용':x.row.startBasis13==='actual'?'입력된 실제 착수시각':'시뮬레이션 예측 착수'],['선행 조건',links||'없음'],['비교 자원',x.baselineResources.join('; ')||'무자원'],['선택 자원',x.row.resources.join('; ')||'무자원'],['관련 사건',x.cause_ids.map(id=>id+' · '+(events.get(id)||'이름 없음')).join(' / ')||'직접 사건 기록 없음 · 선행·자원 대기를 포함할 수 있음'],['달력시간 차이','착수 '+signed(x.startClockChange)+' / 완료 '+signed(x.finishClockChange)],['물량 근거',s.source?.quantity_method||s.source?.quantity_origin||'별도 근거 없음'],['IFC 출처 ID',s.source?.quantity_source_ids||'미연결'],['검측·승인 상태','설계 '+(s.design||'미확인')+' / 검사 '+(s.inspection||'미확인')],['비교 주의',x.baselineDateOnly?'원본 날짜만 있어 근무 시작·종료시각을 표시 가정으로 사용':x.baselineMissing?'원본 비교 일정이 없는 항목은 차이를 계산하지 않음':'관련 사건별 지연을 합산한 인과 기여도는 아님']
+ ].map(([k,v])=>'<dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd>').join('')+'</dl></div>';}
+function basisNote(){return ui.baseline==='reference'?'보통기간과 입력 선후행으로 만든 참조 계획입니다. 제약 즉시 해제를 가정하므로 계약상 최초 공정표와 다를 수 있습니다.':ui.baseline==='none'?'같은 난수·같은 사건이 발생한 무대응 시행과 비교합니다. 대안 간 일정 차이를 확인할 수 있지만 사건별 독립 지연 기여도는 아닙니다.':'입력 공정표에 보관된 최초 날짜를 사용합니다. 누락 날짜는 미확인으로 남기며, 날짜만 있는 행은 근무 시작·종료시각을 표시 가정으로 사용합니다.';}
+function renderSchedule(m){
+ $('rc13BasisNote').textContent=basisNote();
+ if(!m.selection){$('rc13ScheduleNote').textContent=m.error;$('rc13Gantt').innerHTML='';$('v12Schedule').innerHTML='<div class="rc13scheduleerror">'+esc(m.error)+'</div>';$('rc13ChangeSummary').textContent='완료 공정표 없음';$('rc13PageInfo').textContent='';$('rc13TaskDetail').innerHTML='';return;}
+ const s=m.selection,rows=m.rows,filter=ui.search.toLowerCase(),all=rows.filter(x=>(!ui.changedOnly||x.changed)&&(!filter||(x.id+' '+x.name+' '+x.zone).toLowerCase().includes(filter)));
+ ui.rowPage=Math.min(ui.rowPage,Math.max(0,Math.ceil(all.length/PAGE)-1));const page=all.slice(ui.rowPage*PAGE,(ui.rowPage+1)*PAGE);
+ $('rc13ScheduleNote').textContent=s.candidate.name+' · P'+Math.round(ui.percentile*100)+' 근처 시행 '+(s.iteration+1)+' · 이 시행의 준공 '+stamp(finite(s.run.completionClockHours)?clockDate(s.run.completionClockHours,m.r):workDate(s.run.completion,m.r));
+ $('rc13ChangeSummary').innerHTML=[['전체',rows.length],['변경',rows.filter(x=>x.changed).length],['완료 지연',rows.filter(x=>x.finishClockChange>.01).length],['자원 변경',rows.filter(x=>x.resourceChanged).length],['비교 누락',rows.filter(x=>x.baselineMissing).length]].map(([label,n])=>'<span>'+esc(label)+' <b>'+n+'</b>개</span>').join('');
+ $('rc13Gantt').innerHTML=page.length?ganttHTML(page,m.r):'<p>검색 조건에 맞는 작업이 없습니다.</p>';$('v12Schedule').innerHTML=scheduleTable(page);
+ try{ if(window.SA_RC13_WBS6) window.SA_RC13_WBS6.render(rows); }catch(e){ console.error(e); }
+ $('rc13PageInfo').textContent=all.length?(ui.rowPage*PAGE+1)+'–'+Math.min(all.length,(ui.rowPage+1)*PAGE)+' / '+all.length+'개 · 다운로드는 전체 대상':'표시할 작업 없음';
+ if(!rows.some(x=>x.id===ui.task))ui.task=rows.find(x=>x.changed)?.id||rows[0]?.id||'';
+ $('rc13TaskDetail').innerHTML=taskDetail(rows.find(x=>x.id===ui.task),m);
+ root.querySelectorAll('[data-rc13="previousRows"]').forEach(b=>b.disabled=state().busy||ui.rowPage===0);root.querySelectorAll('[data-rc13="nextRows"]').forEach(b=>b.disabled=state().busy||(ui.rowPage+1)*PAGE>=all.length);
+}
+function historyTable(m){return table(['시각','대응안','사건','모의 판단','상세'],(m.selection?.run.history||[]).map(x=>[esc(stamp(workDate(x.time,m.r,'start'))),esc(x.policy_id),esc(x.event_id),esc(x.kind),esc(x.note)]));}
+function traceTable(m){return table(['시각','구분','작업·대상','관련 ID','상세'],(m.selection?.run.trace||[]).map(x=>[esc(stamp(workDate(x.time,m.r,'start'))),esc(x.type),esc(x.target),esc(x.cause_ids.join('; ')),esc(x.detail)]));}
+function actionHTML(actions){return actions.length?actions.map(x=>'<article class="rc13action"><div class="rc13heading"><h4>'+esc(x.name)+'</h4>'+badge(x.status,x.status.includes('보류')?'warn':'')+'</div><p>'+esc(x.action)+'</p><dl>'+[['판단 조건',x.trigger],['모의 인지·판단',stamp(x.triggerAt)],['모의 적용시각',x.appliedAt?x.appliedAt.split(';').map(stamp).join(' / '):'적용 기록 없음'],['연결 작업',x.targets.join('; ')||'직접 연결 작업 확인 필요'],['현장 담당자',x.owner],['실제 변경 마감',x.deadline]].map(([k,v])=>'<dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd>').join('')+'</dl><p class="rc13fine">'+esc(x.note||'이 시행에서는 대응 조건이 충족되지 않았습니다. 적용된 것처럼 해석하지 마세요.')+'</p></article>').join(''):'<div class="rc13empty">선택한 대안에 추가 대응 정책이 없습니다. 변경된 작업과 착수조건을 확인하세요.</div>';}
+function preparationHTML(m){const rows=m.rows.filter(x=>x.changed).sort((a,b)=>(a.row.start??Infinity)-(b.row.start??Infinity));return '<p>변경 작업 '+rows.length+'개 중 착수순 상위 20개. 아래 날짜는 선택 시행의 예측 시각이며 계약상 통보 마감이 아닙니다.</p>'+table(['작업','예측 착수','준비·확인할 내용'],rows.slice(0,20).map(x=>[esc(x.id+' '+x.name),esc(stamp(x.start)),esc((x.resourceChanged?'자원 배정 '+x.baselineResources.join(';')+' → '+x.row.resources.join(';')+' 확인. ':'')+'자재·검측·승인 상태 확인; 협력업체에 변경 일정 검토 요청.')]));}
+function summaryText(m){const r=m.r,c=m.candidate;return ['SA 시뮬레이션 결과 · '+r.id,'분석 기준 '+F.asOf(r.input),'선택 대응안: '+c.name,'최초 목표 준공: '+stamp(targetDate(r)),'무대응 P80: '+stamp(percentileDate(r.candidates.find(x=>x.id==='none'),r)),'선택안 P80: '+stamp(percentileDate(c,r)),decisionText(m),'완료율 '+fmt(c.stats.completionRate*100)+'% · 반복 '+r.iterations+'회 · '+(r.converged?'표본오차 기준 충족':'반복 한도, 미수렴'),'선택 공정표: '+(m.selection?'P'+Math.round(ui.percentile*100)+' 근처 시행 '+(m.selection.iteration+1):m.error),'입력 가정에 따른 예측이며 현장 실행·확정 계획을 뜻하지 않습니다.'].join('\n');}
+function displayPage(name){if(!['overview','schedule','actions','downloads','verify'].includes(name))return;ui.page=name;root.querySelectorAll('[data-rc13-panel]').forEach(e=>e.hidden=e.dataset.rc13Panel!==name);root.querySelectorAll('[data-rc13-page]').forEach(e=>{const on=e.dataset.rc13Page===name;e.classList.toggle('active',on);e.setAttribute('aria-current',on?'page':'false');});}
+function syncStatus(){
+ const r=result(),stale=isStale(),busy=state().busy;let canSchedule=false;if(r&&!stale&&!busy)try{chooseRun(r,activeCandidate(r),ui.percentile);canSchedule=true;}catch{}
+ $('rc13Stale').hidden=!stale;$('rc13State').textContent=busy?'계산 중':stale?'이전 결과 · 재계산 필요':r?'계산 완료':'계산 대기';
+ root.querySelectorAll('[data-rc13-export]').forEach(b=>b.disabled=busy||stale||!r||(['schedule','changes','actions'].includes(b.dataset.rc13Export)&&!canSchedule));
+ $('v12Candidate').disabled=busy||!r;$('rc13Percentile').disabled=busy||!r;root.querySelectorAll('[data-rc13="copy"], [data-rc13="recommended"]').forEach(b=>b.disabled=busy||stale||!r);
+ if(!r)root.querySelectorAll('[data-rc13="previousRows"], [data-rc13="nextRows"]').forEach(b=>b.disabled=true);
+}
+function render(){
+ const r=result();if(!r){syncStatus();return;}
+ if(ui.result!==r){ui.result=r;ui.cache.clear();ui.rowPage=0;ui.task='';displayPage('overview');}
+ const m=model(r);$('rc13RunMeta').textContent=r.id+' · '+F.civil(r.createdAt).replace('T',' ').slice(0,19)+' 계산 · 기준 '+stamp(F.asOf(r.input))+' (한국시각)';
+ $('v12Candidate').innerHTML=r.candidates.map(c=>'<option value="'+esc(c.id)+'"'+(c.id===m.candidate.id?' selected':'')+'>'+esc(c.name)+'</option>').join('');$('rc13Percentile').value=String(ui.percentile);
+ $('v12ResultSummary').innerHTML=summaryHTML(m);$('rc13Decision').className='rc13decision';$('rc13Decision').textContent=decisionText(m);$('v12Results').innerHTML=comparisonTable(r);$('v12Robust').innerHTML=robustHTML(r);$('rc13Quality').innerHTML=qualityHTML(m);$('rc13Assumptions').innerHTML=r.warnings.length?'<ul>'+r.warnings.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p>별도로 기록된 추가 가정이 없습니다.</p>';
+ renderSchedule(m);$('rc13Actions').innerHTML=m.selection?actionHTML(m.actions):'<div class="rc13scheduleerror">'+esc(m.error)+'</div>';$('rc13Preparation').innerHTML=m.selection?preparationHTML(m):'<p>완료 시행을 선택할 수 없어 작업별 조치 일정을 만들 수 없습니다.</p>';$('rc13History').innerHTML=historyTable(m);$('rc13Trace').innerHTML=traceTable(m);
+ $('rc13ExportMeta').textContent=r.id+' · '+m.candidate.name+' · '+(m.selection?'P'+Math.round(ui.percentile*100)+' 근처 시행 '+(m.selection.iteration+1):'통계·근거만 다운로드 가능')+' · 비교: '+names[ui.baseline];
+ syncStatus();
+}
+function csvCell(v){let s=String(v??'');if(typeof v==='string'&&/^[\s\uFEFF]*[=+@\-\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}
+function csv(headers,rows){return '\ufeff'+[headers,...rows].map(row=>row.map(csvCell).join(',')).join('\r\n');}
+function linkText(l){return l.id+(l.type||'FS')+(l.lag?(l.lag>0?'+':'')+l.lag+'h':'');}
+function scheduleCSV(m){if(!m.selection)throw Error(m.error);const cal=E.calendar(m.r.input.settings),s=m.selection;
+ const h=['task_id','task_name','predecessor_ids','duration_value','duration_unit','resource','zone_ref','start_date','end_date','start_datetime','finish_datetime','dur_min','dur_max','baseline_start_datetime','baseline_finish_datetime','start_change_hours','finish_change_hours','calendar_finish_change_hours','cause_ids','scenario','scenario_id','iteration','result_id','engine_version','as_of_datetime','time_basis','start_basis','quantity_value','quantity_unit','source_story','quantity_method','quantity_origin','measured_quantity','estimated_quantity','quantity_source_ids','quantity_assumptions','simulation_result','duration_basis'];
+ return csv(h,m.rows.map(x=>{const t=x.row,p=x.input?.source||{},d=t.timeBasis==='elapsed'?(cal.parse(x.finish)-cal.parse(x.start))/3600000:Math.max(0,t.finish-t.start);return [x.id,x.name,t.links.map(linkText).join(';'),d,'hour',t.resources.join(';'),x.zone,x.start.slice(0,10),x.finish.slice(0,10),x.start,x.finish,d,d,x.baselineStart,x.baselineFinish,x.startChange,x.finishChange,x.finishClockChange,x.cause_ids.join(';'),s.candidate.name,s.candidate.id,s.iteration+1,m.r.id,m.r.engine,F.asOf(m.r.input),t.timeBasis,t.startBasis13,t.quantity,t.unit,p.source_story||'',p.quantity_method||'',p.quantity_origin||'',p.measured_quantity,p.estimated_quantity,p.quantity_source_ids||'',p.quantity_assumptions||'',1,t.timeBasis==='elapsed'?'elapsed_span_including_wait':'work_calendar_span_including_wait'];}));
+}
+function changesCSV(m){if(!m.selection)throw Error(m.error);return csv(['task_id','task_name','comparison_basis','baseline_start','baseline_finish','revised_start','revised_finish','start_change_work_hours','finish_change_work_hours','finish_change_elapsed_hours','original_resources','revised_resources','cause_ids','scenario_id','result_id'],m.rows.filter(x=>x.changed).map(x=>[x.id,x.name,names[ui.baseline],x.baselineStart,x.baselineFinish,x.start,x.finish,x.startChange,x.finishChange,x.finishClockChange,x.baselineResources.join(';'),x.row.resources.join(';'),x.cause_ids.join(';'),m.candidate.id,m.r.id]));}
+function actionsCSV(m){if(!m.selection)throw Error(m.error);return csv(['policy_id','action_name','action','simulation_status','trigger','simulated_trigger_at','simulated_applied_at','target_tasks','related_events','responsible_person','site_change_deadline','model_deadline','notes','scenario_id','result_id'],m.actions.map(x=>[x.id,x.name,x.action,x.status,x.trigger,x.triggerAt,x.appliedAt,x.targets.join(';'),x.eventIds.join(';'),x.owner,x.deadline,x.modelDeadline,x.note,m.candidate.id,m.r.id]));}
+function comparisonCSV(m){return csv(['scenario_id','scenario','completion_rate','p50_work_hours','p80_work_hours','p95_work_hours','p80_finish_datetime','paired_mean_saved_hours','paired_mean_low95_hours','paired_mean_high95_hours','worse_rate','average_input_cost','average_disruption','iterations','result_id'],m.r.candidates.map(c=>[c.id,c.name,c.stats.completionRate,c.stats.p50,c.stats.p80,c.stats.p95,percentileDate(c,m.r),c.paired.mean,c.paired.low,c.paired.high,c.paired.worse,c.stats.avgCost,c.stats.avgDisruption,m.r.iterations,m.r.id]));}
+function jsonData(m){return {...m.r,selected:m.candidate.id,resultCenterVersion:'1.0',verification:state().verification,selection:m.selection?{candidateId:m.candidate.id,percentile:ui.percentile,iteration:m.selection.iteration,quantile:m.selection.quantile,quantileBasis:m.selection.quantileBasis,run:m.selection.run}:null,selectionError:m.error||null,comparisonBasis:ui.baseline,changes:m.rows.map(({row,input,...x})=>x),actionItems:m.actions.map(({policy,...x})=>x),interpretation:['입력 가정에 따른 모의 결과이며 실제 정확도를 보장하지 않습니다.','작업별 분위수를 조합하지 않고 선택한 한 시행 전체를 사용합니다.','CSV 기간은 대기를 포함한 시행 구간입니다. 같은 리스크를 다시 적용하면 중복될 수 있습니다.','작업 중단·자원 배정·사건 처리의 정확한 맥락은 이 JSON의 selection.run을 사용합니다.','4D 재생 날짜는 이 결과에 자동 연결되지 않습니다.']};}
+function reportHTML(m){const style=$('rc13Style')?.textContent||'';return '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SA 시뮬레이션 결과 보고서</title><style>'+style+'body{margin:28px;background:#fff;color:#232b35;font:14px/1.65 Pretendard,Arial,sans-serif}main{max-width:1200px;margin:auto}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #dde2e8;padding:8px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#f3f5f7}.card{border:1px solid #dce1e6;border-radius:8px;padding:20px;margin:18px 0}h1{font-size:25px}h2{font-size:18px}.rc13scroll{max-height:none;overflow:visible}.rc13gantt{min-width:0}.rc13grow{grid-template-columns:170px 1fr}.rc13axis{margin-left:170px}.printButton{padding:10px 16px;background:white;border:1px solid #aaa;border-radius:6px}@media print{@page{size:A4 landscape;margin:12mm}body{margin:0;font-size:11px}.printButton{display:none}.rc13kpis{grid-template-columns:repeat(4,1fr)}.rc13gantt{min-width:0}.rc13grow,.rc13action,tr{break-inside:avoid}thead{display:table-header-group}.card{border:0;padding:0}h2{break-after:avoid}table{font-size:9px}}</style></head><body><main id="rc13Root"><button class="printButton" onclick="window.print()">인쇄 / PDF 저장</button><h1>시뮬레이션 결과 보고서</h1><p>'+esc(m.r.id)+' · '+esc(m.candidate.name)+' · '+esc(F.civil(m.r.createdAt))+' 계산</p><p>분석 기준 '+esc(F.asOf(m.r.input))+' · 한국시각 · 비교 '+esc(names[ui.baseline])+'</p>'+summaryHTML(m)+'<p class="rc13decision">'+esc(decisionText(m))+'</p><p>'+esc(m.selection?'P'+Math.round(ui.percentile*100)+' 근처 시행 '+(m.selection.iteration+1)+' 전체를 일관되게 사용합니다.':m.error)+'</p><div class="card"><h2>대안 비교</h2>'+comparisonTable(m.r,false)+'</div><div class="card"><h2>변경 공정표</h2><p>'+esc(basisNote())+'</p>'+(m.selection?ganttHTML(m.rows,m.r)+scheduleTable(m.rows,false):esc(m.error))+'</div><div class="card"><h2>실행 전 조치</h2>'+actionHTML(m.actions)+(m.selection?preparationHTML(m):'')+'</div><div class="card"><h2>판단 이력</h2>'+historyTable(m)+'</div><div class="card"><h2>가정·검증 상태</h2>'+qualityHTML(m)+robustHTML(m.r)+'<ul>'+m.r.warnings.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><p>본 결과는 현장 조치를 실행하거나 공정표를 확정하지 않습니다. 리스크 원인별 독립 지연 기여도를 산정한 결과가 아닙니다. 상세 사건·배정·중단 기록은 전체 결과 JSON에 보관됩니다.</p></div></main></body></html>';}
+function save(name,data,type){const url=URL.createObjectURL(new Blob([data],{type})),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);$('rc13ExportFeedback').textContent=name+' 다운로드를 요청했습니다. 선택 대안: '+activeCandidate().name;}
+function exportFile(kind){requireResult();const m=model(),suffix=m.r.id+'_'+m.candidate.id.replace(/[^\w가-힣-]/g,'_')+'_P'+Math.round(ui.percentile*100);if(kind==='schedule')return save('SA_V13_수정공정표_'+suffix+'.csv',scheduleCSV(m),'text/csv;charset=utf-8');if(kind==='changes')return save('SA_변경내역_'+suffix+'.csv',changesCSV(m),'text/csv;charset=utf-8');if(kind==='actions')return save('SA_실행조치_'+suffix+'.csv',actionsCSV(m),'text/csv;charset=utf-8');if(kind==='comparison')return save('SA_대안비교_'+suffix+'.csv',comparisonCSV(m),'text/csv;charset=utf-8');if(kind==='report')return save('SA_결과보고서_'+suffix+'.html',reportHTML(m),'text/html;charset=utf-8');if(kind==='json')return save('SA_전체결과_'+suffix+'.json',JSON.stringify(jsonData(m),null,2),'application/json');if(kind==='archive')return save('SA_V13_Forecast_'+m.r.id+'.json',JSON.stringify(V.archive(m.r),null,2),'application/json');throw Error('지원하지 않는 출력 형식');}
+async function copySummary(){requireResult();const text=summaryText(model());try{if(!navigator.clipboard?.writeText)throw Error('clipboard');await navigator.clipboard.writeText(text);$('rc13ExportFeedback').textContent='회의용 요약을 복사했습니다.';}catch{const area=document.createElement('textarea');area.value=text;area.setAttribute('aria-label','복사할 결과 요약');$('rc13ExportFeedback').replaceChildren(area);area.select?.();$('rc13ExportFeedback').appendChild(document.createTextNode(' 자동 복사를 사용할 수 없습니다. 위 내용을 선택해 복사하세요.'));}}
+root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;try{if(b.dataset.rc13Page)return displayPage(b.dataset.rc13Page);if(b.dataset.rc13Select){state().selected=b.dataset.rc13Select;ui.rowPage=0;render();return;}if(b.dataset.rc13Task){ui.task=b.dataset.rc13Task;renderSchedule(model());return;}if(b.dataset.rc13Export)return exportFile(b.dataset.rc13Export);if(b.dataset.rc13==='recommended'){state().selected=result().candidates[0].id;render();return;}if(b.dataset.rc13==='previousRows'){ui.rowPage=Math.max(0,ui.rowPage-1);renderSchedule(model());return;}if(b.dataset.rc13==='nextRows'){ui.rowPage++;renderSchedule(model());return;}if(b.dataset.rc13==='copy')copySummary().catch(err=>{$('rc13ExportFeedback').textContent=err.message;});}catch(err){$('rc13ExportFeedback').textContent=err.message;}});
+root.addEventListener('change',e=>{const el=e.target;if(el.id==='rc13Percentile'){const p=Number(el.value);if([.5,.8,.95].includes(p))ui.percentile=p;ui.rowPage=0;render();}else if(el.id==='rc13Baseline'){if(names[el.value])ui.baseline=el.value;ui.rowPage=0;render();}else if(el.id==='rc13ChangedOnly'){ui.changedOnly=el.checked;ui.rowPage=0;if(result())renderSchedule(model());}});
+root.addEventListener('input',e=>{if(e.target.id==='rc13Search'){ui.search=e.target.value;ui.rowPage=0;if(result())renderSchedule(model());}});
+$('saV12Hub').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&'rc13Jump' in b.dataset){V.step(4);displayPage('overview');}});
+window.SA_RESULT_CENTER13={version:'1.0',ui,render,syncStatus,selectedRun,model,rowsFor,actionItems:actionsFor,exportFile,scheduleCSV,changesCSV,actionsCSV,comparisonCSV,jsonData,reportHTML,summaryText,displayPage,getSelection:()=>{const m=model(requireResult());return m.selection?clone({resultId:m.r.id,candidateId:m.candidate.id,percentile:ui.percentile,iteration:m.selection.iteration,input:m.r.input,run:m.selection.run}):null;}};
+displayPage('overview');render();
 })();
 </script>
 </body>
