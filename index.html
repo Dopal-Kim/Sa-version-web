@@ -817,6 +817,11 @@ body.clientMode #quickDemoBtn{display:inline-block !important;}
 .ifcGanttWrap4 .gHdrBg{fill:var(--bg-2);}
 .ifcGanttWrap4 .gLblBg{fill:var(--bg-1);}
 .ifcGanttWrap4 .gLblLine{stroke:var(--border-strong);stroke-width:1;}
+.ifcGanttWrap4 .gLblStory{font-weight:700;}
+.ifcGanttWrap4 .gRowStory{fill:var(--bg-2);}
+.ifcGanttWrap4 .gSum{fill:var(--text-primary);}
+.ifcGanttWrap4 .gSum.crit{fill:var(--critical);}
+.gLvl4 button{padding:3px 9px;font-size:12px;margin-left:4px;}
 table.ifcGenTable4{width:100%;border-collapse:collapse;font-size:12.5px;min-width:900px;}
 table.ifcGenTable4 th{position:sticky;top:0;z-index:1;background:var(--bg-2);color:var(--text-secondary);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.35px;text-align:left;padding:7px 8px;border-bottom:1px solid var(--border-strong);white-space:nowrap;}
 table.ifcGenTable4 td{padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
@@ -4151,7 +4156,9 @@ BH-2,34.8,4.2,풍화토,2.5,8"></textarea>
 
     <!-- [간트] 최적 공정표는 간트 차트로 먼저 보여준다(ES→EF 막대·총여유·임계경로·FS 화살표). 표는 아래 접이식. -->
     <div class="ifcGanttWrap4" id="ifcGanttWrap4"><div class="hint" style="padding:12px;">아직 생성된 최적 공정표가 없습니다 — 위 "최적 공정표 생성 · 검증"을 누르면 여기에 간트 차트가 그려집니다.</div></div>
-    <div class="legend" style="margin-top:6px;">
+    <div class="legend" style="margin-top:6px;align-items:center;">
+      <span class="gLvl4">보기 <button type="button" class="ghost" data-glvl="0">층</button><button type="button" class="ghost active" data-glvl="1">공종</button><button type="button" class="ghost" data-glvl="2">세부 작업</button></span>
+      <span><span class="sw" style="background:var(--text-primary);height:6px;"></span>층·공종 요약</span>
       <span><span class="sw" style="background:var(--gantt-bar);"></span>여유 있는 작업</span>
       <span><span class="sw" style="background:var(--critical);"></span>임계경로(TF=0)</span>
       <span><span class="sw" style="background:var(--gantt-float);"></span>총여유 구간(ES→LS)</span>
@@ -14054,56 +14061,98 @@ function buildIfcSchedule4(){
     document.getElementById('ifcDownloadSchedule4').disabled=true;document.getElementById('ifcApplySchedule4').disabled=true;
   }
 }
-/* [간트] 생성된 최적 공정표(IFC_GENERATED_ROWS4: ES/EF/LS/TF 일 단위, is_critical, predecessor_ids)를 SVG 간트로 그린다.
-   시간축은 프로젝트 시작일이 있으면 달력 날짜, 없으면 상대 일수. 화살표는 링크의 선행 EF → 후행 ES (FS 기준 단순 꺾은선). */
+/* [간트] 생성된 최적 공정표를 WBS 계층으로 그린다 — 층 → (Zone) → 공종 요약 막대 → 세부 작업.
+   실무 공정표처럼 요약 막대(층·공종)를 기본으로 보이고, 세부 작업(철근·거푸집·검측·타설·양생)은 행을 눌러 펼친다.
+   값은 IFC_GENERATED_ROWS4 의 ES/EF/LS/TF(일)·is_critical 을 그대로 쓰고 요약은 자식의 min ES / max EF. */
+const IFC_GANTT_TRADE4={IFCWALL:'벽체 골조',IFCSLAB:'슬래브 골조',IFCROOF:'지붕공사','IFCWINDOW/IFCDOOR':'창호·개구부',IFCCOLUMN:'기둥 골조',IFCBEAM:'보 골조',IFCSTAIR:'계단'};
+let IFC_GANTT_OPEN4=null;   // 펼친 노드 키 집합(null 이면 기본: 층만 펼침)
+function ifcGanttTree4(rows){
+  const storyOf=r=>String(r.zone_ref||r.source_story||'').split('-')[0]||'기타';
+  const zoneOf=r=>{ const m=String(r.zone_ref||'').match(/-(.+)$/); return m?m[1]:''; };
+  const multiZone=Number(rows[0]&&rows[0].optimization_zone_count)>1;
+  const tree=[], byKey=new Map();
+  const node=(key,label,depth,parent)=>{ let n=byKey.get(key); if(!n){ n={key,label,depth,kids:[],tasks:[],miles:[]}; byKey.set(key,n); (parent?parent.kids:tree).push(n); } return n; };
+  for(const r of rows){
+    const st=node('S:'+storyOf(r), storyOf(r), 0, null);
+    if(r.ifc_element_type==='MILESTONE'){ st.miles.push(r); continue; }
+    const zn=multiZone&&zoneOf(r)?node(st.key+'/Z:'+zoneOf(r), zoneOf(r), 1, st):st;
+    const trade=IFC_GANTT_TRADE4[r.ifc_element_type]||String(r.ifc_element_type||'기타').replace(/^IFC/,'');
+    const g=node(zn.key+'/T:'+trade, trade, zn.depth+1, zn); g.tasks.push(r);
+  }
+  const span=n=>{ const xs=[...n.tasks,...n.miles].map(r=>[Number(r.ES),Number(r.EF),!!r.is_critical]); n.kids.forEach(k=>{ span(k); xs.push([k.es,k.ef,k.crit]); });
+    n.es=xs.length?Math.min(...xs.map(x=>x[0])):0; n.ef=xs.length?Math.max(...xs.map(x=>x[1])):0; n.crit=xs.some(x=>x[2]); n.count=n.tasks.length+n.kids.reduce((a,k)=>a+k.count,0); };
+  tree.forEach(span); return tree;
+}
+function ifcGanttSetLevel4(level){ // 0 층만 · 1 공종까지 · 2 세부 작업까지
+  const rows=IFC_GENERATED_ROWS4; IFC_GANTT_OPEN4=new Set();
+  const walk=n=>{ if(n.depth<level||(level>=2)) IFC_GANTT_OPEN4.add(n.key); n.kids.forEach(walk); };
+  ifcGanttTree4(rows).forEach(walk); if(level===0) IFC_GANTT_OPEN4=new Set(); renderIfcGantt4();
+}
+function ifcGanttToggle4(key){ if(!IFC_GANTT_OPEN4) IFC_GANTT_OPEN4=new Set(ifcGanttTree4(IFC_GENERATED_ROWS4).map(n=>n.key)); if(IFC_GANTT_OPEN4.has(key)) IFC_GANTT_OPEN4.delete(key); else IFC_GANTT_OPEN4.add(key); renderIfcGantt4(); }
 function renderIfcGantt4(){
   const wrap=document.getElementById('ifcGanttWrap4'); if(!wrap) return;
   const rows=IFC_GENERATED_ROWS4.filter(r=>Number.isFinite(Number(r.ES))&&Number.isFinite(Number(r.EF)));
   if(!rows.length){ wrap.innerHTML='<div class="hint" style="padding:12px;">아직 생성된 최적 공정표가 없습니다 — 위 "최적 공정표 생성 · 검증"을 누르면 여기에 간트 차트가 그려집니다.</div>'; return; }
-  const LW=300, HDR=30, RH=22, PAD=12, esc=escIfc4;
+  const tree=ifcGanttTree4(rows);
+  const open=IFC_GANTT_OPEN4||new Set(tree.map(n=>n.key));          // 기본: 층은 펼치고 공종은 접음
+  // 보이는 행 목록
+  const vis=[];
+  const push=n=>{ vis.push({type:'sum',n,depth:n.depth}); if(!open.has(n.key)) return;
+    n.kids.forEach(push); n.tasks.forEach(r=>vis.push({type:'task',r,depth:n.depth+1})); n.miles.forEach(r=>vis.push({type:'mile',r,depth:n.depth+1})); };
+  tree.forEach(push);
+  const LW=300, HDR=30, RH=24, PAD=12, esc=escIfc4, IND=14;
   const total=Math.max(1,...rows.map(r=>Math.max(Number(r.EF),Number(r.LF)||0)));
   const avail=Math.max(420,(wrap.clientWidth||900)-LW-PAD*2);
-  const ppd=Math.max(6,Math.min(48,avail/total));                 // px/일 — 전체가 한 화면에 들어오되 6px 아래로는 압축하지 않는다(가로 스크롤)
-  const W=LW+PAD+Math.ceil(total*ppd)+PAD, H=HDR+rows.length*RH+PAD;
+  const ppd=Math.max(6,Math.min(48,avail/total));
+  const W=LW+PAD+Math.ceil(total*ppd)+PAD+48, H=HDR+vis.length*RH+PAD;   // +48: 마지막 요약 막대의 기간 라벨 자리
   const X=d=>LW+PAD+d*ppd, Y=i=>HDR+i*RH;
   const startRaw=(document.getElementById('ifcProjectStart8')||{}).value||'';
   const base=/^\d{4}-\d{2}-\d{2}$/.test(startRaw)?Date.parse(startRaw+'T00:00:00Z'):null;
   const tickLbl=d=>{ if(base===null) return d+'일'; const t=new Date(base+d*86400000); return (t.getUTCMonth()+1)+'/'+t.getUTCDate(); };
-  const step=[1,2,5,7,10,14,30].find(k=>k*ppd>=52)||30;   // 눈금 라벨(≈48px)이 겹치지 않는 최소 간격
-  const idx=new Map(rows.map((r,i)=>[r.task_id,i])), ids=new Set(rows.map(r=>r.task_id));
+  const step=[1,2,5,7,10,14,30].find(k=>k*ppd>=52)||30;
+  const idx=new Map(); vis.forEach((v,i)=>{ if(v.type!=='sum') idx.set(v.r.task_id,i); });
+  const ids=new Set(rows.map(r=>r.task_id));
+  const f1=v=>Number(v).toFixed(1);
   let s=`<svg class="sgGanttBody" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="최적 공정표 간트 차트">`;
   s+=`<rect class="gHdrBg" x="0" y="0" width="${W}" height="${HDR}"/>`;
   for(let d=0; d<=total; d+=step){ const x=X(d); s+=`<line class="gGridDay" x1="${x}" y1="${HDR}" x2="${x}" y2="${H-PAD}"/><line class="gTickLine" x1="${x}" y1="${HDR-6}" x2="${x}" y2="${HDR}"/><text class="gTick" x="${x+3}" y="${HDR-9}">${tickLbl(d)}</text>`; }
-  rows.forEach((r,i)=>{ if(i%2) s+=`<rect class="gRowAlt" x="${LW}" y="${Y(i)}" width="${W-LW}" height="${RH}"/>`; });
-  // 막대: 총여유(ES→LS+dur) 뒤에, 작업 막대 앞에
-  rows.forEach((r,i)=>{
-    const es=Number(r.ES), ef=Number(r.EF), ls=Number.isFinite(Number(r.LS))?Number(r.LS):es, dur=Math.max(ef-es,0), y=Y(i)+5, h=RH-10;
-    if(ls>es+1e-6) s+=`<rect class="gFloat" x="${X(es)}" y="${y}" width="${Math.max(1,(ls-es+dur)*ppd)}" height="${h}"/>`;
-    const w=Math.max(2,dur*ppd), cls=r.is_critical?'gBar crit':'gBar', cx=X(es), cy=y+h/2;
-    s+=dur<=1e-6
-      ? `<g class="gBarRow"><path class="${r.is_critical?'gMile crit':'gMile'}" d="M${cx},${cy-6} l6,6 l-6,6 l-6,-6 z"><title>`
-      : `<g class="gBarRow"><rect class="${cls}" x="${cx}" y="${y}" width="${w}" height="${h}" rx="1"><title>${esc(r.task_id)} ${esc(r.task_name)} · ${esc(r.zone_ref||'')} · ${esc(r.resource||'')} · ES ${es.toFixed(1)}일 → EF ${ef.toFixed(1)}일 · TF ${(Number(r.TF)||0).toFixed(1)}일${r.start_date?' · '+esc(r.start_date)+' ~ '+esc(r.end_date):''}</title>${dur<=1e-6?'</path>':'</rect>'}`;
-    if(w>=44&&dur>1e-6) s+=`<text class="gBarLbl" x="${X(es)+4}" y="${y+h-3}">${esc(String(r.duration_value))}${r.duration_unit==='hour'?'h':'d'}</text>`;
-    s+='</g>';
+  vis.forEach((v,i)=>{ if(v.type==='sum'&&v.depth===0) s+=`<rect class="gRowStory" x="${LW}" y="${Y(i)}" width="${W-LW}" height="${RH}"/>`; else if(i%2) s+=`<rect class="gRowAlt" x="${LW}" y="${Y(i)}" width="${W-LW}" height="${RH}"/>`; });
+  vis.forEach((v,i)=>{
+    const y=Y(i);
+    if(v.type==='sum'){ const n=v.n, x1=X(n.es), x2=Math.max(X(n.ef),x1+3), cy=y+RH/2, cls=n.crit?'gSum crit':'gSum';
+      s+=`<g class="gBarRow"><rect class="${cls}" x="${x1}" y="${cy-3}" width="${x2-x1}" height="6"/><path class="${cls}" d="M${x1},${cy+1} l5,6 l-5,0 z"/><path class="${cls}" d="M${x2},${cy+1} l-5,6 l5,0 z"/><title>${esc(n.label)} · ${n.count}개 작업 · ${f1(n.es)}일 → ${f1(n.ef)}일 (${f1(n.ef-n.es)}일)${n.crit?' · 임계경로 포함':''}</title></g>`;
+      if(x2-x1>=40) s+=`<text class="gBarLbl" x="${x2+6}" y="${cy+4}">${f1(n.ef-n.es)}d</text>`;
+      return; }
+    const r=v.r, es=Number(r.ES), ef=Number(r.EF), ls=Number.isFinite(Number(r.LS))?Number(r.LS):es, dur=Math.max(ef-es,0), by=y+6, h=RH-12, cx=X(es), cy=y+RH/2;
+    const tip=`<title>${esc(r.task_id)} · ${esc(r.task_name)} · ${esc(r.resource||'')} · ES ${f1(es)}일 → EF ${f1(ef)}일 · TF ${f1(r.TF||0)}일${r.start_date?' · '+esc(r.start_date)+' ~ '+esc(r.end_date):''}</title>`;
+    if(v.type==='mile'||dur<=1e-6){ s+=`<g class="gBarRow"><path class="${r.is_critical?'gMile crit':'gMile'}" d="M${cx},${cy-6} l6,6 l-6,6 l-6,-6 z">${tip}</path></g>`; return; }
+    if(ls>es+1e-6) s+=`<rect class="gFloat" x="${cx}" y="${by}" width="${Math.max(1,(ls-es+dur)*ppd)}" height="${h}"/>`;
+    const w=Math.max(2,dur*ppd);
+    s+=`<g class="gBarRow"><rect class="${r.is_critical?'gBar crit':'gBar'}" x="${cx}" y="${by}" width="${w}" height="${h}" rx="1">${tip}</rect>${w>=44?`<text class="gBarLbl" x="${cx+4}" y="${by+h-3}">${esc(String(r.duration_value))}${r.duration_unit==='hour'?'h':'d'}</text>`:''}</g>`;
   });
-  // 링크 화살표: 후행의 착수를 실제로 결정한(driving) 링크만 그린다 — 모든 링크를 그리면 선이 화면을 덮어 읽을 수 없다(전체는 아래 표의 predecessor_ids).
+  // 링크 화살표: 둘 다 보이는 세부 작업 사이의 driving 링크만
   if(typeof rowLinks8==='function'){
     const lagD=l=>(typeof linkLagHours==='function'?linkLagHours(l):0)/HOURS_PER_DAY;
-    rows.forEach((r,i)=>{ for(const l of rowLinks8(r,ids)){ const j=idx.get(l.id); if(j===undefined) continue; const p=rows[j];
-      const from=Number(l.type==='SS'?p.ES:l.type==='FF'?p.EF:p.EF), need=l.type==='FF'?Number(r.EF):Number(r.ES);
-      if(Math.abs(need-(from+lagD(l)))>1e-3) continue;
-      const crit=r.is_critical&&p.is_critical, x1=X(Number(l.type==='SS'?p.ES:p.EF)), y1=Y(j)+RH/2, x2=X(Number(r.ES)), y2=Y(i)+RH/2, xm=Math.max(x1+6,x2-6);
-      s+=`<path class="gArrow${crit?' crit':''}" d="M${x1},${y1} H${xm} V${y2} H${x2-2}"/><path class="gArrowHead${crit?' crit':''}" d="M${x2},${y2} l-6,-3.5 v7 z"/>`; } });
+    vis.forEach((v,i)=>{ if(v.type!=='task') return; const r=v.r;
+      for(const l of rowLinks8(r,ids)){ const j=idx.get(l.id); if(j===undefined) continue; const p=vis[j].r;
+        const from=Number(l.type==='SS'?p.ES:p.EF), need=l.type==='FF'?Number(r.EF):Number(r.ES);
+        if(Math.abs(need-(from+lagD(l)))>1e-3) continue;
+        const crit=r.is_critical&&p.is_critical, x1=X(from), y1=Y(j)+RH/2, x2=X(Number(r.ES)), y2=Y(i)+RH/2, xm=Math.max(x1+6,x2-6);
+        s+=`<path class="gArrow${crit?' crit':''}" d="M${x1},${y1} H${xm} V${y2} H${x2-2}"/><path class="gArrowHead${crit?' crit':''}" d="M${x2},${y2} l-6,-3.5 v7 z"/>`; } });
   }
-  // 라벨 열(스크롤 시에도 읽히도록 마지막에 그려 막대 위에 놓는다)
+  // 라벨 열(막대 위에 놓는다)
   s+=`<rect class="gLblBg" x="0" y="${HDR}" width="${LW}" height="${H-HDR}"/><line class="gLblLine" x1="${LW}" y1="0" x2="${LW}" y2="${H}"/>`;
-  s+=`<text class="gTick" x="${PAD}" y="${HDR-9}">작업 · 층/Zone · 자원</text>`;
-  const stripPrefix=(name,r)=>{ let n=name; for(const pre of [r.source_story,r.zone_ref]){ const t=String(pre||'').trim(); if(t&&n.startsWith(t)) n=n.slice(t.length).replace(/^[\s·:\-–]+/,''); } n=n.replace(/^Zone\s*[A-Za-z0-9]+\s*[·:\-–]?\s*/i,''); return n||name; };
-  rows.forEach((r,i)=>{ const name=String(r.task_name||''); const short=stripPrefix(name,r); const nm=short.length>22?short.slice(0,21)+'…':short; const z=String(r.zone_ref||'').replace(/^Zone\s*/i,'Z');
-    s+=`<text class="gLbl" x="${PAD}" y="${Y(i)+RH-7}">${esc(nm)}<title>${esc(r.task_id)} · ${esc(name)} · ${esc(r.zone_ref||'')} · ${esc(r.resource||'')}</title></text>`;
-    s+=`<text class="gLblSub" x="${LW-PAD}" y="${Y(i)+RH-7}" text-anchor="end">${esc(z)}</text>`; });
+  s+=`<text class="gTick" x="${PAD}" y="${HDR-9}">WBS · 층 › 공종 › 작업</text>`;
+  const stripPrefix=(name,r)=>{ let n=name; for(const pre of [r.source_story,String(r.zone_ref||'').split('-')[0]]){ const t=String(pre||'').trim(); if(t&&n.startsWith(t)) n=n.slice(t.length).replace(/^[\s·:\-–]+/,''); } n=n.replace(/^Zone\s*[A-Za-z0-9]*\s*[·:\-–]?\s*/i,''); return n||name; };
+  vis.forEach((v,i)=>{ const y=Y(i)+RH-8, x=PAD+v.depth*IND;
+    if(v.type==='sum'){ const n=v.n, o=open.has(n.key);
+      s+=`<g class="gTgl" data-key="${esc(n.key)}" style="cursor:pointer"><rect x="0" y="${Y(i)}" width="${LW}" height="${RH}" fill="transparent"/><text class="gLbl ${v.depth===0?'gLblStory':''}" x="${x}" y="${y}"><tspan class="gLblSub">${o?'−':'+'}</tspan> ${esc(n.label)}<title>${esc(n.label)} · ${n.count}개 작업 (클릭하면 ${o?'접힘':'펼침'})</title></text><text class="gLblSub" x="${LW-PAD}" y="${y}" text-anchor="end">${n.count}</text></g>`;
+    }else{ const r=v.r, name=String(r.task_name||''), short=stripPrefix(name,r), nm=short.length>20?short.slice(0,19)+'…':short;
+      s+=`<text class="gLbl" x="${x}" y="${y}">${esc(nm)}<title>${esc(r.task_id)} · ${esc(name)} · ${esc(r.resource||'')}</title></text><text class="gLblSub" x="${LW-PAD}" y="${y}" text-anchor="end">${esc(String(r.resource_group||r.resource||'').replace(/ #\d+$/,''))}</text>`; }
+  });
   s+='</svg>';
   wrap.innerHTML=s;
+  wrap.querySelectorAll('.gTgl').forEach(g=>g.addEventListener('click',()=>ifcGanttToggle4(g.getAttribute('data-key'))));
 }
 function renderGeneratedSchedule4(){
   renderIfcGantt4();
@@ -14696,6 +14745,7 @@ function foldLongText6(root, minLen){
   ['tab4','tab1'].forEach(id => foldLongText6(document.getElementById(id), 70));
 })();
 
+document.querySelectorAll('.gLvl4 [data-glvl]').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('.gLvl4 [data-glvl]').forEach(x=>x.classList.toggle('active',x===b)); if(typeof ifcGanttSetLevel4==='function') ifcGanttSetLevel4(Number(b.dataset.glvl)); }));
 /* Open-Meteo 예보 요약 — 3번 탭 상태(SA_WEATHER15.config().data)만 읽는다. 값이 없으면 null. */
 function openMeteoSummary5(){
   try{
