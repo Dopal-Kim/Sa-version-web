@@ -64,3 +64,29 @@ test('LH 템플릿 → 위치기반 엔진(달력 모드): 결정 공기가 LH �
   assert.ok(learned.p80cal >= learned.p80 && learned.p80 > learned.deterministic * 1.05);
   assert.ok(learned.p80 - learned.p50 > 3 * (sym.p80 - sym.p50));   // 학습 분포의 오른쪽 꼬리가 대칭 ±15%보다 훨씬 김
 });
+
+test('기상 연도별 변동: 서울 실측 3년 → 연·월 비작업일(골조 연 합계가 LH 132일과 15% 이내), 편차 보정 평균 = LH 별표, 날씨만으로 공기가 해마다 달라짐', () => {
+  const c3 = vm.createContext({}); c3.window = c3;
+  const blk = id => html.match(new RegExp('<script id="' + id + '"[^>]*>([\\s\\S]*?)</script>'))[1];
+  vm.runInContext(blk('sa-lbs-core'), c3); vm.runInContext(blk('sa-lh-core'), c3);
+  const L = c3.SA_LBS_CORE, H3 = c3.SA_LH_CORE;
+  const { daily } = JSON.parse(fs.readFileSync(new URL('./fixtures/weather_seoul_2016_2018.json', import.meta.url), 'utf8'));
+  const ys = J(H3.weatherYears(daily));
+  assert.deepEqual(ys.map(y => y.year), [2016, 2017, 2018]);
+  for (const y of ys) { const tot = y.tables.frame.reduce((a, b) => a + b, 0); assert.ok(Math.abs(tot / 132 - 1) < 0.15, `${y.year} 골조 ${tot}일`); assert.ok(y.tables.frame[1] >= 8 && y.tables.frame[0] >= 9); }
+  const an = J(H3.anomalyTables('서울', ys)), lh = H3.RULES.nonwork.frame['서울'];
+  for (let m = 0; m < 12; m++) { const avg = an.reduce((a, y) => a + y.tables.frame[m], 0) / an.length; assert.ok(Math.abs(avg - lh[m]) <= 1, `${m + 1}월 평균 ${avg} vs LH ${lh[m]}`); }
+  const t = H3.template(EX8);
+  const fixed = L.simulate(t.model, { N: 300, seed: 4, calendar: t.calendar, ratio: 'none' });
+  const vary = L.simulate(t.model, { N: 300, seed: 4, calendar: t.calendar, ratio: 'none', calendarVariants: an });
+  assert.equal(new Set(Array.from(fixed.samples).map(Math.round)).size, 1);       // 날씨 고정 + 기간 고정 → 한 값
+  assert.ok(new Set(Array.from(vary.samples).map(Math.round)).size >= 2);        // 해마다 다른 날씨 → 여러 값
+});
+
+test('관측소 좌표: LH 77개 지역 모두 기상청 공식 좌표, 별칭 지역은 기준 관측소 좌표', () => {
+  assert.equal(Object.keys(H.STATIONS).length, 77);
+  for (const n of Object.keys(H.RULES.nonwork.frame)) assert.ok(H.STATIONS[n], n);
+  assert.deepEqual(J(H.stationCoord('서울')), { station: '서울', lat: 37.57142, lon: 126.9658, id: 108 });
+  assert.equal(H.stationCoord('하남').station, '서울');
+  for (const [lat, lon] of Object.values(H.STATIONS)) assert.ok(lat > 33 && lat < 39 && lon > 124 && lon < 131);
+});

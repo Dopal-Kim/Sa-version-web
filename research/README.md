@@ -29,4 +29,5 @@ python -P research/scripts/validate_r0.py     # 계열 단위 5겹 × 10회 교�
 
 ## 결과 (`results/`)
 - `r0_validation.json` — R0 검증. 요약은 [R0_검증.md](R0_검증.md)
-- `calibration.json`, `duration_prior.json`, `lh_rules.json` — 앱에 들어간 값
+- `calibration.json`, `duration_prior.json`, `lh_rules.json`, `kma_stations.json`(LH 77개 지역 = 기상청 ASOS 관측소 공식 좌표) — 앱에 들어간 값
+- `kr_validation.json` — 국내 완공 정비사업 7건 역검증
