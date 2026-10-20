@@ -1097,9 +1097,30 @@ body[data-a12-mode="auto"] #tab4 .ifcOptGrid8{display:none} .a12-date input{max-
       <div><label for="p6Amount">계약금액(억원) [가정]</label><input type="number" id="p6Amount" min="1" value="1500"></div>
       <div><label for="p6Contract">계약 공기(일, 비우면 LH 기준)</label><input type="number" id="p6Contract" min="1" placeholder="LH 기준"></div>
       <div><label for="p6Ld">지체상금률(‰/일)</label><input type="number" id="p6Ld" min="0" step="0.1" value="0.5"></div>
-      <div><label for="p6Indirect">간접비(계약금액의 %) [가정]</label><input type="number" id="p6Indirect" min="0" step="0.5" value="8"></div>
+      <div><label for="p6Area">연면적(㎡) [가정]</label><input type="number" id="p6Area" min="100" value="80000"></div>
       <div><label for="p6N">반복 횟수</label><select id="p6N"><option value="1000">1,000회(빠름)</option><option value="2000" selected>2,000회</option><option value="4000">4,000회</option></select></div>
     </div>
+    <details class="descFold6" style="margin-top:12px;"><summary>비용 근거값 (출처 있는 값과 [가정])</summary>
+      <div class="p6grid">
+        <div><label for="p6DirLab">직접노무비 / 계약금액(%) [가정]</label><input type="number" id="p6DirLab" min="0" max="100" step="1" value="25"></div>
+        <div><label for="p6MatLab">(재료비+노무비) / 계약금액(%) [가정]</label><input type="number" id="p6MatLab" min="0" max="100" step="1" value="75"></div>
+        <div><label for="p6IndLab">간접노무비율(% of 직접노무비)</label><input type="number" id="p6IndLab" min="0" step="0.1" value="19.4"><p class="hint">조달청 2026.4 건축 36개월 초과</p></div>
+        <div><label for="p6OthExp">기타경비율(% of 재료+노무)</label><input type="number" id="p6OthExp" min="0" step="0.1" value="6.8"><p class="hint">조달청 6.1~7.5%</p></div>
+        <div><label for="p6PreLoan">착공 전 차입잔액(억원) [가정]</label><input type="number" id="p6PreLoan" min="0" value="500"></div>
+        <div><label for="p6Rate">연 금리(%)</label><input type="number" id="p6Rate" min="0" step="0.1" value="6.5"><p class="hint">본PF 5~7%(2025.11~2026.9)</p></div>
+        <div><label for="p6FwRatio">거푸집 면적 / 연면적 [가정]</label><input type="number" id="p6FwRatio" min="0" step="0.1" value="2.7"></div>
+        <div><label for="p6AlRent">알폼 임대(원/㎡) [가정]</label><input type="number" id="p6AlRent" min="0" step="1000" value="30000"><p class="hint">설치·해체 단가는 표준시장단가(알폼 16,323 / 유로폼 43,546원/㎡)</p></div>
+      </div>
+      <p class="hint">간접비 = 계약금액 × (직접노무비 비중 × 간접노무비율 + 재료·노무 비중 × 기타경비율) ÷ 계약공기 — 정부입찰·계약 집행기준 제73조 구조. 연장근무 = 골조 노무비(노무 투입의 38.25%) × 25.7%(근로기준법 가산 50%, 효율 −12.5%).</p>
+    </details>
+    <details class="descFold6"><summary>책임준공(PF) — 신탁사·대주단 관점</summary>
+      <div class="p6grid">
+        <div><label for="p6LcOn">책준 평가</label><select id="p6LcOn"><option value="">사용 안 함</option><option value="full">판례형(하루 초과 시 원리금 전액)</option><option value="ratio">모범규준형(경과일/90 채무인수)</option></select></div>
+        <div><label for="p6LcDate">책준 기한</label><input type="date" id="p6LcDate"></div>
+        <div><label for="p6LcLoan">대출원리금(억원)</label><input type="number" id="p6LcLoan" min="0" value="1000"></div>
+      </div>
+      <p class="hint">판례형: 2025.5·2026.1 대출원리금 전액 배상 판결. 모범규준형: 금융투자협회 책임준공 모범규준(연장 최대 90일, 경과일수 × 1/90).</p>
+    </details>
     <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <button type="button" class="primary" id="p6Run">계산</button>
       <span class="status-line" id="p6Status" role="status" aria-live="polite">입력 후 계산을 누르세요.</span>
@@ -19166,14 +19187,32 @@ window.SA_GROUND_CORE = (function(){
     causes: [{ key: 'material', name: '원자재 수급(레미콘 제외)', share: 31 / 301 }, { key: 'remicon', name: '레미콘 부족', share: 19 / 301 },
       { key: 'labor', name: '노동쟁의', share: 19 / 301 }, { key: 'etc', name: '보상·공법변경·추가공사·기상·문화재·부도 등(원인 미분리)', share: 232 / 301 }] };
 
-  const ECON_DEFAULT = {   // [가정] 표시는 화면에서 바꿀 수 있다
-    contractAmount: 1000,       // 억원 [가정 — 반드시 실제 계약금액으로]
-    contractDays: null,         // null 이면 LH 기준 공기
-    ldRatePerDay: 0.0005,       // 지체상금률 0.5/1000·일 (공공 표준), 상한 30%
-    ldCap: 0.30,
-    indirectRate: 0.08,         // 간접비 = 계약금액 × 8% ÷ 계약공기 (일당) [가정]
-    financePerMonthRate: 0.004, // 착공 연기 시 금융비 = 계약금액 × 0.4%/월 [가정]
+  // 비용 기본값. 근거가 있는 값은 출처를, 없는 값은 [가정]을 단다(화면에서 바꿀 수 있다). 금액 억원.
+  const ECON_DEFAULT = {
+    contractAmount: 1000,        // 계약금액 [가정 — 실제 값으로]
+    contractDays: null,          // null 이면 LH 기준 공기
+    floorArea: 80000,            // 연면적 ㎡ [가정 — Revit/설계 값으로]
+    ldRatePerDay: 0.0005,        // 지체상금 0.5/1000·일 — 국가계약법 시행규칙 제75조(공사). 민간은 약정률
+    ldCap: 0.30,                 // 상한 계약금액 30% — 공사계약일반조건 제25조
+    directLaborShare: 0.25,      // 직접노무비 / 계약금액 [가정]
+    matLaborShare: 0.75,         // (재료비+노무비) / 계약금액 [가정]
+    indirectLaborRate: 0.194,    // 간접노무비 = 직접노무비 × 19.4% — 조달청 2026.4 건축(36개월 초과)
+    otherExpenseRate: 0.068,     // 기타경비 = (재료비+노무비) × 6.1~7.5%의 가운데 — 조달청 2026.4
+    frameLaborShare: 0.3825,     // 공동주택 노무 투입 중 골조 비중 — 전상훈·구교진 2015(25개 현장)
+    overtimePremium: 0.5,        // 연장근로 가산 50% — 근로기준법 제56조
+    preLoan: 500,                // 착공 전 차입잔액(브릿지·토지담보) [가정]
+    loanRate: 0.065,             // 연 금리 — 본PF 올인코스트 5~7%(2025.11~2026.9 보도)
+    formworkRatio: 2.7,          // 거푸집 면적 / 연면적 [가정 — 국내 근거 미확인, Revit 산출로 대체]
+    alformLabor: 16323,          // 알폼 설치·해체 일반층 원/㎡ — 2026 하반기 표준시장단가
+    euroLabor: 43546,            // 유로폼 원/㎡ — 표준시장단가 35,000~52,092의 가운데
+    alformRent: 30000,           // 알폼 임대·전용 원/㎡ [가정 — 단위 확인된 국내 자료 없음]
+    lc: null,                    // 책임준공 { deadlineDays, loan(억원), model:'full'|'ratio' }
   };
+  const indirectPerDay = (e, C) => e.contractAmount * (e.directLaborShare * e.indirectLaborRate + e.matLaborShare * e.otherExpenseRate) / C;
+  // 연장근무 추가비: 하루 10시간 중 2시간(20%)이 1.5배, 효율 −12.5% → 같은 일에 드는 노무비 = (0.8 + 0.2×1.5) ÷ 0.875 = 1.257배
+  const overtimeCost = e => e.contractAmount * e.directLaborShare * e.frameLaborShare * ((0.8 + 0.2 * (1 + e.overtimePremium)) / 0.875 - 1);
+  const financeCost = (e, months) => e.preLoan * e.loanRate / 12 * months;
+  const formworkDelta = e => e.floorArea * e.formworkRatio * (e.alformLabor - e.euroLabor + e.alformRent) / 1e8;   // 원 → 억원
 
   const addMonths = (s, k) => { const [y, m, d] = s.split('-').map(Number); const t = new Date(Date.UTC(y, m - 1 + k, d)); return t.toISOString().slice(0, 10); };
 
@@ -19200,24 +19239,24 @@ window.SA_GROUND_CORE = (function(){
   // 대응안 목록: 각 대응안 = { id, name, apply(ctx) → { params?, tpl?, drivers?, econ?, cost, safety }, evidence, assumption }
   const OPTIONS = {
     formworkSystem: { name: '거푸집 변경: 유로폼 → 시스템(알폼·갱폼)', evidence: 'LH 지침: 7층 이상 층당 11일 → 7일. 알폼은 유로폼 대비 +58%(학술, 거푸집 비용 기준)',
-      assumption: '추가비 = 계약금액 × 0.5% [가정]',
-      applicable: p => p.formwork === 'euro', apply: c => ({ params: { ...c.p, formwork: 'system' }, cost: c.econ.contractAmount * 0.005 }) },
+      assumption: '추가비 = 연면적 × 거푸집 면적비[가정] × (알폼 설치·해체 − 유로폼 [표준시장단가 2026 하반기] + 알폼 임대[가정])',
+      applicable: p => p.formwork === 'euro', apply: c => ({ params: { ...c.p, formwork: 'system' }, cost: formworkDelta(c.econ) }) },
     startShift3: { name: '착공 3개월 이동', evidence: '착공월에 따라 같은 건물의 LH 공기가 794~874일(서울 20층 예시)',
-      assumption: '금융비 = 계약금액 × 0.4%/월 × 3 [가정]',
-      apply: c => ({ params: { ...c.p, start: addMonths(c.p.start, 3) }, cost: c.econ.contractAmount * c.econ.financePerMonthRate * 3, shiftDays: 0 }) },
-    startShift6: { name: '착공 6개월 이동', evidence: '위와 같음', assumption: '금융비 = 계약금액 × 0.4%/월 × 6 [가정]',
-      apply: c => ({ params: { ...c.p, start: addMonths(c.p.start, 6) }, cost: c.econ.contractAmount * c.econ.financePerMonthRate * 6 }) },
+      assumption: '금융비 = 착공 전 차입잔액[가정] × 연 금리(PF 5~7%) ÷ 12 × 3',
+      apply: c => ({ params: { ...c.p, start: addMonths(c.p.start, 3) }, cost: financeCost(c.econ, 3) }) },
+    startShift6: { name: '착공 6개월 이동', evidence: '위와 같음', assumption: '금융비 = 착공 전 차입잔액[가정] × 연 금리 ÷ 12 × 6',
+      apply: c => ({ params: { ...c.p, start: addMonths(c.p.start, 6) }, cost: financeCost(c.econ, 6) }) },
     finishFlow: { name: '마감 층별 선행 착수(택트, 골조 3개층 뒤)', evidence: '고층 공동주택 마감 택트 적용 153일 vs 미적용 206일(−25%, Lee 외 2015 eTACT, 단일 회사). 동바리 3개층 존치(표준시방서)',
       assumption: '마감 작업조 4개, 추가비 0(공정 운영 변경)', apply: c => ({ tpl: finishFlow(c.tpl), cost: 0 }) },
     finishFlowCrew: { name: '마감 층별 선행 착수 + 마감 작업조 1개 추가', evidence: '인원 추가는 인시 증가로 이득 일부 상쇄(Seppänen 외 2014), 과다투입 생산성 손실 0~41%(Hanna)',
       assumption: '작업조 5개, 생산성 −10% [가정], 추가비 = 계약금액 × 0.3% [가정]',
       apply: c => ({ tpl: finishFlow(c.tpl, { crews: 5, productivity: 0.9 }), cost: c.econ.contractAmount * 0.003 }) },
     overtimeFrame: { name: '골조 연장근무(일 8→10시간)', evidence: '주 50~60시간 근무 시 효율 −10~15%(Thomas & Raynar 1997), 재해 오즈 약 1.5배(Webb 외 2015)',
-      assumption: '하루 작업량 ×1.25×0.875 = ×1.094, 할증비 = 계약금액 × 0.4% [가정], 안전 노출 ×1.5',
+      assumption: '하루 작업량 ×1.25×0.875 = ×1.094. 추가 노무비 = 계약금액 × 직접노무비 비중[가정] × 골조 비중 38.25% × 25.7%(가산 50%·효율 −12.5%). 안전 노출 ×1.5',
       apply: c => {
         const m = JSON.parse(JSON.stringify(c.tpl.model)), f = 1 / (1.25 * 0.875);
         for (const t of m.tasks) if (t.trade === '골조') { t.dur *= f; if (t.durByLoc) for (const k in t.durByLoc) t.durByLoc[k] *= f; }
-        return { tpl: { ...c.tpl, model: m }, cost: c.econ.contractAmount * 0.004, safety: 0.5 };
+        return { tpl: { ...c.tpl, model: m }, cost: overtimeCost(c.econ), safety: 0.5 };
       } },
     materialDual: { name: '레미콘·자재 이원화와 선발주', evidence: 'LH 지연 원인 중 원자재 50곳(레미콘 19곳)/지연 301곳', assumption: '원자재·레미콘 원인 지연 확률 50% 감소 [가정], 추가비 = 계약금액 × 0.2% [가정]',
       applicable: (p, mode) => mode === 'public',
@@ -19225,12 +19264,18 @@ window.SA_GROUND_CORE = (function(){
   };
 
   // 표본 → 비용 통계. T: 달력일 표본, C: 계약공기
+  // 책임준공 손실: full = 기한을 하루라도 넘기면 대출원리금 전액(판례 2025.5·2026.1), ratio = 경과일수/90 만큼 채무인수(금투협 모범규준)
+  const lcLoss = (lc, t) => { if (!lc || !(lc.loan > 0)) return 0; const over = t - lc.deadlineDays; if (over <= 0) return 0; return lc.model === 'ratio' ? lc.loan * Math.min(1, over / 90) : lc.loan; };
+
   function costStats(T, C, econ, respCost){
-    const amt = econ.contractAmount, perDay = amt * econ.indirectRate / C, ldMax = econ.ldCap * amt;
-    const tot = Array.from(T, t => respCost + Math.min(ldMax, econ.ldRatePerDay * amt * Math.max(0, t - C)) + perDay * t).sort((a, b) => a - b);
+    const amt = econ.contractAmount, perDay = econ.indirectRate != null ? amt * econ.indirectRate / C : indirectPerDay(econ, C), ldMax = econ.ldCap * amt, lc = econ.lc;
+    const one = t => respCost + Math.min(ldMax, econ.ldRatePerDay * amt * Math.max(0, t - C)) + perDay * t + lcLoss(lc, t);
+    const tot = Array.from(T, one).sort((a, b) => a - b);
     const n = tot.length, k = Math.max(1, Math.floor(n * 0.05)), mean = tot.reduce((a, b) => a + b, 0) / n;
-    let ld = 0, late = 0, onTime = 0; for (const t of T) { const d = Math.max(0, t - C); ld += Math.min(ldMax, econ.ldRatePerDay * amt * d); late += d; if (t <= C) onTime++; }
-    return { expectedCost: mean, cvar95: tot.slice(n - k).reduce((a, b) => a + b, 0) / k, expectedLD: ld / n, expectedDelay: late / n, onTimeProb: onTime / n, indirectPerDay: perDay };
+    let ld = 0, late = 0, onTime = 0, lcOk = 0, lcL = 0;
+    for (const t of T) { const d = Math.max(0, t - C); ld += Math.min(ldMax, econ.ldRatePerDay * amt * d); late += d; if (t <= C) onTime++; if (lc && t <= lc.deadlineDays) lcOk++; lcL += lcLoss(lc, t); }
+    return { expectedCost: mean, cvar95: tot.slice(n - k).reduce((a, b) => a + b, 0) / k, expectedLD: ld / n, expectedDelay: late / n, onTimeProb: onTime / n, indirectPerDay: perDay,
+      lcOnTimeProb: lc ? lcOk / n : null, expectedLcLoss: lc ? lcL / n : null };
   }
 
   // 평가: 기준 + 대응안(단독, 그리고 combos 로 준 묶음). 모든 경우 같은 시드(공통 난수)
@@ -19278,7 +19323,7 @@ window.SA_GROUND_CORE = (function(){
     return rows.map((r, i) => ({ id: r.id, score: d(V[i], worst) / ((d(V[i], best) + d(V[i], worst)) || 1) })).sort((a, b) => b.score - a.score);
   }
 
-  G.SA_RESPONSE_CORE = { KR_PUBLIC, ECON_DEFAULT, OPTIONS, finishFlow, costStats, evaluate, pareto, topsis };
+  G.SA_RESPONSE_CORE = { KR_PUBLIC, ECON_DEFAULT, OPTIONS, finishFlow, costStats, evaluate, pareto, topsis, indirectPerDay, overtimeCost, financeCost, formworkDelta, lcLoss };
 })();
 </script>
 <style id="sa-prob-ui-css">
@@ -19318,8 +19363,19 @@ window.SA_GROUND_CORE = (function(){
       formwork: v('p6Form'), parking: v('p6Park'), retaining: v('p6Ret'), retainingScale: v('p6RetScale'), pile, roof: v('p6Roof') === 'flat' ? null : v('p6Roof'), housing: v('p6Housing') };
   }
   function econ(){
-    const c = Number($('p6Contract').value);
-    return { contractAmount: Number($('p6Amount').value), contractDays: c > 0 ? c : null, ldRatePerDay: Number($('p6Ld').value) / 1000, indirectRate: Number($('p6Indirect').value) / 100 };
+    const c = Number($('p6Contract').value), num = id => Number($(id).value), pc = id => num(id) / 100;
+    const e = { contractAmount: num('p6Amount'), contractDays: c > 0 ? c : null, ldRatePerDay: num('p6Ld') / 1000, floorArea: num('p6Area'),
+      directLaborShare: pc('p6DirLab'), matLaborShare: pc('p6MatLab'), indirectLaborRate: pc('p6IndLab'), otherExpenseRate: pc('p6OthExp'),
+      preLoan: num('p6PreLoan'), loanRate: pc('p6Rate'), formworkRatio: num('p6FwRatio'), alformRent: num('p6AlRent'), lc: null };
+    const lcModel = $('p6LcOn').value;
+    if (lcModel) {
+      const d = $('p6LcDate').value;
+      if (!d) throw new Error('책준 기한 날짜를 입력하세요');
+      const days = (Date.parse(d) - Date.parse($('p6Start').value)) / 86400000 + 1;
+      if (!(days > 0)) throw new Error('책준 기한이 착공일보다 빠릅니다');
+      e.lc = { deadlineDays: days, loan: num('p6LcLoan'), model: lcModel, date: d };
+    }
+    return e;
   }
 
   // ── 차트 ───────────────────────────────────────────
@@ -19398,10 +19454,11 @@ window.SA_GROUND_CORE = (function(){
     const crit = [{ key: 'p80cal', w: w('p6wT'), better: 'min' }, { key: 'expectedCost', w: w('p6wC'), better: 'min' }, { key: 'cvar95', w: w('p6wR'), better: 'min' }, { key: 'safetyExposure', w: w('p6wS'), better: 'min' }].filter(c => c.w > 0);
     const ev = LAST.ev, top = crit.length ? R.topsis(ev.rows, crit) : ev.rows.map((r, i) => ({ id: r.id, score: 1 - i / ev.rows.length }));
     const rank = Object.fromEntries(top.map((t, i) => [t.id, i + 1])), rows = [...ev.rows].sort((a, b) => rank[a.id] - rank[b.id]);
-    let h = '<thead><tr><th scope="col">순위</th><th scope="col">대응안</th><th scope="col">기한 내</th><th scope="col">P50</th><th scope="col">보정 P80</th><th scope="col">기대 지연</th><th scope="col">대응비</th><th scope="col">기대 지체상금</th><th scope="col">기대 총비용</th><th scope="col">CVaR95</th><th scope="col">안전 노출</th><th scope="col">파레토</th></tr></thead><tbody>';
+    const lc = !!LAST.e.lc;
+    let h = '<thead><tr><th scope="col">순위</th><th scope="col">대응안</th><th scope="col">기한 내</th>' + (lc ? '<th scope="col">책준 내</th><th scope="col">책준 기대손실</th>' : '') + '<th scope="col">P50</th><th scope="col">보정 P80</th><th scope="col">기대 지연</th><th scope="col">대응비</th><th scope="col">기대 지체상금</th><th scope="col">기대 총비용</th><th scope="col">CVaR95</th><th scope="col">안전 노출</th><th scope="col">파레토</th></tr></thead><tbody>';
     rows.forEach((r, i) => {
       const why = r.ids.length ? `<details><summary>근거·가정</summary>${r.evidence.map(e => `<p>근거: ${esc(e)}</p>`).join('')}${r.assumptions.map(a => `<p>가정: ${esc(a)}</p>`).join('')}</details>` : '<details><summary>설명</summary><p>LH 지침 기준 공정 그대로. 공공 모드는 LH 실적에 맞춘 외부 지연 위험 포함.</p></details>';
-      h += `<tr class="${i === 0 ? 'best' : ''}"><td>${rank[r.id]}</td><td>${esc(r.name)}${why}</td><td>${pct(r.onTimeProb)}</td><td>${n0(r.p50)}일</td><td>${n0(r.p80cal)}일</td><td>${n0(r.expectedDelay)}일</td><td>${n1(r.responseCost)}억</td><td>${n1(r.expectedLD)}억</td><td>${n1(r.expectedCost)}억</td><td>${n1(r.cvar95)}억</td><td>${r.safetyExposure === 1 ? '기준' : '×' + r.safetyExposure}</td><td>${ev.pareto.includes(r.id) ? '●' : ''}</td></tr>`;
+      h += `<tr class="${i === 0 ? 'best' : ''}"><td>${rank[r.id]}</td><td>${esc(r.name)}${why}</td><td>${pct(r.onTimeProb)}</td>${lc ? `<td>${pct(r.lcOnTimeProb)}</td><td>${n1(r.expectedLcLoss)}억</td>` : ''}<td>${n0(r.p50)}일</td><td>${n0(r.p80cal)}일</td><td>${n0(r.expectedDelay)}일</td><td>${n1(r.responseCost)}억</td><td>${n1(r.expectedLD)}억</td><td>${n1(r.expectedCost)}억</td><td>${n1(r.cvar95)}억</td><td>${r.safetyExposure === 1 ? '기준' : '×' + r.safetyExposure}</td><td>${ev.pareto.includes(r.id) ? '●' : ''}</td></tr>`;
     });
     $('p6RespTable').innerHTML = h + '</tbody>';
     $('p6Scatter').innerHTML = scatter(ev.rows, rank, ev.pareto);
@@ -19435,7 +19492,9 @@ window.SA_GROUND_CORE = (function(){
         $('p6Gantt').innerHTML = gantt(lh);
         $('p6LhTable').innerHTML = `<table class="cmp"><thead><tr><th>구간</th><th>시작</th><th>끝</th><th>일수</th><th>작업</th><th>비작업</th></tr></thead><tbody>${lh.phases.map(x => `<tr><td>${esc(x.label)}</td><td>${x.start}</td><td>${x.end}</td><td>${x.days}</td><td>${x.work ?? '-'}</td><td>${x.work ? x.nonwork : '-'}</td></tr>`).join('')}</tbody></table>`;
         const C = ev.contractDays;
-        $('p6Kpis').innerHTML = [['LH 기준', n0(lh.total) + '일'], ['P50', n0(base.p50) + '일'], ['보정 P80', n0(base.p80cal) + '일'], ['계약 공기 내 준공', pct(base.onTimeProb)], ['기대 지연', n0(base.expectedDelay) + '일'], ['±15% 대칭이면 P80', n0(sym.p80) + '일']]
+        const kp = [['LH 기준', n0(lh.total) + '일'], ['P50', n0(base.p50) + '일'], ['보정 P80', n0(base.p80cal) + '일'], ['계약 공기 내 준공', pct(base.onTimeProb)], ['기대 지연', n0(base.expectedDelay) + '일'], ['±15% 대칭이면 P80', n0(sym.p80) + '일']];
+        if (e.lc) kp.push([`책준 기한(${e.lc.date}) 내 준공`, pct(base.lcOnTimeProb)], ['책준 기대 손실', n1(base.expectedLcLoss) + '억']);
+        $('p6Kpis').innerHTML = kp
           .map(([k, v]) => `<div class="p6kpi"><span>${k}</span><b>${v}</b></div>`).join('');
         $('p6Hist').innerHTML = hist(base.sorted, [{ v: lh.total, t: 'LH', c: css('--status-done') }, { v: base.p50, t: 'P50', c: css('--text-secondary') }, { v: base.p80cal, t: '보정 P80', c: css('--status-risk') }, { v: C, t: '계약', c: css('--text-primary'), dash: true }]);
         $('p6HistNote').textContent = `${mode === 'public' ? '공공 모드: LH 395단지 지연 실적에 맞춘 외부 지연(발생 94%, 중앙값 75일) 포함. ' : '민간 모드: 작업 분포만 사용. '}보정 P80 = 시뮬레이션 ${(base.qstar * 100).toFixed(1)} 분위(공개 프로젝트 백테스트로 정한 값). 반복 ${n0(N)}회.`;

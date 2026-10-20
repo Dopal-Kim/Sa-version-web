@@ -8,12 +8,13 @@ for (const id of ['sa-lbs-core', 'sa-lh-core', 'sa-response-core']) vm.runInCont
 const R = ctx.SA_RESPONSE_CORE, L = ctx.SA_LBS_CORE, H = ctx.SA_LH_CORE, prior = JSON.parse(blk('sa-duration-prior'));
 const EX8 = { region: '서울', start: '2016-09-14', basement: 1, basementTall: 1, parking: 'lt150', floors: 20, formwork: 'system', retaining: 'self', retainingScale: 'general', pile: { method: 'bored', depth: 25, count: 2000 }, roof: 'concrete', housing: 'sale' };
 
-test('비용 손계산: 지체상금 = 0.5/1000 × 계약금액 × 지연일(상한 30%), 간접비 = 8% ÷ 계약공기 × 공기', () => {
+test('비용 손계산: 지체상금 = 0.5/1000 × 계약금액 × 지연일(상한 30%), 간접비 = 계약금액 × (직노비중×19.4% + 재노비중×6.8%) ÷ 계약공기 × 공기', () => {
   const econ = { ...R.ECON_DEFAULT, contractAmount: 1000 };
   const s = R.costStats(Float64Array.from([800, 1000, 3000]), 1000, econ, 5);
   // 지연 0 / 0 / 2000일 → 0.0005×1000×2000 = 1000억 > 상한 300억 → 300
   assert.ok(Math.abs(s.expectedLD - 100) < 1e-9);
-  const perDay = 1000 * 0.08 / 1000;
+  const perDay = 1000 * (0.25 * 0.194 + 0.75 * 0.068) / 1000;   // 0.0995억/일
+  assert.ok(Math.abs(s.indirectPerDay - perDay) < 1e-12);
   assert.ok(Math.abs(s.expectedCost - (5 + (0 + 0 + 300) / 3 + perDay * (800 + 1000 + 3000) / 3)) < 1e-9);
   assert.ok(Math.abs(s.onTimeProb - 2 / 3) < 1e-9);
   assert.ok(Math.abs(s.cvar95 - (5 + 300 + perDay * 3000)) < 1e-9);   // 표본 3개 → 최악 1개
@@ -57,4 +58,24 @@ test('평가: 공공 기준안 기한내 확률 ≈ LH 실적(24%), 민간은 �
   assert.ok(pub.rows.find(r => r.id === 'materialDual').expectedDelay < b.expectedDelay);
   assert.equal(R.evaluate(EX8, { mode: 'public', N: 200, prior, options: ['formworkSystem'] }).rows.length, 1);   // 이미 시스템 거푸집
   assert.equal(R.evaluate({ ...EX8, formwork: 'euro' }, { mode: 'public', N: 200, prior, options: ['formworkSystem'] }).rows.length, 2);
+});
+
+test('대응안 비용 손계산: 연장근무 25.7%, 착공 연기 금융비, 거푸집 차액(표준시장단가)', () => {
+  const e = { ...R.ECON_DEFAULT, contractAmount: 1000, directLaborShare: 0.25 };
+  // 1000 × 0.25 × 0.3825 × ((0.8 + 0.2×1.5)/0.875 − 1) = 95.625 × 0.25714… = 24.589
+  assert.ok(Math.abs(R.overtimeCost(e) - 1000 * 0.25 * 0.3825 * (1.1 / 0.875 - 1)) < 1e-9);
+  assert.ok(Math.abs(R.financeCost({ ...e, preLoan: 600, loanRate: 0.06 }, 3) - 9) < 1e-9);       // 600 × 6% ÷ 12 × 3
+  // 80,000㎡ × 2.7 × (16,323 − 43,546 + 30,000)원 = 5.998억
+  assert.ok(Math.abs(R.formworkDelta(e) - 80000 * 2.7 * (16323 - 43546 + 30000) / 1e8) < 1e-9);
+});
+
+test('책임준공: 판례형은 하루만 넘어도 원리금 전액, 모범규준형은 경과일수/90, 기한 내 확률·기대손실이 비용에 들어감', () => {
+  assert.equal(R.lcLoss({ deadlineDays: 900, loan: 500, model: 'full' }, 901), 500);
+  assert.equal(R.lcLoss({ deadlineDays: 900, loan: 500, model: 'full' }, 900), 0);
+  assert.ok(Math.abs(R.lcLoss({ deadlineDays: 900, loan: 500, model: 'ratio' }, 945) - 250) < 1e-9);
+  assert.equal(R.lcLoss({ deadlineDays: 900, loan: 500, model: 'ratio' }, 2000), 500);
+  const e = { ...R.ECON_DEFAULT, contractAmount: 1000, lc: { deadlineDays: 950, loan: 500, model: 'full' } };
+  const base = R.costStats(Float64Array.from([900, 1000]), 1000, { ...e, lc: null }, 0), withLc = R.costStats(Float64Array.from([900, 1000]), 1000, e, 0);
+  assert.equal(withLc.lcOnTimeProb, 0.5); assert.equal(withLc.expectedLcLoss, 250);
+  assert.ok(Math.abs(withLc.expectedCost - base.expectedCost - 250) < 1e-9);
 });
