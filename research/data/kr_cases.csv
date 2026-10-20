@@ -1,0 +1,15 @@
+name,region,owner,start,planned_months,actual_months,status,floors,basement,units,causes,url,verified,use
+올림픽파크포레온(둔촌주공),강동,정비사업,2020-02-15,42,57.3,완공,35,3,12032,"공사비 분쟁으로 2022-04-15~10-17 공사 중단(183일), 2023-12 합의",https://www.yna.co.kr/view/AKR20241125114800004,Y,validate
+래미안 원베일리(신반포3차·경남),서초,정비사업,2020-04-20,40.3,40.3,완공(정시),35,3,2990,"2개월 연장 요청(코로나·화물연대·감리 교체) 후 연장 없이 준공",https://www.sedaily.com/NewsView/29TMD9TYK2,Y,validate
+디에이치퍼스티어아이파크(개포주공1),강남,정비사업,2020-06-03,41.5,41.9,완공(임시사용·돌관),35,4,6702,"오봉역 사고·화물연대 → 연장 요청 거부, 돌관공사",https://www.sedaily.com/NewsView/29N7CCTQXI,Y*,validate
+잠실래미안아이파크(잠실진주),송파,정비사업,2021-12-01,42,48,완공,35,3,2678,"유구 발견 정밀발굴(약 3~7개월), 공사비 갈등, 마감재 변경",https://www.mk.co.kr/news/realestate/11965281,Y,validate
+철산자이 더 헤리티지(철산주공8·9),광명,정비사업,2021-12-01,41.5,42,완공(정시),40,3,3804,"공사비 분쟁(경기도 조정) — 공기 연장 없음",https://www.housingtimes.co.kr/news/articleView.html?idxno=827,Y,validate
+트리우스 광명(광명2R),광명,정비사업,2021-04-01,41,44,완공,35,3,3344,"조합 집행부 공석·공사비 협상·원자재 → 4개월 연장 합의",https://biz.heraldcorp.com/article/3152834,Y,validate
+메이플자이(신반포4지구),서초,정비사업,2021-10-19,34,44.3,완공,35,4,3307,"1·2차 연장, 공사비 분쟁(4916억 요구 → 788억 합의)",https://biz.chosun.com/real_estate/real_estate_general/2025/04/18/P5TBGURUP5EUTND77TU4TJVDOM/,Y*,validate
+왕십리뉴타운2구역,성동,정비사업,2010-12-02,34,38.8,완공,,,,"분양가 문제로 약 5개월 공사 중단",https://lfind.kr/cases/%EC%84%9C%EC%9A%B8%EA%B3%A0%EB%93%B1%EB%B2%95%EC%9B%90/2016%EB%82%982044019,Y*,no-floors
+써밋더힐(흑석11구역),동작,정비사업,2025-12-01,43,49,계약변경(착공 전),,,,"흙막이 공법 변경·중대재해법·혹서기 중지·파업·3mm 강우 타설 금지",https://www.housingwatch.co.kr/news/article.html?no=26257,Y,baseline-trend
+디에이치 클래스트(반포주공1 124주구),서초,정비사업,2024-03-01,34,44,연장확정(진행중),35,5,5002,"물가변동 등 공사비 47.8% 증액과 함께 공기 연장",https://www.newsis.com/view/NISX20240904_0002874529,Y,baseline-trend
+래미안 트리니원(반포주공1 3주구),서초,정비사업,2023-03-01,34,40,연장확정(진행중),35,3,,"흙막이·중대재해법·혹서기·파업·강우 타설 금지",https://www.housingwatch.co.kr/news/article.html?no=26257,Y,baseline-trend
+광명자이힐스테이트SKVIEW(광명5R),광명,정비사업,2023-01-01,45,48,계약변경(착공 직전),,,2878,"암반 추가 발견",https://www.sedaily.com/NewsView/29N7CCTQXI,Y,baseline-trend
+디에이치 클라우드(마천4구역),송파,정비사업,2026-12-01,34,44,요청(착공 전),33,4,1254,"설계변경(지하 3→4층, 평형 확대)",https://newsway.co.kr/news/view?ud=2026040216433904711,Y,baseline-trend
+원평2동 재개발,구미,정비사업,2027-07-01,42,48,계약변경(착공 전),49,3,2023,"설계변경, 물가상승분",https://www.wolyo.co.kr/news/articleView.html?idxno=315366,Y,baseline-trend

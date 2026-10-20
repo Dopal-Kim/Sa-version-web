@@ -1081,7 +1081,7 @@ body[data-a12-mode="auto"] #tab4 .ifcOptGrid8{display:none} .a12-date input{max-
     <div class="p6grid">
       <div><label for="p6Region">지역(관측 지역 또는 시·군)</label><input type="text" id="p6Region" list="p6RegionList" value="서울"><datalist id="p6RegionList"></datalist></div>
       <div><label for="p6Start">착공일</label><input type="date" id="p6Start" value="2026-03-02"></div>
-      <div><label for="p6Mode">발주 구분</label><select id="p6Mode"><option value="public">공공(LH 실적 보정)</option><option value="private">민간</option></select></div>
+      <div><label for="p6Mode">발주 구분</label><select id="p6Mode"><option value="public">공공(LH 실적 보정)</option><option value="redevelop">정비사업(외부 지연 보정)</option><option value="private">민간(비분쟁, 작업 분포만)</option></select></div>
       <div><label for="p6Floors">지상 층수</label><input type="number" id="p6Floors" min="3" max="80" value="20"></div>
       <div><label for="p6Base">지하 층수</label><input type="number" id="p6Base" min="0" max="8" value="1"></div>
       <div><label for="p6BaseTall">층고 4.5m 초과 지하층 수</label><input type="number" id="p6BaseTall" min="0" max="8" value="1"></div>
@@ -19277,7 +19277,7 @@ window.SA_GROUND_CORE = (function(){
         return { tpl: { ...c.tpl, model: m }, cost: overtimeCost(c.econ), safety: 0.5 };
       } },
     materialDual: { name: '레미콘·자재 이원화와 선발주', evidence: 'LH 지연 원인 중 원자재 50곳(레미콘 19곳)/지연 301곳', assumption: '원자재·레미콘 원인 지연 확률 50% 감소 [가정], 추가비 = 계약금액 × 0.2% [가정]',
-      applicable: (p, mode) => mode === 'public',
+      applicable: (p, mode) => mode !== 'private',
       apply: c => ({ drivers: c.drivers.map(d => d.id === KR_PUBLIC.id ? { ...d, prob: d.prob * (1 - 0.5 * (50 / 301)) } : d), cost: c.econ.contractAmount * 0.002 }) },
   };
 
@@ -19300,7 +19300,7 @@ window.SA_GROUND_CORE = (function(){
   function evaluate(p, opts = {}){
     const mode = opts.mode || 'public', econ = { ...ECON_DEFAULT, ...(opts.econ || {}) }, N = opts.N || 2000, seed = opts.seed || 20261020;
     const baseTpl = H().template(p), C = econ.contractDays || baseTpl.lh.total;
-    const baseDrivers = mode === 'public' ? [KR_PUBLIC] : [];
+    const baseDrivers = mode === 'private' ? [] : [KR_PUBLIC];   // 공공·정비사업은 외부 지연 보정(정비사업: 국내 완공 7건 역검증 research/R0_검증.md)
     const run = (ids) => {
       let ctx = { p, tpl: baseTpl, drivers: baseDrivers, econ }, cost = 0, safety = 0, notes = [];
       for (const id of ids) {
@@ -19578,7 +19578,7 @@ window.SA_GROUND_CORE = (function(){
         const ev = window.SA_RESPONSE_CORE.evaluate(p, { mode, N, prior: prior(), econ: e,
           combos: [['formworkSystem', 'finishFlow'], ['formworkSystem', 'finishFlow', 'materialDual'], ['finishFlow', 'materialDual'], ['finishFlow', 'overtimeFrame']] });
         const base = ev.rows[0], lh = base.tpl.lh;
-        const sym = window.SA_LBS_CORE.simulate(base.tpl.model, { N, seed: 20261020, calendar: base.tpl.calendar, ratio: 'sym15', riskDrivers: mode === 'public' ? [window.SA_RESPONSE_CORE.KR_PUBLIC] : [] });
+        const sym = window.SA_LBS_CORE.simulate(base.tpl.model, { N, seed: 20261020, calendar: base.tpl.calendar, ratio: 'sym15', riskDrivers: mode !== 'private' ? [window.SA_RESPONSE_CORE.KR_PUBLIC] : [] });
         LAST = { ev, p, e, lh, sym };
         $('p6LhCard').hidden = $('p6DistCard').hidden = $('p6RespCard').hidden = $('p6FlowCard').hidden = false;
         $('p6LhDesc').innerHTML = `${esc(lh.region)}(${lh.grade}급지) · ${esc(lh.start)} 착공 → <b>${esc(lh.end)} 준공, ${n0(lh.total)}일</b>. 지상골조 동절기 층: ${base.tpl.lh.phases.find(x => x.key === 'superFrame').winterFloors.join(', ') || '없음'}.`;
@@ -19590,7 +19590,7 @@ window.SA_GROUND_CORE = (function(){
         $('p6Kpis').innerHTML = kp
           .map(([k, v]) => `<div class="p6kpi"><span>${k}</span><b>${v}</b></div>`).join('');
         $('p6Hist').innerHTML = hist(base.sorted, [{ v: lh.total, t: 'LH', c: css('--status-done') }, { v: base.p50, t: 'P50', c: css('--text-secondary') }, { v: base.p80cal, t: '보정 P80', c: css('--status-risk') }, { v: C, t: '계약', c: css('--text-primary'), dash: true }]);
-        $('p6HistNote').textContent = `${mode === 'public' ? '공공 모드: LH 395단지 지연 실적에 맞춘 외부 지연(발생 94%, 중앙값 75일) 포함. ' : '민간 모드: 작업 분포만 사용. '}보정 P80 = 시뮬레이션 ${(base.qstar * 100).toFixed(1)} 분위(공개 프로젝트 백테스트로 정한 값). 반복 ${n0(N)}회.`;
+        $('p6HistNote').textContent = `${mode === 'private' ? '민간 모드: 작업 분포만 사용(국내 정비사업 7건 역검증에서 낙관적 — 분쟁 가능 현장은 정비사업 모드). ' : 'LH 395단지 지연 실적에 맞춘 외부 지연(발생 94%, 중앙값 75일) 포함' + (mode === 'redevelop' ? ' — 국내 완공 정비사업 7건 역검증 P80 안 5/7. ' : '. ')}보정 P80 = 시뮬레이션 ${(base.qstar * 100).toFixed(1)} 분위(공개 프로젝트 백테스트로 정한 값). 반복 ${n0(N)}회.`;
         rankRows(); revitButtons();
         st.className = 'status-line ok'; st.textContent = `완료 — 대응안 ${ev.rows.length}개, ${n0(performance.now() - t0)}ms`;
       } catch (err) { st.className = 'status-line err'; st.textContent = '계산 오류: ' + err.message; console.error(err); }
