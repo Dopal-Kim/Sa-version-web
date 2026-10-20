@@ -1124,6 +1124,8 @@ body[data-a12-mode="auto"] #tab4 .ifcOptGrid8{display:none} .a12-date input{max-
     </details>
     <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <button type="button" class="primary" id="p6Run">계산</button>
+      <button type="button" class="ghost" id="p6Save">입력값 저장</button>
+      <label class="ghost" style="margin:0;cursor:pointer;" for="p6LoadFile">입력값 불러오기</label><input type="file" id="p6LoadFile" accept=".json,application/json" hidden>
       <span class="status-line" id="p6Status" role="status" aria-live="polite">입력 후 계산을 누르세요.</span>
     </div>
   </div>
@@ -19684,6 +19686,28 @@ window.SA_GROUND_CORE = (function(){
     return window.SA_REVIT_CORE.results(REVIT, row, { N: Number($('p6N').value), prior: prior(), riskDrivers: row.drivers });
   }
 
+  // 입력값 저장·불러오기(sa-input/1) — 예제 재현·공유용. 카드 A의 모든 입력 + 대응안 가중치
+  const INPUT_IDS = ['p6Region', 'p6Start', 'p6Mode', 'p6Floors', 'p6Base', 'p6BaseTall', 'p6Form', 'p6Park', 'p6Ret', 'p6RetScale', 'p6Pile', 'p6PileDepth', 'p6PileCount',
+    'p6Roof', 'p6Housing', 'p6Amount', 'p6Contract', 'p6Ld', 'p6Area', 'p6Wx', 'p6N', 'p6DirLab', 'p6MatLab', 'p6IndLab', 'p6OthExp', 'p6PreLoan', 'p6Rate', 'p6FwRatio',
+    'p6AlRent', 'p6LcOn', 'p6LcDate', 'p6LcLoan', 'p6wT', 'p6wC', 'p6wR', 'p6wS'];
+  function saveInputs(){
+    const values = Object.fromEntries(INPUT_IDS.map(id => [id, $(id).value]));
+    download('sa_input.json', JSON.stringify({ schema: 'sa-input/1', savedAt: new Date().toISOString(), values }, null, 1), 'application/json');
+  }
+  function loadInputs(file){
+    const st = $('p6Status'), rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const j = JSON.parse(rd.result);
+        if (j.schema !== 'sa-input/1' || !j.values) throw new Error('입력값 파일이 아닙니다(schema: sa-input/1)');
+        const unknown = Object.keys(j.values).filter(k => !INPUT_IDS.includes(k));
+        for (const id of INPUT_IDS) if (j.values[id] != null) $(id).value = j.values[id];
+        st.className = 'status-line ok'; st.textContent = `입력값을 불러왔습니다${j.title ? ' — ' + j.title : ''}. 계산을 누르세요.` + (unknown.length ? ` (모르는 항목 무시: ${unknown.join(', ')})` : '');
+      } catch (err) { st.className = 'status-line err'; st.textContent = err.message; }
+    };
+    rd.readAsText(file, 'utf-8');
+  }
+
   function init(){
     if (!$('tab6')) return;
     const R = window.SA_LH_CORE.RULES;
@@ -19691,6 +19715,8 @@ window.SA_GROUND_CORE = (function(){
     $('p6Run').addEventListener('click', run);
     for (const id of ['p6wT', 'p6wC', 'p6wR', 'p6wS']) $(id).addEventListener('input', rankRows);
     $('p6FlowSel').addEventListener('change', drawFlow);
+    $('p6Save').addEventListener('click', saveInputs);
+    $('p6LoadFile').addEventListener('change', e => { if (e.target.files[0]) loadInputs(e.target.files[0]); e.target.value = ''; });
     $('p6RevitFile').addEventListener('change', e => e.target.files[0] && loadRevit(e.target.files[0]));
     $('p6RevitJson').addEventListener('click', () => { const r = revitResult(); download('sa_revit_result.json', JSON.stringify(r, null, 1), 'application/json'); $('p6RevitStatus').textContent = `결과 JSON: 요소 ${r.elements.length}개 연결, 연결 안 됨 ${r.unmapped}개(지붕층 등) — 시나리오 "${r.scenario}"`; });
     $('p6RevitCsv').addEventListener('click', () => download('sa_timeliner.csv', window.SA_REVIT_CORE.timelinerCsv(revitResult()), 'text/csv'));
