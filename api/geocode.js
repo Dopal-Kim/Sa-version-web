@@ -1,5 +1,6 @@
 // 주소 → 좌표 중계. 브라우저에서 Nominatim 을 직접 부르면 IP 제한·느린 응답으로 멈추는 경우가 있어 서버에서 대신 부른다.
 // Nominatim 이용약관상 식별 가능한 User-Agent 가 필수이며, 실패하면 Photon(komoot) 으로 넘어간다.
+import { guard } from "../lib/guard.js";
 export const config = { maxDuration: 30 };
 const UA = "SA-SmartSchedule/0.2 (site-context lookup; github.com/Dopal-Kim/Sa-version-web)";
 
@@ -11,9 +12,10 @@ async function withTimeout(url, ms, headers) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  const q = (req.query && req.query.q || "").trim();
+  if (!guard(req, res, { methods: ["GET"], perMin: 30 })) return;
+  const q = String(req.query && req.query.q || "").trim();
   if (!q) return res.status(400).json({ error: "missing q" });
+  if (q.length > 200) return res.status(400).json({ error: "주소가 너무 깁니다(200자 이하)" });
   const notes = [];
   try {
     const r = await withTimeout("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(q), 10000,

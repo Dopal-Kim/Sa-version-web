@@ -8,6 +8,7 @@
 //  2) 슬롯이 있는 인스턴스에만 질의를 보내고, 첫 성공 응답을 그대로 돌려준다.
 //  3) 함수 상한은 60초(Vercel Hobby 기본, Fluid Compute 없이도 배포됨). 브라우저가 X-Budget-Ms 로 단계 예산을
 //     알려주면 그 안에서만 기다린다.
+import { guard } from "../lib/guard.js";
 export const config = { maxDuration: 60 };
 
 // 운영자가 다른 세 계열을 섞는다: 메인 클러스터(overpass-api.de: z/lz4/main) · mail.ru · private.coffee/kumi(형제).
@@ -43,11 +44,11 @@ async function slotStatus(base) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  if (req.method === "OPTIONS") return res.status(200).end();
+  if (!guard(req, res, { methods: ["POST"], perMin: 20 })) return;
 
-  const q = (req.body && req.body.data) || (typeof req.body === "string" ? req.body : "");
+  const q = String((req.body && req.body.data) || (typeof req.body === "string" ? req.body : ""));
   if (!q) return res.status(400).json({ error: "missing 'data' (Overpass QL)" });
+  if (q.length > 10000) return res.status(413).json({ error: "질의가 너무 깁니다(10,000자 이하)" });
 
   const hinted = Number(req.headers["x-budget-ms"]);
   const total = Math.min(isFinite(hinted) && hinted > 5000 ? hinted : 48000, 48000); // 함수 상한 60s 안 — 슬롯 확인(≤4s)과 응답 전송 시간을 남긴다(504 방지)
