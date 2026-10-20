@@ -1164,6 +1164,21 @@ body[data-a12-mode="auto"] #tab4 .ifcOptGrid8{display:none} .a12-date input{max-
     <div id="p6Flow" class="p6chart"></div>
   </div>
 
+  <div class="card" id="p6Revit">
+    <h2><span class="n">G</span>Revit 연동 (파일로 주고받기 — 모델은 PC 밖으로 나가지 않음)</h2>
+    <p class="desc">① Revit에서 pyRevit <b>SA 내보내기</b> → <code>sa-revit/1</code> JSON ② 여기서 불러오면 층수·지하층·4.5m 초과 지하층·연면적·파일이 입력칸에 채워짐 → 계산
+      ③ 아래에서 결과 JSON을 받아 Revit <b>SA 가져오기</b>(요소에 SA_P50/P80_Finish·SA_Risk 기록, 현재 뷰 위험도 색칠) ④ TimeLiner CSV로 Navisworks 4D(Sync ID = 활동 ID).
+      pyRevit 확장은 저장소 <code>revit/SA.extension</code>.</p>
+    <label for="p6RevitFile">Revit 내보내기 파일(sa-revit/1 JSON)</label><input type="file" id="p6RevitFile" accept=".json,application/json">
+    <p class="status-line" id="p6RevitStatus" role="status" aria-live="polite">불러온 모델 없음</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+      <button type="button" class="ghost" id="p6RevitJson" disabled>Revit 결과 JSON 내려받기</button>
+      <button type="button" class="ghost" id="p6RevitCsv" disabled>Navisworks TimeLiner CSV 내려받기</button>
+    </div>
+    <p class="hint">결과는 E 흐름선에서 고른 대응안 기준입니다. 요소 → 활동: 기초 = 기초공사, 지하 구조 = 지하골조, 지상 구조 = 그 층 골조, 문·창·천장 = 그 층 마감(마감이 일괄이면 마감 전체).
+      위험도: 활동 P80 완료가 결정 일정보다 60일 넘게 늦으면 High, 20일 넘으면 Mid.</p>
+  </div>
+
   <div class="card" id="p6Basis">
     <h2><span class="n">F</span>근거와 한계</h2>
     <details class="descFold6"><summary>데이터·검증</summary>
@@ -18950,6 +18965,7 @@ window.SA_GROUND_CORE = (function(){
     const cal = opts.calendar ? makeCalendar(net, opts.calendar) : null;
     const base = Float64Array.from(net.acts, a => a.dur), dur = new Float64Array(n);
     const es = new Float64Array(n), ef = new Float64Array(n), T = new Float64Array(N), crit = new Float64Array(n);
+    const fin = opts.trackFinish ? Array.from({ length: n }, () => new Float64Array(N)) : null;   // 활동별 완료일 표본(요소 위험도용)
     const mode = opts.ratio || (opts.prior ? 'prior' : 'sym15');
     const sampler = mode === 'prior' ? priorSampler(opts.prior) : null;
     // Risk Driver 두 종류: impact:[a,m,b] = 대상 활동 기간 × 배율(상관) / addDays:{median,sigma} = 대상 공종 첫 활동 뒤 작업 중단(달력일, 로그정규)
@@ -18975,6 +18991,7 @@ window.SA_GROUND_CORE = (function(){
       });
       const sch = opts.withCriticality ? schedule(net, dur, cal, extra) : null;
       T[it] = sch ? sch.T : forward(net, dur, es, ef, null, cal, extra);
+      if (fin) { const e2 = sch ? sch.ef : ef; for (let i = 0; i < n; i++) fin[i][it] = e2[i]; }
       if (sch) for (let i = 0; i < n; i++) if (sch.critical[i]) crit[i]++;
     }
     const sorted = Float64Array.from(T).sort(), qs = opts.prior && opts.prior.calibration_qstar || 0.8;
@@ -18984,6 +19001,7 @@ window.SA_GROUND_CORE = (function(){
       deterministic: schedule(net, base, cal).T, calendar: cal,
       criticality: opts.withCriticality ? Array.from(crit, c => c / N) : null,
       driverHitRate: hits.map(h => h / N), mode,
+      finish: fin ? fin.map(a => { const s = a.sort(); return { p50: quantile(s, 0.5), p80: quantile(s, 0.8) }; }) : null, net,
     };
   }
 
@@ -19299,7 +19317,7 @@ window.SA_GROUND_CORE = (function(){
       return { id: ids.join('+') || 'base', name: ids.length ? ids.map(i => OPTIONS[i].name).join(' + ') : '대응 없음(LH 기준)', ids,
         lhTotal: ctx.tpl.lh.total, deterministic: sim.deterministic, p50: sim.p50, p80: sim.p80, p80cal: sim.p80cal, responseCost: cost,
         safetyExposure: 1 + safety, ...cs, start: ctx.p.start, evidence: ids.map(i => OPTIONS[i].evidence), assumptions: notes,
-        qstar: sim.qstar, sorted: sim.sorted, tpl: ctx.tpl };
+        qstar: sim.qstar, sorted: sim.sorted, tpl: ctx.tpl, drivers: ctx.drivers };
     };
     const sets = [[], ...(opts.options || Object.keys(OPTIONS)).map(i => [i]), ...(opts.combos || [])];
     const rows = sets.map(run).filter(Boolean);
@@ -19324,6 +19342,81 @@ window.SA_GROUND_CORE = (function(){
   }
 
   G.SA_RESPONSE_CORE = { KR_PUBLIC, ECON_DEFAULT, OPTIONS, finishFlow, costStats, evaluate, pareto, topsis, indirectPerDay, overtimeCost, financeCost, formworkDelta, lcLoss };
+})();
+</script>
+<script id="sa-revit-core">
+/* Revit 교환(SA_REVIT_CORE) — 파일로 주고받는다(모델·공정은 서버로 보내지 않음).
+   Revit(pyRevit 'SA 내보내기') → sa-revit/1 JSON → 이 앱: LH 입력 자동 채움 → 시뮬레이션
+   → sa-revit-result/1 JSON(요소별 P50·P80 완료일·위험) → pyRevit 'SA 가져오기'(매개변수·색칠)
+   → Navisworks TimeLiner CSV(Sync ID = 활동 ID, 계획 = P50, User1 = P80, User2 = 위험).
+   층 판정: 고도 0 이상 레벨 = 지상(F1부터), 0 미만 = 지하. 층고 = 다음 레벨까지 차. 지하 4.5m 초과 층 수를 셈. */
+(function(){
+  const G = typeof window !== 'undefined' ? window : globalThis;
+  const STRUCT = ['Walls', 'Floors', 'Structural Columns', 'Structural Framing', 'Columns'];
+
+  function parseExport(j){
+    if (!j || j.schema !== 'sa-revit/1') throw new Error('Revit 내보내기 파일이 아닙니다(schema: sa-revit/1 이어야 함)');
+    if (!Array.isArray(j.levels) || !j.levels.length) throw new Error('레벨 정보가 없습니다 — Revit 레벨에 "Building Story"를 켰는지 확인하세요');
+    const lv = [...j.levels].filter(l => isFinite(l.elev_m)).sort((a, b) => a.elev_m - b.elev_m);
+    const above = lv.filter(l => l.elev_m >= -0.01 && !l.roof), below = lv.filter(l => l.elev_m < -0.01);
+    const hOf = k => k + 1 < lv.length ? lv[k + 1].elev_m - lv[k].elev_m : null;
+    lv.forEach((l, k) => { l.height_m = l.height_m ?? hOf(k); });
+    const loc = {};
+    above.forEach((l, k) => { loc[l.name] = 'F' + (k + 1); });
+    below.forEach(l => { loc[l.name] = 'site'; });
+    const tall = below.filter(l => l.height_m > 4.5).length;
+    const q = j.quantities || [];
+    const sum = key => q.reduce((a, x) => a + (+x[key] || 0), 0);
+    const params = { floors: above.length, basement: below.length, basementTall: tall };
+    if (j.piles && j.piles.count > 0) params.pile = { method: j.piles.method || 'bored', depth: j.piles.depth_m || 25, count: j.piles.count };
+    const area = +(j.project && j.project.grossArea_m2) || sum('floorArea_m2');
+    return { params, floorArea: area || null, formworkArea: sum('formwork_m2') || null, concrete: sum('concrete_m3') || null,
+      levelLoc: loc, levels: lv, elements: j.elements || [], project: j.project || {}, warnings: [
+        ...(above.length < 3 ? ['지상 레벨이 3개 미만 — LH 계산은 3층 이상만 지원'] : []),
+        ...(j.elements && j.elements.length ? [] : ['요소 목록이 없어 Revit 되쓰기를 할 수 없습니다']),
+      ] };
+  }
+
+  // 요소 → 활동 ID. 템플릿 모델(네트워크)의 활동 id 를 찾아 연결
+  function activityOf(el, x, idx){
+    const loc = x.levelLoc[el.level];
+    if (el.cat === 'Structural Foundation') return idx['found@site'] != null ? 'found@site' : null;
+    if (loc == null) return null;
+    if (loc === 'site') return idx['subFrame@site'] != null ? 'subFrame@site' : null;
+    const structural = el.structural !== false && STRUCT.includes(el.cat);
+    const tryIds = structural ? ['superFrame@' + loc] : ['wet@' + loc, 'wet@site'];
+    return tryIds.find(id => idx[id] != null) || null;
+  }
+
+  // 시나리오(평가 행)의 모델로 활동별 완료일 분포를 다시 뽑아 요소별 결과를 만든다
+  function results(x, row, opts = {}){
+    const L = G.SA_LBS_CORE;
+    const sim = L.simulate(row.tpl.model, { N: opts.N || 2000, seed: opts.seed || 20261020, calendar: row.tpl.calendar, prior: opts.prior, riskDrivers: opts.riskDrivers || [], trackFinish: true });
+    const net = sim.net, cal = sim.calendar, base = L.schedule(net, Float64Array.from(net.acts, a => a.dur), cal);
+    const date = d => cal.date(Math.max(0, Math.ceil(d) - 1));
+    const riskOf = (p80, det) => { const d = p80 - det; return d > 60 ? 'High' : d > 20 ? 'Mid' : 'Low'; };
+    const acts = net.acts.map((a, i) => ({ id: a.id, task: a.task, loc: a.loc, name: (row.tpl.model.tasks.find(t => t.id === a.task) || {}).name || a.task,
+      start: date(base.es[i] + 1), finish: date(base.ef[i]), p50Finish: date(sim.finish[i].p50), p80Finish: date(sim.finish[i].p80),
+      risk: riskOf(sim.finish[i].p80, base.ef[i]), delayP80: Math.round(sim.finish[i].p80 - base.ef[i]), critical: base.critical[i] }));
+    const byId = Object.fromEntries(acts.map(a => [a.id, a]));
+    let unmapped = 0;
+    const elements = x.elements.map(el => {
+      const aid = activityOf(el, x, net.idx); if (!aid) { unmapped++; return null; }
+      const a = byId[aid]; return { uid: el.uid, ifcGuid: el.ifcGuid || null, activity: aid, p50Finish: a.p50Finish, p80Finish: a.p80Finish, risk: a.risk };
+    }).filter(Boolean);
+    return { schema: 'sa-revit-result/1', generatedAt: new Date().toISOString(), scenario: row.name, projectP50: date(sim.p50), projectP80cal: date(sim.p80cal),
+      activities: acts, elements, unmapped };
+  }
+
+  // Navisworks TimeLiner CSV — 가져오기에서 Task Name, Synchronization ID, Planned Start/End, Task Type, User 1·2 를 매핑
+  function timelinerCsv(res){
+    const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const head = ['Task Name', 'Synchronization ID', 'Planned Start', 'Planned End', 'Task Type', 'User 1 (P80 Finish)', 'User 2 (Risk)'];
+    const rows = res.activities.map(a => [`${a.name} ${a.loc === 'site' ? '' : a.loc}`.trim(), a.id, a.start, a.p50Finish, 'Construct', a.p80Finish, a.risk]);
+    return '﻿' + [head, ...rows].map(r => r.map(q).join(',')).join('\r\n') + '\r\n';
+  }
+
+  G.SA_REVIT_CORE = { parseExport, results, timelinerCsv, activityOf };
 })();
 </script>
 <style id="sa-prob-ui-css">
@@ -19353,7 +19446,7 @@ window.SA_GROUND_CORE = (function(){
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const n0 = x => Math.round(x).toLocaleString('ko-KR'), n1 = x => (Math.round(x * 10) / 10).toLocaleString('ko-KR'), pct = x => Math.round(x * 100) + '%';
   const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#555';
-  let PRIOR = null, LAST = null;
+  let PRIOR = null, LAST = null, REVIT = null;
   const prior = () => PRIOR || (PRIOR = JSON.parse(document.getElementById('sa-duration-prior').textContent));
 
   function params(){
@@ -19498,11 +19591,36 @@ window.SA_GROUND_CORE = (function(){
           .map(([k, v]) => `<div class="p6kpi"><span>${k}</span><b>${v}</b></div>`).join('');
         $('p6Hist').innerHTML = hist(base.sorted, [{ v: lh.total, t: 'LH', c: css('--status-done') }, { v: base.p50, t: 'P50', c: css('--text-secondary') }, { v: base.p80cal, t: '보정 P80', c: css('--status-risk') }, { v: C, t: '계약', c: css('--text-primary'), dash: true }]);
         $('p6HistNote').textContent = `${mode === 'public' ? '공공 모드: LH 395단지 지연 실적에 맞춘 외부 지연(발생 94%, 중앙값 75일) 포함. ' : '민간 모드: 작업 분포만 사용. '}보정 P80 = 시뮬레이션 ${(base.qstar * 100).toFixed(1)} 분위(공개 프로젝트 백테스트로 정한 값). 반복 ${n0(N)}회.`;
-        rankRows();
+        rankRows(); revitButtons();
         st.className = 'status-line ok'; st.textContent = `완료 — 대응안 ${ev.rows.length}개, ${n0(performance.now() - t0)}ms`;
       } catch (err) { st.className = 'status-line err'; st.textContent = '계산 오류: ' + err.message; console.error(err); }
       finally { $('p6Run').disabled = false; }
     }, 30);
+  }
+
+  // ── Revit 연동 ───────────────────────────────────
+  function loadRevit(file){
+    const st = $('p6RevitStatus'), rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const x = window.SA_REVIT_CORE.parseExport(JSON.parse(rd.result)); REVIT = x;
+        $('p6Floors').value = x.params.floors; $('p6Base').value = x.params.basement; $('p6BaseTall').value = x.params.basementTall;
+        if (x.floorArea) $('p6Area').value = Math.round(x.floorArea);
+        if (x.params.pile) { $('p6Pile').value = x.params.pile.method; $('p6PileDepth').value = x.params.pile.depth; $('p6PileCount').value = x.params.pile.count; }
+        st.className = 'status-line ok';
+        st.textContent = `${x.project.name || '모델'}: 지상 ${x.params.floors}층·지하 ${x.params.basement}층(4.5m 초과 ${x.params.basementTall})·요소 ${x.elements.length}개` +
+          (x.floorArea ? `·연면적 ${n0(x.floorArea)}㎡` : '') + (x.formworkArea ? `·거푸집 근사 ${n0(x.formworkArea)}㎡(기둥·보 제외)` : '') +
+          (x.warnings.length ? ' — ' + x.warnings.join(' / ') : '') + ' → 입력칸에 반영, 계산을 누르세요.';
+      } catch (err) { REVIT = null; st.className = 'status-line err'; st.textContent = err.message; }
+      revitButtons();
+    };
+    rd.readAsText(file, 'utf-8');
+  }
+  function revitButtons(){ const ok = !!(REVIT && LAST && REVIT.elements.length); $('p6RevitJson').disabled = $('p6RevitCsv').disabled = !ok; }
+  function download(name, text, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+  function revitResult(){
+    const row = LAST.ev.rows.find(x => x.id === $('p6FlowSel').value) || LAST.ev.rows[0];
+    return window.SA_REVIT_CORE.results(REVIT, row, { N: Number($('p6N').value), prior: prior(), riskDrivers: row.drivers });
   }
 
   function init(){
@@ -19512,6 +19630,9 @@ window.SA_GROUND_CORE = (function(){
     $('p6Run').addEventListener('click', run);
     for (const id of ['p6wT', 'p6wC', 'p6wR', 'p6wS']) $(id).addEventListener('input', rankRows);
     $('p6FlowSel').addEventListener('change', drawFlow);
+    $('p6RevitFile').addEventListener('change', e => e.target.files[0] && loadRevit(e.target.files[0]));
+    $('p6RevitJson').addEventListener('click', () => { const r = revitResult(); download('sa_revit_result.json', JSON.stringify(r, null, 1), 'application/json'); $('p6RevitStatus').textContent = `결과 JSON: 요소 ${r.elements.length}개 연결, 연결 안 됨 ${r.unmapped}개(지붕층 등) — 시나리오 "${r.scenario}"`; });
+    $('p6RevitCsv').addEventListener('click', () => download('sa_timeliner.csv', window.SA_REVIT_CORE.timelinerCsv(revitResult()), 'text/csv'));
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

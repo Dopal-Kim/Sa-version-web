@@ -1,0 +1,28 @@
+{
+  "schema": "sa-revit/1",
+  "exportedAt": "2026-10-21T10:00:00",
+  "project": { "name": "예시 공동주택 101동", "grossArea_m2": 12400, "revitVersion": "2025" },
+  "levels": [
+    { "name": "B1", "elev_m": -5.4 },
+    { "name": "1F", "elev_m": 0 }, { "name": "2F", "elev_m": 3.6 }, { "name": "3F", "elev_m": 6.5 }, { "name": "4F", "elev_m": 9.4 },
+    { "name": "5F", "elev_m": 12.3 }, { "name": "6F", "elev_m": 15.2 }, { "name": "7F", "elev_m": 18.1 }, { "name": "8F", "elev_m": 21.0 },
+    { "name": "9F", "elev_m": 23.9 }, { "name": "10F", "elev_m": 26.8 }, { "name": "11F", "elev_m": 29.7 }, { "name": "12F", "elev_m": 32.6 },
+    { "name": "13F", "elev_m": 35.5 }, { "name": "14F", "elev_m": 38.4 }, { "name": "15F", "elev_m": 41.3 },
+    { "name": "ROOF", "elev_m": 44.2, "roof": true }
+  ],
+  "quantities": [
+    { "level": "B1", "concrete_m3": 1850, "formwork_m2": 6200, "floorArea_m2": 1900 },
+    { "level": "1F", "concrete_m3": 260, "formwork_m2": 2150, "floorArea_m2": 690 },
+    { "level": "2F", "concrete_m3": 240, "formwork_m2": 2050, "floorArea_m2": 690 }
+  ],
+  "piles": { "count": 420, "depth_m": 22, "method": "bored" },
+  "elements": [
+    { "uid": "e-found-1", "ifcGuid": "0aaaaaaaaaaaaaaaaaaaa1", "cat": "Structural Foundation", "level": "B1" },
+    { "uid": "e-b1-wall", "ifcGuid": "0aaaaaaaaaaaaaaaaaaaa2", "cat": "Walls", "level": "B1", "structural": true },
+    { "uid": "e-1f-slab", "ifcGuid": "0aaaaaaaaaaaaaaaaaaaa3", "cat": "Floors", "level": "1F", "structural": true },
+    { "uid": "e-8f-col", "ifcGuid": "0aaaaaaaaaaaaaaaaaaaa4", "cat": "Structural Columns", "level": "8F" },
+    { "uid": "e-15f-wall", "ifcGuid": "0aaaaaaaaaaaaaaaaaaaa5", "cat": "Walls", "level": "15F", "structural": true },
+    { "uid": "e-5f-door", "ifcGuid": "0aaaaaaaaaaaaaaaaaaaa6", "cat": "Doors", "level": "5F" },
+    { "uid": "e-roof-x", "ifcGuid": "0aaaaaaaaaaaaaaaaaaaa7", "cat": "Generic Models", "level": "ROOF" }
+  ]
+}
