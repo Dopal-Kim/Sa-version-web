@@ -1064,8 +1064,97 @@ body[data-a12-mode="auto"] #tab4 .ifcOptGrid8{display:none} .a12-date input{max-
   <button class="tab-btn" data-tab="tab5"><span class="dot"></span>공정 · 원가 시뮬레이션</button>
   <button class="tab-btn" data-tab="tab2"><span class="dot"></span>4D · 주변 환경</button>
   <button class="tab-btn" data-tab="tab3"><span class="dot"></span>구조물 · 현장 개요</button>
+  <button class="tab-btn" data-tab="tab6"><span class="dot"></span>확률 공정 · 대응안</button>
 </nav>
 
+
+<!-- ============ TAB 6 : 공동주택 확률 공정 · 대응안 (SA_LBS_CORE + SA_LH_CORE + SA_RESPONSE_CORE) ============ -->
+<section class="panel" id="tab6">
+  <div class="live-caption">
+    <span class="lc-dot"></span>
+    <span class="lc-text">기간을 직접 넣지 않습니다. 공법·층수·지역·착공일 → LH 지침 기준 공기 → 실제 프로젝트 데이터로 학습한 분포 → 대응안을 같은 조건으로 비교합니다.</span>
+  </div>
+
+  <div class="card" id="p6Input">
+    <h2><span class="n">A</span>공동주택 기본 정보</h2>
+    <p class="desc">LH 「주택건설공사 공사기간 산정지침」(2021.9, 제2601호)의 입력 항목입니다. 금액 기본값은 <b>[가정]</b>이니 실제 값으로 바꾸세요.</p>
+    <div class="p6grid">
+      <div><label for="p6Region">지역(관측 지역 또는 시·군)</label><input type="text" id="p6Region" list="p6RegionList" value="서울"><datalist id="p6RegionList"></datalist></div>
+      <div><label for="p6Start">착공일</label><input type="date" id="p6Start" value="2026-03-02"></div>
+      <div><label for="p6Mode">발주 구분</label><select id="p6Mode"><option value="public">공공(LH 실적 보정)</option><option value="private">민간</option></select></div>
+      <div><label for="p6Floors">지상 층수</label><input type="number" id="p6Floors" min="3" max="80" value="20"></div>
+      <div><label for="p6Base">지하 층수</label><input type="number" id="p6Base" min="0" max="8" value="1"></div>
+      <div><label for="p6BaseTall">층고 4.5m 초과 지하층 수</label><input type="number" id="p6BaseTall" min="0" max="8" value="1"></div>
+      <div><label for="p6Form">거푸집</label><select id="p6Form"><option value="system">시스템(알폼·갱폼)</option><option value="euro" selected>유로폼</option><option value="pc">PC조</option></select></div>
+      <div><label for="p6Park">지하주차장(주동 통합형)</label><select id="p6Park"><option value="lt150">층당 150대 미만</option><option value="ge150">층당 150대 이상</option><option value="none">없음·분리형</option></select></div>
+      <div><label for="p6Ret">흙막이</label><select id="p6Ret"><option value="self">자립식</option><option value="anchor">어스앵커(레이커)</option><option value="none">없음</option></select></div>
+      <div><label for="p6RetScale">흙막이 규모</label><select id="p6RetScale"><option value="general">일반(55%)</option><option value="small">소규모(80%)</option><option value="base">기본규모(100%)</option></select></div>
+      <div><label for="p6Pile">파일</label><select id="p6Pile"><option value="bored">선굴착(SIP 등)</option><option value="direct">직타</option><option value="">없음</option></select></div>
+      <div><label for="p6PileDepth">파일 깊이(m)</label><input type="number" id="p6PileDepth" min="1" max="80" value="25"></div>
+      <div><label for="p6PileCount">파일 본수</label><input type="number" id="p6PileCount" min="0" max="20000" value="2000"></div>
+      <div><label for="p6Roof">지붕</label><select id="p6Roof"><option value="concrete">콘크리트 경사지붕</option><option value="steel">철골 경사지붕</option><option value="flat">평지붕</option></select></div>
+      <div><label for="p6Housing">주택 유형</label><select id="p6Housing"><option value="sale">분양·공공임대</option><option value="rental">장기임대</option></select></div>
+      <div><label for="p6Amount">계약금액(억원) [가정]</label><input type="number" id="p6Amount" min="1" value="1500"></div>
+      <div><label for="p6Contract">계약 공기(일, 비우면 LH 기준)</label><input type="number" id="p6Contract" min="1" placeholder="LH 기준"></div>
+      <div><label for="p6Ld">지체상금률(‰/일)</label><input type="number" id="p6Ld" min="0" step="0.1" value="0.5"></div>
+      <div><label for="p6Indirect">간접비(계약금액의 %) [가정]</label><input type="number" id="p6Indirect" min="0" step="0.5" value="8"></div>
+      <div><label for="p6N">반복 횟수</label><select id="p6N"><option value="1000">1,000회(빠름)</option><option value="2000" selected>2,000회</option><option value="4000">4,000회</option></select></div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button type="button" class="primary" id="p6Run">계산</button>
+      <span class="status-line" id="p6Status" role="status" aria-live="polite">입력 후 계산을 누르세요.</span>
+    </div>
+  </div>
+
+  <div class="card" id="p6LhCard" hidden>
+    <h2><span class="n">B</span>LH 지침 기준 공기</h2>
+    <p class="desc" id="p6LhDesc"></p>
+    <div id="p6Gantt" class="p6chart"></div>
+    <details class="descFold6"><summary>구간별 계산</summary><div id="p6LhTable"></div></details>
+  </div>
+
+  <div class="card" id="p6DistCard" hidden>
+    <h2><span class="n">C</span>확률 공기 — 데이터로 학습한 분포</h2>
+    <p class="desc">작업기간 분포는 사람이 정하지 않고 실제 건축 프로젝트 59개(작업 3,058개)의 계획 대비 실적에서 가져옵니다.
+      공개 실제 프로젝트 백테스트에서 <b>보정 P80 적중 80%</b>(현재 방식 ±15% 대칭은 40%).</p>
+    <div class="p6kpis" id="p6Kpis"></div>
+    <div id="p6Hist" class="p6chart"></div>
+    <p class="hint" id="p6HistNote"></p>
+  </div>
+
+  <div class="card" id="p6RespCard" hidden>
+    <h2><span class="n">D</span>대응안 비교</h2>
+    <p class="desc">모든 대응안을 같은 난수로 돌려 비교합니다. 기대 총비용 = 대응비 + 기대 지체상금 + 간접비 × 기대 공기. CVaR95 = 가장 나쁜 5% 경우의 평균 비용.
+      ● = 공기·비용·위험 모두에서 다른 안에 밀리지 않는 안(파레토). 순위는 아래 가중치(TOPSIS)로 매깁니다.</p>
+    <div class="p6weights">
+      <label for="p6wT">공기(보정 P80)</label><input type="number" id="p6wT" min="0" max="10" value="4">
+      <label for="p6wC">기대 총비용</label><input type="number" id="p6wC" min="0" max="10" value="4">
+      <label for="p6wR">최악 비용(CVaR95)</label><input type="number" id="p6wR" min="0" max="10" value="1">
+      <label for="p6wS">안전 노출</label><input type="number" id="p6wS" min="0" max="10" value="1">
+    </div>
+    <div style="overflow-x:auto;"><table class="cmp" id="p6RespTable"></table></div>
+    <div id="p6Scatter" class="p6chart"></div>
+  </div>
+
+  <div class="card" id="p6FlowCard" hidden>
+    <h2><span class="n">E</span>흐름선(LOB) — 층별 진행</h2>
+    <p class="desc">같은 공정 데이터를 층(세로)과 시간(가로)으로 본 것입니다. 기울기가 작업 속도, 선 사이 가로 간격이 공종 간 여유입니다.</p>
+    <label for="p6FlowSel">비교할 대응안</label><select id="p6FlowSel"></select>
+    <div id="p6Flow" class="p6chart"></div>
+  </div>
+
+  <div class="card" id="p6Basis">
+    <h2><span class="n">F</span>근거와 한계</h2>
+    <details class="descFold6"><summary>데이터·검증</summary>
+      <p class="hint">기준 공기: LH 주택건설공사 공사기간 산정지침 2021.9.17 제2601호(원문 별표8 예시 795일을 일 단위까지 재현, 자동 테스트).<br>
+      작업기간 분포: DSLIB 3.4 (Batselier &amp; Vanhoucke 2015, IJPM 33(3):697–710) 건축 59개 프로젝트. 같은 계열 프로젝트를 빼고 검증.<br>
+      공공 보정: LH 395단지(2020.1~2025.9 준공) 지연 구간(기한 내 23.8 / 1~6개월 48.6 / 6~12개월 18.4 / 1년+ 9.1%) — 국회 국토위 제출자료(경제일보 2025.10.10). 보정 결과 24.3 / 48.5 / 18.5 / 8.6%.</p></details>
+    <details class="descFold6"><summary>한계</summary>
+      <p class="hint">작업 단위 실적은 벨기에 프로젝트(국내 공개 데이터 없음). 공공 외부 지연은 원인별로 나뉜 수치가 아니라 전체 분포에 맞춘 값.
+      대응안 비용 기본값과 효과 일부(작업조 생산성 −10%, 자재 이원화 효과 50%)는 [가정] — 각 행의 '근거·가정'을 확인하세요.
+      건축물대장 기반 국내 유사 건물 공기 비교(사업 검토 단계)는 데이터 확보 후 추가됩니다.</p></details>
+  </div>
+</section>
 
 <!-- ============ TAB 1 : V5 현장자료 · 리스크 자동탐지 ============ -->
 <section class="panel" id="tab1">
@@ -18669,6 +18758,703 @@ window.SA_GROUND_CORE = (function(){
   return { qty:Math.ceil(L / th.pileGap) * len, unit:'m' };                         // 주열 간격 0.5m 가정
  }
  return { LAYER, TH, SRC, RATE, WALL, SUPPORT, FOUND, layerAt, slice, recommend, stages, days, wallQty };
+})();
+</script>
+<script id="sa-duration-prior" type="application/json">{"source":"DSLIB 3.4 (Batselier & Vanhoucke 2015, IJPM 33(3):697-710), 건축 섹터, 자리표시·취소 작업 제외","dur_bins_days":[0,2,5,10,20,50],"calibration_qstar":0.8185,"backtest":{"sym15":{"p80_hit_raw":0.4,"p80_hit_raw_famW":0.24603174603174607,"p80_hit_cal":0.4888888888888889,"p80_hit_cal_famW":0.4007936507936508,"crps_cal_over_pd":0.11304079669832111,"crps_cal_famW":0.14281526753415555,"qstar_all":1.0},"expert":{"p80_hit_raw":0.4444444444444444,"p80_hit_raw_famW":0.3412698412698413,"p80_hit_cal":0.5333333333333333,"p80_hit_cal_famW":0.46031746031746035,"crps_cal_over_pd":0.13750054618241092,"crps_cal_famW":0.19725151514352593,"qstar_all":1.0},"lopo":{"p80_hit_raw":0.7555555555555555,"p80_hit_raw_famW":0.6269841269841271,"p80_hit_cal":0.8,"p80_hit_cal_famW":0.7222222222222223,"crps_cal_over_pd":0.12804758341810873,"crps_cal_famW":0.1271061858355511,"qstar_all":0.808},"lopo_blk":{"p80_hit_raw":0.7777777777777778,"p80_hit_raw_famW":0.6746031746031746,"p80_hit_cal":0.8,"p80_hit_cal_famW":0.7222222222222223,"crps_cal_over_pd":0.12533876459613405,"crps_cal_famW":0.12514088925762584,"qstar_all":0.8185}},"n_projects":59,"projects":[{"code":"C2011-12","sector":"commercial building","family":"Claeys-Verhelst Premises","ratios_by_bin":[[6.0,1.0],[1.0,1.0,1.0,1.0,1.0],[1.2,0.5,9.2,1.0,0.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.5,1.0,0.7143,0.75,1.0,0.6667,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.3333,1.0,1.0],[1.8,0.88,0.6,1.0,0.8,1.0],[1.6667,1.0,1.0]]},{"code":"C2011-13","sector":"industrial","family":"Wind Farm","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,20.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.6667,1.6667,1.6667,1.6667,1.6667,1.6667,1.6667,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,3.1429,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.25,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.4286,1.0,1.0],[1.0],[1.0,0.8222,1.0,0.3611]]},{"code":"C2013-03","sector":"institutional building","family":"Brussels Finance Tower","ratios_by_bin":[[],[1.0,1.0,1.0,1.0],[3.4,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.025,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.625,1.5455,1.675,1.0,1.3939,1.2564,2.5143,1.58,0.9167,1.88,2.2,1.0976,1.0244,1.0488,0.561],[0.9059,1.1548,0.4727,0.5138,0.5,0.6842,0.5246,0.5104,0.5489,0.4741,0.9885,0.4306,0.307,0.3084,1.4423,0.569]]},{"code":"C2013-04","sector":"institutional building","family":"Kitchen Tower Anderlecht","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0,1.0,0.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.6667,0.6667,0.6667,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,0.3333,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0],[0.9091],[1.0],[1.3363,1.3443,1.0323]]},{"code":"C2013-06","sector":"institutional building","family":"Government Office Building","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,2.0,2.0,1.0,1.0,1.0,1.0,1.0,1.75,1.3333,1.5,1.0,1.0,1.0,1.0,1.0,1.75,1.0,1.5,1.0,0.6,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.5,1.0,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.5,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.75,1.0,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.75,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.75,1.0,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.75,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.75,1.0,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.75,1.0,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.75,1.5,1.0,1.0,1.0,1.5],[1.0,1.0,1.0,1.0,1.0,1.0,2.1,1.4,1.0,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.3,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.5,1.0,1.5,1.0],[1.0,1.0,1.0,1.0,3.5333,1.4,3.7333,2.1,1.0,1.0,1.0,1.0,1.0,1.6667,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,0.8,1.5273,0.8,1.0,1.0,1.0],[1.0,0.3333,0.4714,1.0]]},{"code":"C2013-07","sector":"residential building","family":"Family Residence","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[0.6667,1.0,1.0,1.8,1.0,1.0,1.6667,1.0],[1.0,0.6667,1.0],[1.1],[1.125],[]]},{"code":"C2013-08","sector":"residential building","family":"Timber House","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0,1.0,1.0,1.5,1.0,2.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[0.8,1.0,1.5,1.5,1.0,1.6667,0.3333,1.0,4.0,0.5],[1.0,1.2],[2.0,1.25],[],[]]},{"code":"C2013-09","sector":"commercial building","family":"Urban Development Project","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,2.0,1.0,1.0,1.0,1.0,2.0,2.0,2.0,2.0,2.0,1.0,1.0,1.0,1.0,0.4,0.4,0.4,0.4,4.0,4.0,4.0,4.0,2.0,2.0,2.0,2.0],[1.0,1.0,1.0,1.0,1.0,1.0,2.5,1.6667,2.5,1.6667,1.3333,1.4286,1.4286,1.4286,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,1.0],[1.0,1.0,1.0,1.0,1.0,0.25,1.0],[1.0,0.1562,1.0],[]]},{"code":"C2013-12","sector":"institutional building","family":"Young Cattle Barn","ratios_by_bin":[[3.0,2.5],[3.0,0.8,0.6,2.0,2.0,1.6667,2.0,1.0,1.0,1.0],[1.0,0.8,0.5,0.6,0.4,0.9,0.5,1.5],[1.0,0.85,1.0,0.5,0.6667,0.75,0.75],[],[]]},{"code":"C2013-13","sector":"commercial building","family":"Office Finishing Works","ratios_by_bin":[[1.0],[1.0],[],[],[0.4167,0.4583,0.88],[1.0,0.2414,1.0,1.0,1.0,0.275]]},{"code":"C2013-14","sector":"commercial building","family":"Office Finishing Works","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0],[1.0],[],[1.0,1.0],[],[0.3492]]},{"code":"C2013-15","sector":"commercial building","family":"Office Finishing Works","ratios_by_bin":[[],[1.0,1.0],[1.0,1.0,1.0,1.0],[1.0,1.0,1.0],[2.1875,2.1212,0.7,1.0],[0.2143,0.6462,0.3492]]},{"code":"C2013-16","sector":"commercial building","family":"Office Finishing Works","ratios_by_bin":[[],[],[],[4.6875],[],[0.9886,1.0,1.0,0.956]]},{"code":"C2013-17","sector":"commercial building","family":"Office Finishing Works","ratios_by_bin":[[1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0],[],[3.6818,0.5366],[0.2472,0.6966,0.1457,0.3284,0.9155,0.2857]]},{"code":"C2014-01","sector":"residential building","family":"Mixed-use Building","ratios_by_bin":[[],[1.0,1.0,1.0],[1.0],[0.9412,0.8333,0.8,0.8,0.8,0.75,1.2,0.95,0.95,0.95,1.0,0.7692,1.15],[1.0,1.0,1.1429,0.8077,0.6452,0.6522,0.8571,0.8636,0.9048,0.9167,0.9677,1.0,0.7931],[1.0288,0.6604,0.9538,1.8172,1.2267,0.9531,0.8369,0.9716,1.0435,0.9124]]},{"code":"C2014-04","sector":"industrial","family":"Compressor Station Zelzate","ratios_by_bin":[[],[],[],[1.75,0.3,0.6],[1.0,2.8571,1.3478,2.5714,2.1364,0.9091,0.9048,0.8696,1.0,0.2381,0.2174,1.0,0.8182,1.0,1.4348,1.3636,1.0,0.2174,5.8095,3.3182,2.2273],[]]},{"code":"C2014-05","sector":"residential building","family":"Apartment Building","ratios_by_bin":[[1.0,1.0,2.0],[1.0,2.0,2.0,2.0,1.0],[1.5,1.0,1.5,1.0,1.5,1.0,1.0,1.0],[1.6667,1.3333,1.0,1.0,1.0],[0.8333,1.2,0.8],[1.2857]]},{"code":"C2014-06","sector":"residential building","family":"Apartment Building","ratios_by_bin":[[1.0,1.0,1.0],[1.0,1.6,1.0,0.6,1.0],[1.0,1.0],[1.0,0.75,0.75,1.0,1.0],[1.2,1.8,0.7778,1.5,1.0,1.0,1.0,1.0,1.1333,1.0],[1.0909,1.0571,1.1143,1.0577]]},{"code":"C2014-07","sector":"residential building","family":"Apartment Building","ratios_by_bin":[[1.0,1.0,3.0],[2.0],[1.0,1.5],[1.5,1.75,1.0,2.0,1.25,1.5,1.0,1.3333,0.75,1.0,1.3333,1.0],[1.3333,1.1667,1.0,1.1,1.0,1.1667],[1.1111]]},{"code":"C2014-08","sector":"residential building","family":"Apartment Building","ratios_by_bin":[[1.5,1.0],[2.0,1.0,1.0,1.0,2.0,1.6667,2.0,2.0,1.0,1.0,2.0,1.0,2.0,1.0,2.0,1.0,1.0],[1.0,1.5,0.5,1.5,1.5,1.0,1.0,1.5,1.5,1.5,1.5,1.5,1.0],[1.25,1.25,1.0,0.6667,1.0,1.25],[1.4],[]]},{"code":"C2015-01","sector":"institutional building","family":"Young Cattle Barn","ratios_by_bin":[[3.0,1.5],[3.0,0.4,0.575,1.8,1.0,1.6,1.0,0.175],[1.0,1.0,0.5,0.7,0.6,0.9,2.3],[0.75,0.3937,0.7333,0.6,1.0],[],[]]},{"code":"C2015-03","sector":"industrial","family":"Industrial Complex","ratios_by_bin":[[1.0,1.0,1.0,0.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,0.3333,1.0,0.2,1.0,1.25,0.6,0.8,1.0,1.0,1.0,1.0,0.8,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,4.2,1.0,1.0,1.0,1.0,1.0,1.25,1.25,1.2,0.8,1.75,0.6,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[0.8,0.4,0.5556,0.5,0.6667,0.6667,1.25,0.6667,0.3333,0.6667,0.6667,3.6667,0.5714,1.0,1.0,1.0,0.7143,0.4,0.5714,1.6667,0.8,1.0,1.0,1.0,1.0],[0.7692,0.6111,0.7273,1.1765,0.3636,1.0,1.0,0.8333,0.8333,1.0,0.8824,0.8824,1.0,1.0,0.7],[1.0,0.6071,0.3333,0.3846,1.0,0.9394,0.9394,1.0,1.0,0.5263],[]]},{"code":"C2015-04","sector":"residential building","family":"Apartment Building","ratios_by_bin":[[],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,6.0,1.0,1.0,1.0,1.0,4.0,4.0,2.0,4.0,1.0,2.0,2.0,1.0,2.0,1.0,1.0,1.0],[],[],[],[]]},{"code":"C2015-05","sector":"residential building","family":"Apartment Building","ratios_by_bin":[[],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,6.0,1.0,5.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,5.0,1.0,4.0,1.0,5.0,2.0,2.0,1.0,1.0,2.0,1.0,2.0,1.0,4.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[],[1.0,1.0,1.0],[1.0],[]]},{"code":"C2015-06","sector":"residential building","family":"Family Residence","ratios_by_bin":[[],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0,1.0,1.0,1.0,2.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,5.0,1.0,1.0,2.0,1.0,1.0,1.0,3.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0,2.5,1.0,1.0,0.5,1.0,1.0,6.0,0.5,1.0,0.5,1.5,2.0,2.5,1.0,0.5,1.0,5.0,1.0,1.0,2.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.5,1.0,0.5,2.0,1.0,1.0,1.0,2.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[0.3333,1.0,0.3333,1.0],[1.6667,1.7,0.6667,1.5,1.0,0.6,0.1667,0.6667,0.8,1.1667],[1.3333,0.5714]]},{"code":"C2015-07","sector":"industrial","family":"Industrial Complex","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,4.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.5,1.0,1.0,1.5,0.5,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,3.8,1.0,1.0,1.0,1.25,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.3333,2.0,0.3333,0.3333,1.0,1.0,1.0,2.0,1.0,1.0,0.3333],[1.0,1.0,1.0,1.0,1.0,1.3333,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.5,1.0,1.0,0.625,1.0,0.8,0.2,1.4286,0.1,0.5714,0.2,1.4286,1.0,0.1,0.5714,0.2,0.2,1.0,1.0,0.7,0.7,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.8333,0.5882,1.0,1.0,0.7647,0.6667,0.6667,0.4667,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,0.4,0.4,0.28,0.875,1.0],[1.0,1.0,1.0,0.5082]]},{"code":"C2015-08","sector":"commercial building","family":"Garden Center","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.5,1.0,2.5,1.0,1.0,1.0,1.0,1.0,3.0,1.0,5.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,3.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.5,1.0,1.0,1.0,1.0,1.0,1.0,1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.6667,1.0,1.0,1.0],[0.3333,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,0.05],[1.0],[]]},{"code":"C2015-29","sector":"institutional building","family":"Fire Station","ratios_by_bin":[[1.0,1.25,1.0,1.0,1.0,1.0,1.0,1.0,1.0625,1.5,1.0667,1.0,1.0,1.25,1.0,1.2308,1.0,1.1429,0.9231,1.0,1.1,0.9231,1.0,1.3333,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.375,1.0,1.0,1.0769,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0833,1.0,1.2,1.0,1.0417,1.0,1.0,1.0,1.0,1.0,1.0769,1.0,0.95,0.9048,1.0,1.0526,1.125,1.0,1.1111,1.125,1.0,1.0,1.0,1.0,0.75,0.75,1.0],[1.0,0.9583,1.0,1.0,1.0,1.0,1.0,1.0909,1.05,1.025,1.0,1.0,1.0488,1.0,0.25,1.1429,1.25,1.0],[1.0,1.0,1.0,1.0,1.05,1.0],[1.0909,1.0,1.0,0.985],[]]},{"code":"C2015-30","sector":"residential building","family":"Social Apartments Ypres","ratios_by_bin":[[1.0,1.0,2.5,0.8,1.0,1.0,1.0],[1.6,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.6,1.6,1.0,0.8,1.0,2.0,1.6,1.0,1.0,1.0],[1.0,1.0,1.2,1.2,0.8,1.0],[0.75,0.6667,1.0,1.25,0.9,0.9],[],[0.95,0.6167]]},{"code":"C2015-31","sector":"residential building","family":"Social Apartments Ypres","ratios_by_bin":[[1.0,1.0,1.0,1.0],[0.6667],[0.8,1.0,1.0,1.0,1.0],[1.0,0.9333,0.95,1.0,0.9563,1.0,1.05],[0.92,1.0,1.0,1.04,0.5556,1.0,1.0,0.8333],[1.0,0.9889,0.95,0.6429]]},{"code":"C2015-32","sector":"residential building","family":"Social Apartments Ypres","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,0.6667,1.0,0.6667,1.0,1.4,0.6],[1.0,0.8,0.5,1.0,1.0,0.5,0.5,0.5,1.0,0.7,1.0,0.8],[0.9,1.0,0.4167,0.6667,0.3333,0.4167,0.75,1.0,0.75,1.0,0.75,1.0,1.0],[1.0,0.7083,0.6,1.1,1.0,0.6,0.6667,0.6333,0.8571,0.625,1.0],[0.5467,0.6]]},{"code":"C2015-35","sector":"residential building","family":"Retirement Apartments","ratios_by_bin":[[],[],[],[],[0.875],[1.6333,1.3851,0.9536,1.1855,1.3105,1.1275,0.9839,0.2984,1.8047]]},{"code":"C2016-06","sector":"institutional building","family":"Defense Building","ratios_by_bin":[[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0]]},{"code":"C2016-07","sector":"commercial building","family":"Shopping Village Walkways","ratios_by_bin":[[1.0,1.0],[],[1.0,0.8889,1.375,1.1429,1.1429,1.0,0.8889,1.0,1.0,1.0,0.8889,1.0,1.0,1.0,1.0,0.7778,0.8889,1.0,1.0,1.0,1.0,1.0,1.0,0.8889,0.875,1.0,0.7778,0.875,1.1429,1.1429,0.8889,1.0,1.0,1.0,0.7778,1.0,1.0,1.0,0.8889,0.8889,1.0,0.8,1.0,1.0,1.0,0.7778,1.0,1.0,1.0,0.875,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.8889,1.0,1.0,1.0,1.0,1.0,1.1429,0.8889,1.0,1.0,1.1429,1.0,1.0],[0.9091,0.8571,0.75,0.7273,1.0,0.6364,0.7273,0.5833,0.5833,0.6364,0.6364,0.7273,0.6667,0.7273,0.6364,0.7273,1.0,1.0,1.0,1.0,0.7273,1.0,1.0,1.0,0.7273,1.0,1.0],[],[1.0839]]},{"code":"C2016-11","sector":"residential building","family":"Residential House","ratios_by_bin":[[1.0,1.0,1.0,1.0,2.0,1.0,1.0,1.0,1.0,1.5,3.0,1.5,3.0,0.5,2.0,1.0,1.0,1.0],[0.8,0.3333,0.5,1.0,1.0,1.0,1.0,1.0,1.6667,1.0,1.0,1.0,1.0,0.3333,1.0,1.3333,1.0,1.0,0.75,1.0,0.6,1.2],[1.0,1.1429,1.0,0.9,1.0,1.0,1.0],[0.8333,0.9412,1.0667,1.2308,1.2727],[1.0,1.1667,1.0],[]]},{"code":"C2016-12","sector":"residential building","family":"Residential House","ratios_by_bin":[[1.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.25,1.0,1.0,0.8,0.8,1.0,1.0,1.0,1.2,1.0,0.6667,1.0,1.6667,1.75,1.25,0.75,1.0,0.8,1.0,1.0],[1.0,1.0,0.5,1.0,1.0,1.0,1.2,1.0,1.0],[1.0714,1.0,1.1667,1.0,1.0],[0.9259,0.9333,0.9545,1.0,1.0476,1.0],[]]},{"code":"C2016-13","sector":"residential building","family":"Residential House","ratios_by_bin":[[1.5,1.0,1.0,0.5,1.0,1.0,2.0,0.5,1.0],[1.0,1.0,1.5,2.3333,0.6667,1.25,1.0,2.0,0.6667,1.0,1.0,1.3333,1.0,0.6667,1.0,1.3333,1.25,1.0,1.6,1.0,1.2,1.0,1.0],[1.4444,0.375,0.7143,1.5556,1.3333,0.8333,0.7778,0.8333,1.0,1.0],[0.85,0.9412,0.8182,1.0,1.25,1.0],[1.1852,1.1951,0.9211],[]]},{"code":"C2016-14","sector":"residential building","family":"Residential House","ratios_by_bin":[[1.0,0.5,4.0,1.0,1.0,1.0,1.5,0.5,2.0,1.0],[2.0,1.2,1.25,0.6667,2.25,1.0,1.0,1.0,0.75,1.0,1.75,0.6667,1.2,0.3333,0.75,0.75,1.0,1.0],[1.1429,0.875,1.0,1.1667,1.0,1.0,0.75,1.0,1.2,0.8889],[0.9091,1.0,0.9,0.75,1.0667,1.0],[1.0,0.9429,0.9714,1.0],[]]},{"code":"C2016-15","sector":"residential building","family":"Residential House Structural Work","ratios_by_bin":[[1.0,2.0,2.0],[3.3333],[0.375,1.0,1.75,0.625,1.2222],[0.5263],[1.1481,1.1304,1.087],[]]},{"code":"C2016-16","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0],[],[],[]]},{"code":"C2016-17","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0],[],[],[]]},{"code":"C2016-18","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0],[],[],[]]},{"code":"C2016-19","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0],[],[],[]]},{"code":"C2016-20","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0],[],[],[]]},{"code":"C2016-21","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0],[],[],[]]},{"code":"C2016-22","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0],[],[],[]]},{"code":"C2016-23","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0],[],[],[]]},{"code":"C2016-24","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0],[],[],[]]},{"code":"C2016-25","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0],[],[],[]]},{"code":"C2016-26","sector":"residential building","family":"Residential House Finishing Works","ratios_by_bin":[[1.0],[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],[1.0,1.0],[],[],[]]},{"code":"C2016-27","sector":"residential building","family":"Apartment Building Foundations","ratios_by_bin":[[1.5,1.0,1.5],[1.0,1.2,1.3333,1.0,1.4,1.4,1.4],[1.1,1.0],[1.2,1.0,1.1667,1.0],[],[]]},{"code":"C2016-28","sector":"residential building","family":"Apartment Building Structural Work","ratios_by_bin":[[1.0,1.0],[1.3333,1.2,0.8,1.0,1.0],[0.8333,1.2,1.125,1.0,0.9,1.3,1.3,1.6667,0.8571,1.2],[1.0833,1.0],[],[]]},{"code":"C2016-29","sector":"residential building","family":"Apartment Building Structural Work","ratios_by_bin":[[],[1.0,1.2,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.1111,1.0,1.1111,1.0],[1.0,1.0,1.2222,1.25,1.0],[1.16],[]]},{"code":"C2016-30","sector":"residential building","family":"Apartment Building Structural Work","ratios_by_bin":[[],[1.0,0.8,1.0,1.0,0.8,1.0,1.0,0.8,1.0,1.0,1.3333,1.0,1.0,1.0],[1.1111,1.1111,1.0,1.1111,1.0,1.2857],[1.1333,1.1333,1.1333],[],[]]},{"code":"C2016-31","sector":"residential building","family":"Apartment Building Finishing Works","ratios_by_bin":[[],[1.4,1.6667,1.0,1.6667,1.0],[1.0,1.0,1.0,1.25,1.0,1.0,1.0,1.0,1.0,1.25,1.0],[1.1333,1.0,1.25,1.25,1.0,1.25,1.25],[],[]]},{"code":"C2016-32","sector":"residential building","family":"Apartment Building Finishing Works","ratios_by_bin":[[],[1.6667,1.0,1.0,1.6667,1.6667],[1.2,1.0,1.0,1.0,1.25,1.0,1.0,1.0,1.25,1.25,1.0,1.25,1.0,1.25],[1.1333,1.25,1.25],[],[]]},{"code":"C2016-33","sector":"residential building","family":"Apartment Building Finishing Works","ratios_by_bin":[[],[1.4,1.6667,1.0,1.6667,1.0],[1.0,1.0,1.0,1.0,1.25,1.0,1.2,1.0,1.0,1.0,1.0,1.25,1.0],[1.2,1.0,1.25,1.2,1.25],[],[]]},{"code":"C2016-34","sector":"residential building","family":"Apartment Building Finishing Works","ratios_by_bin":[[],[1.6667,1.0,1.0,1.0,1.6667,1.6667,1.0,1.0],[1.2,1.0,1.0,1.0,1.0,1.25,1.0,1.0,1.25,1.25,1.25,1.25],[1.1333,1.25,1.0],[],[]]},{"code":"C2019-09","sector":"commercial building","family":"Recreation building","ratios_by_bin":[[1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0,1.4286,1.25,1.0,1.0,1.0],[1.0,1.0,1.0],[1.2381],[]]}]}</script>
+<script id="sa-lbs-core">
+/* 위치기반 공정 코어(SA_LBS_CORE) — 하나의 공정 데이터(공종 × 위치)를 네트워크·바차트·흐름선·확률 렌즈가 같이 쓴다.
+   활동 = 공종 × 위치. 관계 3층: L1 같은 위치의 공종 간 / L3 공종 안 위치 순서(작업조 수만큼 병행) / L5 개별 연결.
+   위치가 하나면 일반 CPM(PDM: FS·SS·FF·SF + lag)과 같다(Kenley & Seppänen LBMS).
+   몬테카를로 기간 = 기준 기간 × 학습 비율. 비율은 DSLIB 건축 프로젝트 하나를 뽑아 그 안에서 기간 구간별로 추출(프로젝트 내 상관 유지,
+   sa_ai/단계AB_결과.md 백테스트 P80 적중 0.80). Risk Driver(AACE 57R-09): 발생 시 대상 활동 기간에 같은 배율을 곱해 상관을 만든다.
+   단위는 작업일. 달력(비작업일) 환산은 이 모듈 밖에서 한다. */
+(function(){
+  const REL = ['FS','SS','FF','SF'];
+  const rngOf = seed => { let a = (seed >>> 0) || 1; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  const tri = (u, a, m, b) => { if (b <= a) return m; const c = (m - a) / (b - a); return u < c ? a + Math.sqrt(u * (b - a) * (m - a)) : b - Math.sqrt((1 - u) * (b - a) * (b - m)); };
+
+  // 모델 → 활동·관계. model = { locations:[{id,name,order}], tasks:[{id,name,trade,dur,durByLoc?,locations?,crews?,continuity?}],
+  //   taskLinks:[{from,to,type,lag,scope:'location'|'task',locBuffer}], links:[{from:'task@loc',to,type,lag}] }
+  function expand(m){
+    const locs = [...(m.locations || [{ id: 'all', order: 0 }])].sort((a, b) => a.order - b.order);
+    const acts = [], idx = Object.create(null), byTask = Object.create(null);
+    for (const t of m.tasks) {
+      const tl = locs.filter(l => !t.locations || t.locations.includes(l.id));
+      if (!tl.length) throw new Error(`공종 ${t.id}: 위치가 없습니다`);
+      byTask[t.id] = [];
+      tl.forEach((l, k) => {
+        const d = t.durByLoc && t.durByLoc[l.id] != null ? +t.durByLoc[l.id] : +t.dur;
+        if (!(d >= 0)) throw new Error(`공종 ${t.id} @ ${l.id}: 기간이 0 이상의 숫자가 아닙니다`);
+        const id = t.id + '@' + l.id; idx[id] = acts.length; byTask[t.id].push(acts.length);
+        acts.push({ id, task: t.id, loc: l.id, k, dur: d, trade: t.trade || '' });
+      });
+    }
+    const links = [];
+    const add = (f, to, type, lag, layer) => {
+      if (f == null || to == null) throw new Error('없는 활동을 가리키는 관계가 있습니다');
+      if (!REL.includes(type)) throw new Error('관계 형식은 FS·SS·FF·SF 중 하나여야 합니다: ' + type);
+      links.push({ from: f, to, type, lag: +lag || 0, layer });
+    };
+    for (const t of m.tasks) {                                  // L3: 작업조 c개 → 위치 k 는 위치 k-c 가 끝난 뒤
+      const c = Math.max(1, Math.floor(t.crews || 1)), a = byTask[t.id];
+      for (let k = c; k < a.length; k++) add(a[k - c], a[k], 'FS', 0, 'L3');
+    }
+    for (const r of m.taskLinks || []) {                        // L1: 공종 간
+      const fa = byTask[r.from], ta = byTask[r.to];
+      if (!fa || !ta) throw new Error(`공종 관계 ${r.from}→${r.to}: 없는 공종`);
+      if (r.scope === 'task') { add(fa[fa.length - 1], ta[0], r.type || 'FS', r.lag, 'L1t'); continue; }
+      const b = Math.max(0, Math.floor(r.locBuffer || 0));     // 위치 버퍼: 후행은 선행보다 b개 위치 뒤에서 따라감
+      for (const j of ta) {
+        const loc = acts[j].loc, fk = fa.findIndex(i => acts[i].loc === loc);
+        if (fk < 0) continue;
+        add(fa[Math.min(fk + b, fa.length - 1)], j, r.type || 'FS', r.lag, 'L1');
+      }
+    }
+    for (const r of m.links || []) add(idx[r.from], idx[r.to], r.type || 'FS', r.lag, 'L5');
+    const n = acts.length, inc = Array.from({ length: n }, () => []), out = Array.from({ length: n }, () => []);
+    for (const l of links) { inc[l.to].push(l); out[l.from].push(l); }
+    // 위상 정렬(순환이면 오류)
+    const deg = inc.map(a => a.length), q = [], ord = [];
+    for (let i = 0; i < n; i++) if (!deg[i]) q.push(i);
+    while (q.length) { const i = q.pop(); ord.push(i); for (const l of out[i]) if (!--deg[l.to]) q.push(l.to); }
+    if (ord.length !== n) throw new Error('관계가 순환합니다 — 선후행을 확인하세요');
+    return { acts, links, inc, out, ord, byTask, idx, tasks: m.tasks };
+  }
+
+  // 전진 계산. minStart: 연속성 보정용 하한(없으면 0)
+  function forward(net, dur, es, ef, minStart, cal, extra){
+    for (const j of net.ord) {
+      const d = dur[j]; let s = minStart ? minStart[j] : 0;
+      for (const l of net.inc[j]) {   // 달력 모드에서 FF·SF 는 작업일을 그대로 빼는 근사
+        const c = l.type === 'FS' ? ef[l.from] + l.lag : l.type === 'SS' ? es[l.from] + l.lag : l.type === 'FF' ? ef[l.from] + l.lag - d : es[l.from] + l.lag - d;
+        if (c > s) s = c;
+      }
+      es[j] = s; ef[j] = (cal ? cal.finish(s, d, j) : s + d) + (extra ? extra[j] : 0);   // extra: 작업 중단(달력일)
+    }
+    let T = 0; for (const j of net.ord) if (ef[j] > T) T = ef[j];
+    return T;
+  }
+
+  // 연속성: continuity 공종은 마지막 위치 종료를 유지한 채 앞 위치 시작을 늦춰 작업조 공백을 없앤다(LBMS 휴리스틱)
+  function continuityStarts(net, dur, es, ef){
+    const min = new Float64Array(net.acts.length);
+    for (const t of net.tasks) {
+      if (!t.continuity || (t.crews || 1) > 1) continue;
+      const a = net.byTask[t.id];
+      let next = es[a[a.length - 1]];
+      min[a[a.length - 1]] = es[a[a.length - 1]];
+      for (let k = a.length - 2; k >= 0; k--) { const s = Math.max(es[a[k]], next - dur[a[k]]); min[a[k]] = s; next = s; }
+    }
+    return min;
+  }
+
+  function schedule(net, dur, cal, extra){
+    const n = net.acts.length, es = new Float64Array(n), ef = new Float64Array(n);
+    let T = forward(net, dur, es, ef, null, cal, extra);
+    if (net.tasks.some(t => t.continuity)) T = forward(net, dur, es, ef, continuityStarts(net, dur, es, ef), cal, extra);
+    // 후진 계산(여유·임계). 달력 모드는 전진 계산의 달력 기간을 그대로 쓴다
+    const cd = cal || extra ? Float64Array.from(ef, (v, i) => v - es[i]) : dur;
+    const lf = new Float64Array(n).fill(T);
+    for (let x = net.ord.length - 1; x >= 0; x--) {
+      const i = net.ord[x], d = cd[i]; let f = T;
+      for (const l of net.out[i]) {
+        const lsj = lf[l.to] - cd[l.to];
+        const c = l.type === 'FS' ? lsj - l.lag : l.type === 'SS' ? lsj - l.lag + d : l.type === 'FF' ? lf[l.to] - l.lag : lf[l.to] - l.lag + d;
+        if (c < f) f = c;
+      }
+      lf[i] = f;
+    }
+    const tf = new Float64Array(n); for (let i = 0; i < n; i++) tf[i] = lf[i] - cd[i] - es[i];
+    return { T, es, ef, lf, tf, critical: Array.from(tf, v => v < 1e-9) };
+  }
+
+  // 달력: 활동마다 비작업일 표(월별 12개, 예: LH 별표)를 정하면 작업일 → 달력일로 바꾼다.
+  // 월 안에서 작업 비율 = 1 − 비작업일/그 달 일수(기댓값 환산). 표가 없는 활동(null)은 달력일 그대로(준비·정리·보정).
+  // opts: { start:'YYYY-MM-DD', tables:{ key:[12] }, tableOf:(act)=>key|null }
+  function makeCalendar(net, opts){
+    const [y0, m0, d0] = String(opts.start).split('-').map(Number), start = Date.UTC(y0, m0 - 1, d0), DAY = 86400000;
+    const segs = [];                                   // 프로젝트 시작 기준 [시작 일수, 그 달 일수, 연, 월]
+    let t = 0, y = y0, m = m0 - 1, first = true;
+    while (t < 365 * 40) {
+      const D = new Date(Date.UTC(y, m + 1, 0)).getUTCDate(), off = first ? d0 - 1 : 0;
+      segs.push({ t, len: D - off, D, m }); t += D - off; first = false; if (++m === 12) { m = 0; y++; }
+    }
+    const key = net.acts.map(a => opts.tableOf ? opts.tableOf(a) : null), tables = opts.tables || {};
+    const find = s => { let lo = 0, hi = segs.length - 1; while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (segs[mid].t <= s) lo = mid; else hi = mid - 1; } return lo; };
+    return {
+      start, segs,
+      finish(s, d, j){
+        const tb = key[j] && tables[key[j]];
+        if (!tb || d <= 0) return s + d;
+        let k = find(s), pos = s, rem = d;
+        while (rem > 1e-12) {
+          const g = segs[k], end = g.t + g.len, frac = Math.max(0.05, 1 - tb[g.m] / g.D), cap = (end - pos) * frac;
+          if (rem <= cap) return pos + rem / frac;
+          rem -= cap; pos = end; k++;
+        }
+        return pos;
+      },
+      date: dayOff => { const x = new Date(start + Math.round(dayOff) * DAY); return `${x.getUTCFullYear()}-${String(x.getUTCMonth() + 1).padStart(2, '0')}-${String(x.getUTCDate()).padStart(2, '0')}`; },
+    };
+  }
+
+  // 작업조 공백(중단): 같은 공종의 다음 위치가 바로 이어지지 않은 일수 합(흐름선 렌즈의 '대기')
+  function gaps(net, es, ef){
+    const g = Object.create(null);
+    for (const t of net.tasks) { const a = net.byTask[t.id], c = Math.max(1, t.crews || 1); let s = 0; for (let k = c; k < a.length; k++) s += Math.max(0, es[a[k]] - ef[a[k - c]]); g[t.id] = s; }
+    return g;
+  }
+
+  const DUR_BINS = [0, 2, 5, 10, 20, 50];
+  const binOf = d => { let b = 0; for (let i = 1; i < DUR_BINS.length; i++) if (d > DUR_BINS[i]) b = i; return b; };
+
+  // 학습 비율 추출기: 반복마다 프로젝트 하나를 뽑고(상관 유지) 그 안에서 활동 기간 구간별로 비율을 뽑는다
+  function priorSampler(prior){
+    const P = prior.projects.filter(p => p.ratios_by_bin.some(x => x.length));
+    if (!P.length) throw new Error('학습 분포에 프로젝트가 없습니다');
+    const all = P.map(p => p.ratios_by_bin.flat());
+    return (r, n, base) => {
+      const pi = Math.floor(r() * P.length), pr = P[pi], out = new Float64Array(n);
+      for (let i = 0; i < n; i++) { const b = pr.ratios_by_bin[binOf(base[i])], src = b.length >= 3 ? b : all[pi]; out[i] = src[Math.floor(r() * src.length)]; }
+      return out;
+    };
+  }
+
+  const quantile = (sorted, q) => { if (!sorted.length) return NaN; const h = (sorted.length - 1) * Math.min(1, Math.max(0, q)), lo = Math.floor(h); return sorted[lo] + (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]) * (h - lo); };
+
+  // 몬테카를로. opts: { N, seed, prior(duration_prior.json), riskDrivers:[{id,prob,impact:[a,m,b],tasks?,trades?}], ratio:'prior'|'sym15'|'none' }
+  function simulate(model, opts = {}){
+    const net = model.acts ? model : expand(model);
+    const N = Math.max(1, opts.N || 1000), r = rngOf(opts.seed || 1), n = net.acts.length;
+    const cal = opts.calendar ? makeCalendar(net, opts.calendar) : null;
+    const base = Float64Array.from(net.acts, a => a.dur), dur = new Float64Array(n);
+    const es = new Float64Array(n), ef = new Float64Array(n), T = new Float64Array(N), crit = new Float64Array(n);
+    const mode = opts.ratio || (opts.prior ? 'prior' : 'sym15');
+    const sampler = mode === 'prior' ? priorSampler(opts.prior) : null;
+    // Risk Driver 두 종류: impact:[a,m,b] = 대상 활동 기간 × 배율(상관) / addDays:{median,sigma} = 대상 공종 첫 활동 뒤 작업 중단(달력일, 로그정규)
+    const drivers = (opts.riskDrivers || []).map(d => {
+      const hit = net.acts.map(a => (!d.tasks || d.tasks.includes(a.task)) && (!d.trades || d.trades.includes(a.trade)));
+      const first = d.addDays ? hit.findIndex(Boolean) : -1;
+      if (d.addDays && first < 0) throw new Error(`위험 ${d.id}: 대상 활동이 없습니다`);
+      return { ...d, hit, first };
+    });
+    const extra = drivers.some(d => d.addDays) ? new Float64Array(n) : null;
+    const gauss = () => Math.sqrt(-2 * Math.log(r() || 1e-12)) * Math.cos(2 * Math.PI * r());
+    const hits = drivers.map(() => 0);
+    for (let it = 0; it < N; it++) {
+      const ratio = sampler ? sampler(r, n, base) : null;
+      for (let i = 0; i < n; i++) dur[i] = base[i] * (ratio ? ratio[i] : mode === 'sym15' ? tri(r(), 0.85, 1, 1.15) : 1);
+      if (extra) extra.fill(0);
+      drivers.forEach((d, k) => {
+        const u = r(), z = d.addDays ? gauss() : 0, v = r();      // 발생 여부와 상관없이 같은 개수의 난수(공통 난수 정렬 유지)
+        if (u >= d.prob) return;
+        hits[k]++;
+        if (d.addDays) { extra[d.first] += d.addDays.median * Math.exp(d.addDays.sigma * z); return; }
+        const f = tri(v, d.impact[0], d.impact[1], d.impact[2]); for (let i = 0; i < n; i++) if (d.hit[i]) dur[i] *= f;
+      });
+      const sch = opts.withCriticality ? schedule(net, dur, cal, extra) : null;
+      T[it] = sch ? sch.T : forward(net, dur, es, ef, null, cal, extra);
+      if (sch) for (let i = 0; i < n; i++) if (sch.critical[i]) crit[i]++;
+    }
+    const sorted = Float64Array.from(T).sort(), qs = opts.prior && opts.prior.calibration_qstar || 0.8;
+    return {
+      N, samples: T, sorted, mean: T.reduce((a, b) => a + b, 0) / N,
+      p50: quantile(sorted, 0.5), p80: quantile(sorted, 0.8), p80cal: quantile(sorted, Math.max(0.8, qs)), qstar: qs,
+      deterministic: schedule(net, base, cal).T, calendar: cal,
+      criticality: opts.withCriticality ? Array.from(crit, c => c / N) : null,
+      driverHitRate: hits.map(h => h / N), mode,
+    };
+  }
+
+  // 표본 CRPS(분포 전체 오차): E|X−y| − ½E|X−X'|
+  function crps(sorted, y){ const n = sorted.length; let a = 0, b = 0; for (let i = 0; i < n; i++) { a += Math.abs(sorted[i] - y); b += (2 * (i + 1) - n - 1) * sorted[i]; } return a / n - b / (n * n); }
+
+  const api = { expand, schedule, gaps, simulate, quantile, crps, binOf, DUR_BINS, rngOf, makeCalendar };
+  (typeof window !== 'undefined' ? window : globalThis).SA_LBS_CORE = api;
+})();
+</script>
+<script id="sa-lh-core">
+/* LH 공사기간 산정(SA_LH_CORE) — 「주택건설공사 공사기간 산정지침」(LH 2021.9.17 제2601호, 주택기술처) 원문 재현.
+   공사기간 = 준비 30 + 토목(작업+비작업) + 기초 + 지하골조 + 지상골조(층별, 동절기 +1일) + 골조보정 + 습식·건식 마감 + 안전활동 보정 + 정리 30.
+   비작업일: 별표1(토목·기초)·2(골조)·3(습식)·4(건식)의 지역·월별 일수를 월 비례로 배분(소수 올림).
+   같은 표를 쓰는 앞 공종이 그 달 비작업일을 일부 쓰면 남은 만큼만 반영(별표8 예시 방식). 검증: 별표8 예시 795일(tests/lh.test.mjs).
+   예시와 원문이 다른 곳: 선굴착 파일 일수는 예시(38.1→38일)대로 반올림, 안전활동 보정은 예시대로 max(1, 버림). */
+(function(){
+  const RULES = {"source":"LH 주택건설공사 공사기간 산정지침 2021.9.17 제2601호(주택기술처), 원본 PDF","nonwork":{"earth":{"강릉":[10,9,11,10,11,9,15,16,16,12,9,9],"강진":[10,9,12,13,13,11,15,15,14,12,9,10],"강화":[14,10,9,9,13,10,18,14,11,11,9,11],"거제":[9,9,13,15,15,12,16,15,15,12,9,9],"거창":[15,10,12,11,12,10,16,16,13,13,9,12],"경주":[10,9,11,13,11,10,12,15,15,11,9,9],"고창":[16,12,11,12,12,10,16,16,12,12,9,15],"고흥":[9,9,12,13,14,12,16,14,14,12,9,9],"광주":[16,11,11,11,12,10,17,18,12,12,9,14],"구미":[10,9,10,10,11,9,14,15,14,11,9,9],"군산":[15,10,12,11,13,10,16,15,13,12,9,16],"금산":[15,10,10,11,11,10,16,17,13,11,9,11],"김해":[9,9,11,13,13,10,15,13,14,12,9,9],"남원":[15,10,11,11,12,10,17,16,13,12,9,10],"남해":[9,10,13,14,15,13,16,16,15,12,9,9],"대구":[10,9,11,10,12,9,14,17,13,11,9,10],"대전":[14,11,10,10,13,10,17,16,14,12,9,13],"동두천":[18,12,12,11,14,10,19,17,12,11,10,16],"동해":[10,10,11,10,10,9,14,15,15,12,10,9],"목포":[16,13,14,12,13,11,15,14,13,13,12,18],"문경":[10,9,10,11,12,10,17,16,13,11,9,9],"밀양":[9,9,10,12,12,10,16,16,13,11,9,9],"보령":[13,9,9,10,13,10,16,15,12,11,9,13],"보은":[18,10,10,10,12,10,19,16,14,11,9,13],"봉화":[21,13,9,11,12,10,16,16,12,11,9,15],"부산":[10,9,13,15,14,12,16,14,14,13,9,9],"부안":[11,9,10,11,13,9,16,16,12,12,10,11],"부여":[11,9,9,11,13,10,17,16,13,11,9,10],"산청":[9,9,11,12,13,11,16,16,14,12,9,9],"상주":[11,9,10,10,11,10,15,16,14,11,9,10],"서산":[14,10,9,10,12,9,17,15,12,11,9,15],"서울":[12,10,9,10,13,11,19,16,12,11,9,12],"속초":[11,11,11,11,11,9,17,17,13,12,10,10],"수원":[14,10,10,9,13,9,19,16,12,11,9,12],"순창":[15,11,12,12,13,10,18,18,13,12,10,12],"순천":[10,9,12,13,13,11,16,15,15,12,10,10],"안동":[15,11,11,10,11,9,15,16,12,11,9,11],"양산":[9,9,11,14,13,11,15,14,14,12,9,9],"양평":[17,10,9,11,13,10,19,16,13,10,9,12],"여수":[17,14,17,16,15,12,16,15,15,14,12,14],"영광":[14,10,11,11,13,10,15,15,13,11,9,14],"영덕":[10,9,10,11,11,9,13,15,14,12,9,9],"영월":[18,11,9,10,12,11,17,17,13,10,9,13],"영주":[16,11,12,13,13,11,17,17,14,11,9,12],"영천":[10,9,11,11,12,9,14,14,13,11,9,9],"완도":[12,11,14,14,14,13,15,14,14,12,11,11],"울산":[9,10,11,12,12,10,14,13,13,11,9,9],"울진":[11,10,10,10,10,9,13,15,14,13,9,10],"원주":[19,13,13,11,13,11,18,17,13,11,9,14],"의령":[10,9,11,13,13,11,15,17,15,12,9,9],"의성":[20,11,10,9,11,9,14,15,13,11,9,13],"이천":[19,12,14,11,14,10,18,16,13,11,9,14],"인제":[20,11,9,10,12,10,19,15,12,10,9,14],"인천":[12,10,11,10,13,10,18,14,12,12,9,13],"임실":[17,11,10,11,13,10,18,17,13,12,9,12],"장수":[18,12,11,12,13,10,19,17,14,13,9,12],"장흥":[10,9,12,12,13,11,16,16,14,12,9,9],"전주":[14,10,12,10,14,11,16,17,13,11,9,13],"정읍":[15,10,11,11,13,10,16,16,12,12,9,11],"제주":[13,13,13,12,12,13,13,14,13,13,11,12],"제천":[21,13,10,12,13,11,18,17,13,11,9,16],"진도":[14,14,15,16,16,11,15,15,13,13,10,16],"진주":[10,9,12,13,13,12,16,16,15,12,9,9],"창원":[9,9,11,14,13,11,15,15,14,12,9,9],"천안":[16,11,10,10,12,9,18,16,13,11,9,16],"철원":[23,15,11,11,13,10,20,16,12,11,9,19],"청송":[16,12,9,10,11,9,13,16,13,12,9,11],"청주":[15,11,12,11,13,10,19,16,14,12,10,15],"춘천":[20,13,9,11,13,11,19,16,12,10,9,16],"충주":[18,11,10,11,12,9,16,17,13,11,9,12],"통영":[9,9,13,14,14,12,16,14,15,12,9,9],"파주":[22,13,11,11,14,10,19,16,11,10,9,17],"포항":[10,9,10,11,11,10,13,14,14,11,9,9],"함양":[10,9,11,11,11,10,16,16,14,12,9,9],"합천":[10,9,10,11,13,10,17,17,14,12,9,9],"해남":[10,10,11,12,13,10,13,14,12,12,9,9],"홍천":[20,11,9,10,12,9,19,16,13,10,9,14]},"frame":{"강릉":[10,9,9,9,10,9,16,16,11,10,9,9],"강진":[10,9,10,10,10,9,12,16,11,10,9,9],"강화":[14,9,9,9,10,9,12,13,10,10,9,11],"거제":[9,9,10,10,11,10,15,17,11,10,9,9],"거창":[15,9,11,9,10,9,16,17,11,11,9,12],"경주":[10,9,9,9,11,10,19,19,12,10,9,9],"고창":[15,11,10,11,10,9,16,19,10,10,9,15],"고흥":[9,9,9,9,11,9,13,15,11,10,9,9],"광주":[16,11,10,9,10,10,18,21,11,10,9,13],"구미":[10,9,9,9,10,9,17,20,10,10,9,9],"군산":[15,10,11,9,10,9,13,16,10,10,9,16],"금산":[14,9,9,9,10,9,17,20,10,10,9,10],"김해":[9,9,9,9,11,9,17,20,12,10,9,9],"남원":[15,9,9,9,10,9,17,19,11,10,9,10],"남해":[9,9,10,9,11,11,16,19,11,10,9,9],"대구":[10,9,9,9,11,11,20,21,11,10,9,9],"대전":[13,10,9,9,10,9,16,19,10,10,9,12],"동두천":[18,12,12,9,12,10,16,17,10,10,9,15],"동해":[9,9,10,9,9,9,12,14,11,10,9,9],"목포":[16,13,12,10,10,9,12,15,11,12,10,18],"문경":[10,9,9,9,10,9,16,18,10,10,9,9],"밀양":[9,9,9,9,11,10,21,22,11,10,9,9],"보령":[13,9,9,9,10,9,13,15,10,10,9,13],"보은":[18,10,9,9,10,9,16,18,11,10,9,12],"봉화":[21,12,9,9,10,9,13,15,10,10,9,14],"부산":[9,9,10,10,11,10,12,14,11,10,9,9],"부안":[11,9,9,9,11,9,15,19,10,11,9,10],"부여":[11,9,9,9,10,9,15,20,10,10,9,9],"산청":[9,9,9,9,11,10,16,19,11,10,9,9],"상주":[11,9,9,9,10,10,17,20,11,10,9,10],"서산":[14,10,9,9,10,9,12,15,10,10,9,15],"서울":[12,10,9,9,11,9,15,17,10,10,9,11],"속초":[11,11,11,9,10,9,15,14,11,10,9,9],"수원":[14,10,9,9,10,9,16,19,10,10,9,12],"순창":[15,10,10,9,11,9,17,20,11,10,9,11],"순천":[10,9,9,9,11,9,16,18,11,10,9,10],"안동":[15,10,10,9,10,9,17,20,10,10,9,10],"양산":[9,9,9,10,11,9,17,20,11,10,9,9],"양평":[17,10,9,9,10,9,17,19,10,10,9,11],"여수":[16,14,15,13,13,10,12,13,12,13,11,14],"영광":[14,10,9,9,11,9,15,19,10,10,9,13],"영덕":[9,9,9,9,10,9,17,17,12,10,9,9],"영월":[17,10,9,9,11,11,15,18,10,10,9,13],"영주":[16,11,11,10,10,9,15,19,11,10,9,12],"영천":[10,9,9,9,11,9,18,18,11,10,9,9],"완도":[12,10,11,11,11,10,12,16,11,10,9,10],"울산":[9,9,9,9,10,9,17,16,11,10,9,9],"울진":[11,10,9,9,9,9,13,12,11,10,9,9],"원주":[19,13,12,9,11,9,15,19,11,10,9,14],"의령":[10,9,9,10,11,10,16,20,11,10,9,9],"의성":[20,11,9,9,10,11,18,21,11,10,9,13],"이천":[19,11,13,9,11,9,16,19,11,10,9,14],"인제":[20,11,9,9,10,9,15,15,10,10,9,14],"인천":[12,10,11,9,10,9,12,14,10,11,9,13],"임실":[17,10,9,9,10,9,17,19,10,10,9,11],"장수":[18,11,9,9,10,9,15,15,11,10,9,12],"장흥":[9,9,10,9,11,9,14,16,11,10,9,9],"전주":[14,10,11,9,11,10,18,22,11,10,9,13],"정읍":[15,9,10,9,11,9,19,21,10,10,9,10],"제주":[13,12,10,10,10,10,13,15,11,10,9,11],"제천":[21,13,9,9,11,9,14,17,10,10,9,16],"진도":[14,13,14,13,13,9,11,13,11,11,9,15],"진주":[10,9,9,9,10,9,16,18,11,10,9,9],"창원":[9,9,9,9,11,9,16,18,11,10,9,9],"천안":[16,10,10,9,10,9,15,18,10,10,9,15],"철원":[23,15,10,9,11,9,14,15,10,10,9,18],"청송":[16,12,9,9,11,9,15,18,11,10,9,10],"청주":[15,10,11,9,11,9,18,19,11,11,9,14],"춘천":[20,13,9,9,11,10,16,17,10,10,9,16],"충주":[18,11,9,9,10,9,15,19,10,10,9,11],"통영":[9,9,10,9,11,9,12,14,11,10,9,9],"파주":[22,13,10,9,11,9,14,17,9,10,9,16],"포항":[9,9,9,9,10,9,17,16,11,10,9,9],"함양":[10,9,9,9,10,9,19,20,11,10,9,9],"합천":[10,9,9,9,11,11,21,23,12,10,9,9],"해남":[9,9,9,9,10,9,13,17,10,10,9,9],"홍천":[20,11,9,9,11,10,18,20,10,10,9,14]},"wetfinish":{"강릉":[22,17,9,9,9,9,9,10,10,9,9,18],"강진":[23,17,9,9,9,9,9,10,10,9,9,17],"강화":[29,24,11,9,10,9,11,9,9,9,10,26],"거제":[18,12,9,9,10,9,9,10,10,10,9,13],"거창":[28,21,11,9,9,9,10,10,9,10,9,24],"경주":[25,18,9,9,9,9,9,9,11,9,9,21],"고창":[25,19,9,9,9,9,10,9,9,9,9,19],"고흥":[22,14,9,9,9,9,9,10,10,10,9,16],"광주":[23,16,9,9,9,9,10,10,9,9,9,18],"구미":[26,18,9,9,9,9,9,10,9,9,9,21],"군산":[26,19,9,9,9,9,9,9,9,9,9,20],"금산":[29,22,11,9,9,9,9,11,9,10,10,25],"김해":[20,12,9,9,9,9,9,9,10,9,9,15],"남원":[28,20,10,9,9,9,10,10,10,10,9,24],"남해":[20,13,9,9,10,9,10,10,11,10,9,15],"대구":[22,14,9,9,9,9,9,10,9,10,9,19],"대전":[27,19,9,9,9,9,10,11,10,9,9,23],"동두천":[29,23,11,9,10,9,11,11,9,9,11,26],"동해":[21,15,9,9,9,9,9,9,10,10,9,16],"목포":[22,16,9,9,9,9,9,9,9,10,9,15],"문경":[28,21,10,9,9,9,10,11,9,9,9,25],"밀양":[25,15,9,9,9,9,9,10,10,9,9,20],"보령":[25,19,10,9,10,9,10,9,9,9,9,20],"보은":[29,23,12,9,9,9,11,11,10,9,11,27],"봉화":[30,25,15,9,9,9,9,10,9,9,14,29],"부산":[17,11,9,9,10,9,9,9,10,10,9,12],"부안":[25,19,10,9,9,9,10,10,9,9,9,20],"부여":[28,21,10,9,9,9,10,11,9,9,9,24],"산청":[25,17,9,9,9,9,10,11,10,10,9,20],"상주":[28,20,9,9,9,9,9,10,9,10,9,24],"서산":[27,22,12,9,9,9,9,10,9,9,9,23],"서울":[27,21,10,9,9,9,11,10,9,9,9,24],"속초":[25,19,10,9,9,9,9,10,9,9,9,20],"수원":[27,21,10,9,9,9,11,10,9,10,9,24],"순창":[27,20,11,9,9,9,11,11,10,10,9,23],"순천":[24,20,10,9,9,9,9,10,10,10,9,21],"안동":[28,21,9,9,9,9,9,11,9,9,9,25],"양산":[19,13,9,9,9,9,9,9,10,10,9,15],"양평":[29,23,10,9,9,9,11,11,9,9,11,27],"여수":[19,12,9,9,9,9,9,10,10,10,9,13],"영광":[26,20,10,9,9,9,9,10,9,9,9,20],"영덕":[22,15,9,9,9,9,9,9,10,10,9,18],"영월":[29,23,11,9,9,9,10,11,9,9,11,26],"영주":[29,23,10,9,9,9,9,11,10,9,11,26],"영천":[27,18,9,9,9,9,9,10,9,10,9,22],"완도":[20,14,9,9,10,9,9,9,10,9,9,12],"울산":[20,13,9,9,9,9,9,9,10,10,9,15],"울진":[22,16,9,9,9,9,9,9,10,10,9,18],"원주":[28,22,10,9,9,9,10,10,9,9,10,26],"의령":[27,18,9,9,9,9,9,10,10,10,9,22],"의성":[29,22,11,9,9,9,9,9,9,9,10,26],"이천":[29,23,11,9,9,9,10,10,9,9,11,27],"인제":[29,25,13,9,9,9,11,10,9,9,13,27],"인천":[27,21,9,9,9,9,10,9,9,9,9,23],"임실":[29,23,13,9,9,9,11,11,9,10,9,26],"장수":[29,24,14,9,9,9,12,11,10,10,11,26],"장흥":[24,16,9,9,10,9,9,10,10,9,9,17],"전주":[25,18,9,9,9,9,10,11,9,9,9,20],"정읍":[25,19,10,9,9,9,10,10,9,9,9,20],"제주":[10,9,9,9,9,9,9,10,10,10,9,9],"제천":[30,25,15,9,9,9,10,11,9,10,14,29],"진도":[26,21,14,9,10,9,9,10,10,10,9,21],"진주":[26,17,9,9,9,9,10,10,10,10,9,21],"창원":[20,13,9,9,9,9,9,9,10,10,9,15],"천안":[28,21,10,9,9,9,10,11,9,9,9,24],"철원":[30,25,14,9,9,9,11,10,9,9,14,28],"청송":[29,24,12,9,9,9,9,9,10,10,11,26],"청주":[27,19,9,9,9,9,11,10,9,9,9,23],"춘천":[29,24,11,9,9,9,11,10,9,9,12,28],"충주":[29,22,11,9,9,9,9,11,9,9,10,26],"통영":[18,12,9,9,10,9,9,9,10,10,9,12],"파주":[30,25,13,9,10,9,11,10,9,9,13,28],"포항":[19,13,9,9,9,9,9,9,10,10,9,15],"함양":[26,20,9,9,9,9,10,10,10,10,9,22],"합천":[27,18,9,9,9,9,10,10,10,10,9,22],"해남":[24,18,9,9,9,9,9,9,10,9,9,17],"홍천":[30,24,11,9,9,9,10,10,9,9,13,28]},"dryfinish":{"강릉":[9,9,9,9,9,9,9,10,10,9,9,9],"강진":[9,8,9,9,9,9,9,10,10,9,9,9],"강화":[9,8,9,9,10,9,11,9,9,9,9,9],"거제":[9,8,9,9,10,9,9,10,10,10,9,9],"거창":[9,8,9,9,9,9,10,10,9,10,9,9],"경주":[9,8,9,9,9,9,9,9,11,9,9,9],"고창":[9,8,9,9,9,9,10,9,9,9,9,9],"고흥":[9,8,9,9,9,9,9,10,10,10,9,9],"광주":[9,8,9,9,9,9,10,10,9,9,9,9],"구미":[9,8,9,9,9,9,9,10,9,9,9,9],"군산":[9,8,9,9,9,9,9,9,9,9,9,9],"금산":[9,8,9,9,9,9,9,11,9,10,9,9],"김해":[9,8,9,9,9,9,9,9,10,9,9,9],"남원":[9,8,9,9,9,9,10,10,10,10,9,9],"남해":[9,8,9,9,10,9,10,10,11,10,9,9],"대구":[9,8,9,9,9,9,9,10,9,10,9,9],"대전":[9,8,9,9,9,9,10,11,10,9,9,9],"동두천":[9,8,9,9,10,9,11,11,9,9,9,9],"동해":[9,8,9,9,9,9,9,9,10,9,9,9],"목포":[9,8,9,9,9,9,9,9,9,9,9,9],"문경":[9,8,9,9,9,9,10,11,9,9,9,9],"밀양":[9,8,9,9,9,9,9,10,10,9,9,9],"보령":[9,8,9,9,10,9,10,9,9,9,9,9],"보은":[9,8,9,9,9,9,11,11,10,9,9,9],"봉화":[9,8,9,9,9,9,9,10,9,9,9,9],"부산":[9,8,9,9,10,9,9,9,10,10,9,9],"부안":[9,8,9,9,9,9,10,10,9,9,9,9],"부여":[9,8,9,9,9,9,10,11,9,9,9,9],"산청":[9,8,9,9,9,9,10,11,10,10,9,9],"상주":[9,8,9,9,9,9,9,10,9,10,9,9],"서산":[9,8,9,9,9,9,9,10,9,9,9,9],"서울":[9,8,9,9,9,9,11,10,9,9,9,9],"속초":[9,8,9,9,9,9,9,10,9,9,9,9],"수원":[9,8,9,9,9,9,11,10,9,10,9,9],"순창":[9,8,9,9,9,9,11,11,10,10,9,9],"순천":[9,8,9,9,9,9,9,10,10,10,9,9],"안동":[9,8,9,9,9,9,9,11,9,9,9,9],"양산":[9,8,9,9,9,9,9,9,10,10,9,9],"양평":[9,8,9,9,9,9,11,11,9,9,9,9],"여수":[9,8,9,9,9,9,9,10,10,10,9,9],"영광":[9,8,9,9,9,9,9,10,9,9,9,9],"영덕":[9,8,9,9,9,9,9,9,10,10,9,9],"영월":[9,8,9,9,9,9,10,11,9,9,9,9],"영주":[9,8,9,9,9,9,9,11,10,9,9,9],"영천":[9,8,9,9,9,9,9,10,9,10,9,9],"완도":[9,9,9,9,10,9,9,9,10,9,9,9],"울산":[9,8,9,9,9,9,9,9,10,10,9,9],"울진":[9,8,9,9,9,9,9,9,10,10,9,9],"원주":[9,8,9,9,9,9,10,10,9,9,9,9],"의령":[9,8,9,9,9,9,9,10,10,10,9,9],"의성":[9,8,9,9,9,9,9,9,9,9,9,9],"이천":[9,8,9,9,9,9,10,10,9,9,9,9],"인제":[9,8,9,9,9,9,11,10,9,9,9,9],"인천":[9,8,9,9,9,9,10,9,9,9,9,9],"임실":[9,8,9,9,9,9,11,11,9,10,9,9],"장수":[9,8,9,9,9,9,12,11,10,10,9,9],"장흥":[9,8,9,9,10,9,9,10,10,9,9,9],"전주":[9,8,9,9,9,9,10,11,9,9,9,9],"정읍":[9,8,9,9,9,9,10,10,9,9,9,9],"제주":[9,9,9,9,9,9,9,10,10,10,9,9],"제천":[9,8,9,9,9,9,10,11,9,10,9,9],"진도":[9,8,9,9,10,9,9,10,10,10,9,9],"진주":[9,8,9,9,9,9,10,10,10,10,9,9],"창원":[9,8,9,9,9,9,9,9,10,10,9,9],"천안":[9,8,9,9,9,9,10,11,9,9,9,9],"철원":[9,8,9,9,9,9,11,10,9,9,9,9],"청송":[9,8,9,9,9,9,9,9,10,10,9,9],"청주":[9,8,9,9,9,9,11,10,9,9,9,9],"춘천":[9,8,9,9,9,9,11,10,9,9,9,9],"충주":[9,8,9,9,9,9,9,11,9,9,9,9],"통영":[9,8,9,9,10,9,9,9,10,10,9,9],"파주":[9,8,9,9,10,9,11,10,9,9,9,9],"포항":[9,8,9,9,9,9,9,9,10,10,9,9],"함양":[9,8,9,9,9,9,10,10,10,10,9,9],"합천":[9,8,9,9,9,9,10,10,10,10,9,9],"해남":[9,8,9,9,9,9,9,9,10,9,9,9],"홍천":[9,8,9,9,9,9,10,10,9,9,9,9]}},"grade":{"금산":1,"동두천":1,"보은":1,"양평":1,"영월":1,"원주":1,"인제":1,"장수":1,"제천":1,"철원":1,"춘천":1,"충주":1,"파주":1,"홍천":1,"강화":2,"거창":2,"광주":2,"구미":2,"남원":2,"대전":2,"문경":2,"보령":2,"봉화":2,"부여":2,"상주":2,"서산":2,"서울":2,"수원":2,"안동":2,"영주":2,"영천":2,"의성":2,"이천":2,"인천":2,"임실":2,"천안":2,"청송":2,"청주":2,"함양":2,"합천":2,"강릉":3,"고창":3,"군산":3,"대구":3,"동해":3,"밀양":3,"부안":3,"산청":3,"속초":3,"순창":3,"순천":3,"영덕":3,"울진":3,"의령":3,"장흥":3,"전주":3,"정읍":3,"진주":3,"강진":4,"경주":4,"고흥":4,"김해":4,"남해":4,"목포":4,"양산":4,"여수":4,"영광":4,"울산":4,"창원":4,"포항":4,"해남":4,"거제":5,"부산":5,"완도":5,"진도":5,"통영":5,"제주":6},"alias":{"가평":"춘천","횡성":"원주","고성":"창원","양구":"인제","태백":"영월","평창":"영월","정선":"영월","화천":"철원","포천":"동두천","연천":"동두천","의정부":"파주","고양":"파주","양주":"파주","단양":"제천","괴산":"충주","음성":"충주","영동":"금산","옥천":"금산","무주":"장수","하남":"서울","구리":"서울","남양주":"서울","성남":"서울","부천":"서울","광명":"서울","시흥":"인천","안산":"인천","세종":"대전","논산":"대전","공주":"대전","계룡":"대전","화성":"수원","오산":"수원","의왕":"수원","안양":"수원","군포":"수원","과천":"수원","김포":"강화","용인":"이천","여주":"이천","증평":"청주","진천":"청주","태안":"서산","당진":"서산","예산":"서산","홍성":"서산","평택":"천안","안성":"천안","아산":"천안","서천":"보령","청양":"부여","김천":"구미","영양":"안동","예천":"안동","칠곡":"상주","군위":"의성","진안":"임실","경산":"대구","성주":"대구","고령":"대구","청도":"대구","화순":"광주","양양":"강릉","삼척":"동해","함안":"진주","하동":"진주","창녕":"밀양","익산":"전주","김제":"전주","완주":"전주","장성":"정읍","곡성":"순천","구례":"순천","보성":"순천","사천":"남해","광양":"남해","나주":"광주","함평":"목포","무안":"목포","신안":"목포","영암":"강진"},"winter":{"1":["11-21","03-15"],"2":["12-01","02-28"],"3":["12-10","02-22"],"4":["12-21","02-13"],"5":["01-01","02-04"],"6":["01-17","01-31"]}};
+
+  const pad = n => String(n).padStart(2, '0');
+  const parse = s => { const [y, m, d] = String(s).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+  const fmt = d => `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+  const addDays = (d, n) => new Date(d.getTime() + n * 86400000);
+  const dim = d => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+  const ceil = x => Math.ceil(x - 1e-9);
+
+  function station(region){
+    const r = String(region || '').trim();
+    if (RULES.nonwork.frame[r]) return r;
+    if (RULES.alias[r]) return RULES.alias[r];
+    throw new Error(`지역 '${r}'은 LH 비작업일 표(별표1~5)에 없습니다 — 가까운 관측 지역을 고르세요`);
+  }
+
+  // 한 공종(같은 비작업일 표)의 작업일 W를 달력으로 펼친다. used: 'YYYY-MM' → 같은 표를 쓴 앞 공종이 그 달에 쓴 비작업일
+  function runPhase(months, W, start, used){
+    let cur = start, days = 0, non = 0; const segs = [];
+    while (W > 0) {
+      const D = dim(cur), dom = cur.getUTCDate(), span = D - dom + 1, N = months[cur.getUTCMonth()];
+      const key = `${cur.getUTCFullYear()}-${pad(cur.getUTCMonth() + 1)}`, prev = used[key];
+      const fresh = dom === 1 && prev == null;
+      const Nspan = fresh ? N : prev != null ? Math.max(0, N - prev) : ceil(N * span / D);
+      const workAvail = span - Nspan;
+      if (W <= workAvail) {
+        const x = Math.min(Nspan, fresh ? ceil(N / (D - N) * W) : ceil(Nspan / workAvail * W));
+        segs.push({ start: cur, span: W + x, work: W });
+        used[key] = (prev || 0) + x; days += W + x; non += x; cur = addDays(cur, W + x); W = 0;
+      } else {
+        segs.push({ start: cur, span, work: workAvail });
+        used[key] = (prev || 0) + Nspan; days += span; non += Nspan; W -= workAvail;
+        cur = new Date(Date.UTC(cur.getUTCFullYear(), cur.getUTCMonth() + 1, 1));
+      }
+    }
+    return { days, nonwork: non, next: cur, segs };
+  }
+  // 공종 안 j번째 작업일(1부터)의 날짜 — 월 안에서 작업일을 고르게 배치(동절기 층 판정용)
+  function workDate(segs, j){
+    for (const s of segs) { if (j <= s.work) return addDays(s.start, Math.max(0, ceil(j * s.span / s.work) - 1)); j -= s.work; }
+    const s = segs[segs.length - 1]; return addDays(s.start, s.span - 1);
+  }
+  const inWinter = (d, w) => { const md = fmt(d).slice(5); return w[0] <= w[1] ? md >= w[0] && md <= w[1] : md >= w[0] || md <= w[1]; };
+
+  // 지상 골조 층별 작업일(동절기 보정 전). 원문 2.5.2 나.(1) 표 + (2) 지상층 보정
+  function floorDays(p){
+    const G = p.floors | 0, f = p.formwork || 'system';
+    if (G <= 2) throw new Error('지상 2층 이하 건축물은 전체기간 고정(230/220일) 규정 — 이 계산기는 3층 이상만 다룹니다');
+    const low = G <= 6;
+    const [first, per] = f === 'pc' ? [20, low ? 13 : 10] : f === 'euro' ? [20, low ? 14 : 11] : [18, low ? 14 : p.small ? 8 : 7];
+    return Array.from({ length: G }, (_, i) => {
+      let d = i === 0 ? first : per;
+      if (f === 'pc' && !low && i + 1 >= 16) d += 2;
+      if (p.rahmen) d += 1;
+      if ((p.facadeChangeFloors || []).includes(i + 1)) d += 2;
+      if ((p.tallFloors || []).includes(i + 1)) d += 5;
+      return d;
+    });
+  }
+
+  // 입력 → 공종별 작업일(원문 2.4·2.5)
+  // p: { region, start:'YYYY-MM-DD', basement, basementTall(4.5m 초과 지하층 수), parking:'none'|'lt150'|'ge150', floors,
+  //   formwork:'system'|'euro'|'pc', small, rahmen, pilotis, retaining:'self'|'anchor'|'none', retainingScale:'base'|'general'|'small',
+  //   pile:{ method:'direct'|'bored', depth, count, rate, units }, upliftAnchor, roof:'flat'|'concrete'|'steel', prefabBath,
+  //   housing:'sale'|'rental', regionAdj:'none'|'county'|'island', designBuild, urbanSmallAdj, terraceFloors }
+  function workPlan(p){
+    const B = Math.max(0, p.basement | 0), tall = Math.max(0, p.basementTall | 0);
+    const dig = B ? 8 + 10 * (B - 1) + 10 * tall : 0;
+    const ret = p.retaining === 'none' || !B ? 0 : (p.retaining === 'anchor' ? 20 : 10) * ({ general: 0.55, small: 0.8 }[p.retainingScale] || 1);
+    const civil = dig + ceil(ret);
+    let pile = 0;
+    if (p.pile && p.pile.method) {
+      const dep = p.pile.depth || 15, band = dep <= 15 ? 0 : dep <= 30 ? 1 : 2;
+      if (p.pile.method === 'direct') pile = [19, 34, 49][band];
+      else {
+        const rate = p.pile.rate || [21, 17.5, 12.5][band];                       // 별표6 본/일·대 범위의 가운데
+        const n = p.pile.count || 0, lim = [[500, 1000], [800, 1600], [900, 1800]][band];
+        const units = p.pile.units || (n <= lim[0] ? 1 : n <= lim[1] ? 2 : 3);
+        pile = Math.min([30, 60, 90][band], Math.max(15, Math.round(n / (rate * units)))) + 11;
+      }
+      if ((p.pile.count || 0) >= 3000) pile += 5;
+    }
+    const found = (B ? 2 : 0) + pile + (p.upliftAnchor ? 10 : 0);
+    const effB = B + (tall && B === 1 ? 1 : 0);                                  // 4.5m 초과 지하1층은 2개층으로
+    const sub = effB === 0 ? 0 : effB === 1 ? 44 : 71 + 27 * (effB - 2);
+    const park = { lt150: 7, ge150: 14 }[p.parking] || 0;
+    const rental = p.housing === 'rental';
+    return { civil, found, basementFrame: sub + park, floorDays: floorDays(p), wet: rental ? 118 : 125, dry: rental ? 28 : 30,
+      frameAdj: ({ concrete: 15, steel: 10 }[p.roof] || 0) + (p.pilotis ? 13 : 0) + ({ county: 10, island: 20 }[p.regionAdj] || 0)
+        - (p.prefabBath ? Math.min(15, Math.max(0, (p.floors | 0) - 5)) : 0) + (p.terraceFloors || 0) * 30,
+      civilAdj: p.urbanSmallAdj ? 15 : 0, designBuild: p.designBuild ? 55 : 0 };
+  }
+
+  function schedule(p){
+    const st = station(p.region), grade = String(RULES.grade[st]), win = RULES.winter[grade];
+    const T = k => RULES.nonwork[k][st], w = workPlan(p), used = { earth: {}, frame: {}, wetfinish: {}, dryfinish: {} };
+    const phases = []; let cur = parse(p.start);
+    const fixed = (key, label, days) => { if (days > 0) { phases.push({ key, label, start: fmt(cur), end: fmt(addDays(cur, days - 1)), days, work: null, nonwork: 0 }); cur = addDays(cur, days); } };
+    const run = (key, label, table, W) => {
+      if (W <= 0) return;
+      const r = runPhase(T(table), W, cur, used[table]);
+      phases.push({ key, label, table, start: fmt(cur), end: fmt(addDays(cur, r.days - 1)), days: r.days, work: W, nonwork: r.nonwork });
+      cur = r.next;
+    };
+    const safety = (key, list) => { const s = list.reduce((a, k) => a + (phases.find(x => x.key === k)?.days || 0), 0); if (s > 0) fixed(key, '안전활동 보정', Math.max(1, Math.floor(s / 30 * 0.25))); };
+    fixed('prep', '공사준비', 30);
+    run('civil', '토목공사(터파기·흙막이)', 'earth', w.civil);
+    fixed('civilAdj', '토목 보정(소규모·도심지)', w.civilAdj);
+    run('found', '기초공사', 'earth', w.found);
+    safety('safety1', ['civil', 'found']);
+    run('subFrame', '지하골조', 'frame', w.basementFrame);
+    // 지상골조: 동절기에 걸친 층은 +1일 — 층 날짜가 바뀌면 다시 계산(수렴까지)
+    let fd = w.floorDays.slice(), r = null; const snap = JSON.stringify(used.frame);
+    for (let k = 0; k < 8; k++) {
+      used.frame = JSON.parse(snap);
+      r = runPhase(T('frame'), fd.reduce((a, b) => a + b, 0), cur, used.frame);
+      let acc = 0;
+      const next = w.floorDays.map((d0, i) => { const a = acc + 1; acc += fd[i]; return d0 + (inWinter(workDate(r.segs, a), win) || inWinter(workDate(r.segs, acc), win) ? 1 : 0); });
+      if (JSON.stringify(next) === JSON.stringify(fd)) break;
+      fd = next;
+    }
+    phases.push({ key: 'superFrame', label: '지상골조', table: 'frame', start: fmt(cur), end: fmt(addDays(cur, r.days - 1)), days: r.days,
+      work: fd.reduce((a, b) => a + b, 0), nonwork: r.nonwork, floorDays: fd, winterFloors: fd.map((d, i) => d > w.floorDays[i] ? i + 1 : 0).filter(Boolean) });
+    cur = r.next;
+    fixed('frameAdj', '골조 보정(지붕·필로티·지역·욕실 등)', w.frameAdj);
+    safety('safety2', ['subFrame', 'superFrame']);
+    run('wet', '습식마감', 'wetfinish', w.wet);
+    run('dry', '건식마감', 'dryfinish', w.dry);
+    safety('safety3', ['wet', 'dry']);
+    fixed('designBuild', '설계·시공 일괄입찰 가산', w.designBuild);
+    fixed('closeout', '정리기간', 30);
+    const total = phases.reduce((a, x) => a + x.days, 0);
+    return { region: st, grade: +grade, winter: win, phases, total, start: p.start, end: phases[phases.length - 1].end };
+  }
+
+  // LH 기준 → 위치기반 모델(SA_LBS_CORE 입력). 위치: 'site'(준비~지하골조·보정·마감) + 지상 층(F1…FG).
+  // 기간은 LH 작업일(동절기 층 보정과 안전활동 보정은 결정값 계산 결과를 씀), 달력은 같은 LH 비작업일 표로 환산.
+  // 마감은 LH처럼 골조 완료 후 일괄 — 층별 선행 착수(택트)는 대응안으로 따로 만든다.
+  function template(p){
+    const lh = schedule(p), w = workPlan(p), st = station(p.region), P = Object.fromEntries(lh.phases.map(x => [x.key, x]));
+    const G = p.floors | 0, floors = Array.from({ length: G }, (_, k) => ({ id: 'F' + (k + 1), name: (k + 1) + '층', order: k + 1 }));
+    const site = { id: 'site', name: '현장 전체', order: 0 };
+    const T = [], add = (id, name, dur, table, trade, extra) => { if (dur > 0) T.push({ id, name, dur, table, trade, locations: ['site'], ...extra }); };
+    add('prep', '공사준비', 30, null, '공통');
+    add('civil', '토목(터파기·흙막이)', w.civil, 'earth', '토공');
+    add('civilAdj', '토목 보정', w.civilAdj, null, '토공');
+    add('found', '기초', w.found, 'earth', '기초');
+    add('safety1', '안전활동 보정', P.safety1 ? P.safety1.days : 0, null, '공통');
+    add('subFrame', '지하골조', w.basementFrame, 'frame', '골조');
+    const fd = P.superFrame.floorDays;
+    T.push({ id: 'superFrame', name: '지상골조', dur: fd[0], durByLoc: Object.fromEntries(fd.map((d, k) => ['F' + (k + 1), d])), table: 'frame', trade: '골조', locations: floors.map(f => f.id) });
+    add('frameAdj', '골조 보정', w.frameAdj, null, '골조');
+    add('safety2', '안전활동 보정', P.safety2 ? P.safety2.days : 0, null, '공통');
+    add('wet', '습식마감', w.wet, 'wetfinish', '마감');
+    add('dry', '건식마감', w.dry, 'dryfinish', '마감');
+    add('safety3', '안전활동 보정', P.safety3 ? P.safety3.days : 0, null, '공통');
+    add('designBuild', '설계·시공 일괄 가산', w.designBuild, null, '공통');
+    add('closeout', '정리기간', 30, null, '공통');
+    const links = [];
+    for (let k = 1; k < T.length; k++) links.push({ from: T[k - 1].id, to: T[k].id, type: 'FS', scope: 'task' });
+    const tables = { earth: RULES.nonwork.earth[st], frame: RULES.nonwork.frame[st], wetfinish: RULES.nonwork.wetfinish[st], dryfinish: RULES.nonwork.dryfinish[st] };
+    const tableOf = Object.fromEntries(T.map(t => [t.id, t.table]));
+    return { model: { locations: [site, ...floors], tasks: T, taskLinks: links },
+      calendar: { start: p.start, tables, tableOf: a => tableOf[a.task] }, lh };
+  }
+
+  const api = { RULES, station, workPlan, schedule, template, runPhase, parse, fmt };
+  (typeof window !== 'undefined' ? window : globalThis).SA_LH_CORE = api;
+})();
+</script>
+<script id="sa-response-core">
+/* 대응안 효용 평가(SA_RESPONSE_CORE) — LH 기준 공동주택 모델에 대응안(모델 변환 + 비용 + 부작용)을 적용해 같은 난수로 비교한다.
+   공기 분포: SA_LBS_CORE(학습 분포 + 보정 P80). 공공(LH) 모드는 'LH 395단지 지연 구간'에 맞춘 외부 지연 위험을 더한다.
+   효용: 기대 총비용 = 대응비 + E[지체상금] + 일 간접비 × E[공기], 위험 = CVaR95(최악 5% 평균 비용), 안전 노출, 파레토 + TOPSIS.
+   비용 기본값은 '가정'(화면에서 수정). 금액 단위: 억원. 기간 단위: 달력일. */
+(function(){
+  const G = typeof window !== 'undefined' ? window : globalThis;
+  const L = () => G.SA_LBS_CORE, H = () => G.SA_LH_CORE;
+
+  // 공공(LH) 외부 지연 — 보정: 발생 0.94, 중앙값 75일, σ 0.6 → 기한내 24.3 / 1~6개월 48.5 / 6~12개월 18.5 / 1년+ 8.6%
+  // (목표 23.8 / 48.6 / 18.4 / 9.1%: LH 395단지 2020.1~2025.9 준공, 국회 국토위 제출자료 — 경제일보 2025.10.10)
+  const KR_PUBLIC = { id: 'kr-public-external', name: '공공 외부 지연(원자재·레미콘·노동쟁의·보상 등)', prob: 0.94,
+    addDays: { median: 75, sigma: 0.6 }, tasks: ['superFrame'],
+    causes: [{ key: 'material', name: '원자재 수급(레미콘 제외)', share: 31 / 301 }, { key: 'remicon', name: '레미콘 부족', share: 19 / 301 },
+      { key: 'labor', name: '노동쟁의', share: 19 / 301 }, { key: 'etc', name: '보상·공법변경·추가공사·기상·문화재·부도 등(원인 미분리)', share: 232 / 301 }] };
+
+  const ECON_DEFAULT = {   // [가정] 표시는 화면에서 바꿀 수 있다
+    contractAmount: 1000,       // 억원 [가정 — 반드시 실제 계약금액으로]
+    contractDays: null,         // null 이면 LH 기준 공기
+    ldRatePerDay: 0.0005,       // 지체상금률 0.5/1000·일 (공공 표준), 상한 30%
+    ldCap: 0.30,
+    indirectRate: 0.08,         // 간접비 = 계약금액 × 8% ÷ 계약공기 (일당) [가정]
+    financePerMonthRate: 0.004, // 착공 연기 시 금융비 = 계약금액 × 0.4%/월 [가정]
+  };
+
+  const addMonths = (s, k) => { const [y, m, d] = s.split('-').map(Number); const t = new Date(Date.UTC(y, m - 1 + k, d)); return t.toISOString().slice(0, 10); };
+
+  // 마감 층별 흐름: LH의 '골조 완료 후 마감 일괄'을 층별 선행 착수로 바꾼다.
+  // 습식 마감은 골조보다 buffer 개 층 뒤(동바리 3개층 존치), 건식은 습식을 같은 층에서 따라감.
+  // 층당 기간 = LH 마감 작업일 × 기본 작업조(baseCrews) ÷ 층수 ÷ 생산성 — 작업조를 늘리면 동시에 하는 층 수만 늘고 층당 기간은 그대로(생산성 손실만 반영)
+  function finishFlow(tpl, { buffer = 3, crews = 4, baseCrews = 4, productivity = 1 } = {}){
+    const m = JSON.parse(JSON.stringify(tpl.model)), floors = m.locations.filter(l => l.id !== 'site').map(l => l.id), Gf = floors.length;
+    const wet = m.tasks.find(t => t.id === 'wet'), dry = m.tasks.find(t => t.id === 'dry');
+    if (!wet || !dry) throw new Error('마감 공종이 없습니다');
+    const per = (t, c) => ({ ...t, dur: t.dur * baseCrews / Gf / productivity, durByLoc: null, locations: floors, crews: c });
+    m.tasks = m.tasks.map(t => t.id === 'wet' ? per(wet, crews) : t.id === 'dry' ? per(dry, crews) : t);
+    const keep = m.taskLinks.filter(l => !['wet', 'dry'].includes(l.from) && !['wet', 'dry'].includes(l.to));
+    const after = m.taskLinks.find(l => l.from === 'dry'), afterTo = after ? after.to : null;
+    const before = m.taskLinks.find(l => l.to === 'wet'), beforeFrom = before ? before.from : null;
+    m.taskLinks = [...keep,
+      { from: 'superFrame', to: 'wet', type: 'FS', locBuffer: buffer },
+      { from: 'wet', to: 'dry', type: 'FS' }];
+    if (beforeFrom && beforeFrom !== 'superFrame') m.taskLinks.push({ from: beforeFrom, to: afterTo || 'closeout', type: 'FS', scope: 'task' });
+    if (afterTo) m.taskLinks.push({ from: 'dry', to: afterTo, type: 'FS', scope: 'task' });
+    return { ...tpl, model: m };
+  }
+
+  // 대응안 목록: 각 대응안 = { id, name, apply(ctx) → { params?, tpl?, drivers?, econ?, cost, safety }, evidence, assumption }
+  const OPTIONS = {
+    formworkSystem: { name: '거푸집 변경: 유로폼 → 시스템(알폼·갱폼)', evidence: 'LH 지침: 7층 이상 층당 11일 → 7일. 알폼은 유로폼 대비 +58%(학술, 거푸집 비용 기준)',
+      assumption: '추가비 = 계약금액 × 0.5% [가정]',
+      applicable: p => p.formwork === 'euro', apply: c => ({ params: { ...c.p, formwork: 'system' }, cost: c.econ.contractAmount * 0.005 }) },
+    startShift3: { name: '착공 3개월 이동', evidence: '착공월에 따라 같은 건물의 LH 공기가 794~874일(서울 20층 예시)',
+      assumption: '금융비 = 계약금액 × 0.4%/월 × 3 [가정]',
+      apply: c => ({ params: { ...c.p, start: addMonths(c.p.start, 3) }, cost: c.econ.contractAmount * c.econ.financePerMonthRate * 3, shiftDays: 0 }) },
+    startShift6: { name: '착공 6개월 이동', evidence: '위와 같음', assumption: '금융비 = 계약금액 × 0.4%/월 × 6 [가정]',
+      apply: c => ({ params: { ...c.p, start: addMonths(c.p.start, 6) }, cost: c.econ.contractAmount * c.econ.financePerMonthRate * 6 }) },
+    finishFlow: { name: '마감 층별 선행 착수(택트, 골조 3개층 뒤)', evidence: '고층 공동주택 마감 택트 적용 153일 vs 미적용 206일(−25%, Lee 외 2015 eTACT, 단일 회사). 동바리 3개층 존치(표준시방서)',
+      assumption: '마감 작업조 4개, 추가비 0(공정 운영 변경)', apply: c => ({ tpl: finishFlow(c.tpl), cost: 0 }) },
+    finishFlowCrew: { name: '마감 층별 선행 착수 + 마감 작업조 1개 추가', evidence: '인원 추가는 인시 증가로 이득 일부 상쇄(Seppänen 외 2014), 과다투입 생산성 손실 0~41%(Hanna)',
+      assumption: '작업조 5개, 생산성 −10% [가정], 추가비 = 계약금액 × 0.3% [가정]',
+      apply: c => ({ tpl: finishFlow(c.tpl, { crews: 5, productivity: 0.9 }), cost: c.econ.contractAmount * 0.003 }) },
+    overtimeFrame: { name: '골조 연장근무(일 8→10시간)', evidence: '주 50~60시간 근무 시 효율 −10~15%(Thomas & Raynar 1997), 재해 오즈 약 1.5배(Webb 외 2015)',
+      assumption: '하루 작업량 ×1.25×0.875 = ×1.094, 할증비 = 계약금액 × 0.4% [가정], 안전 노출 ×1.5',
+      apply: c => {
+        const m = JSON.parse(JSON.stringify(c.tpl.model)), f = 1 / (1.25 * 0.875);
+        for (const t of m.tasks) if (t.trade === '골조') { t.dur *= f; if (t.durByLoc) for (const k in t.durByLoc) t.durByLoc[k] *= f; }
+        return { tpl: { ...c.tpl, model: m }, cost: c.econ.contractAmount * 0.004, safety: 0.5 };
+      } },
+    materialDual: { name: '레미콘·자재 이원화와 선발주', evidence: 'LH 지연 원인 중 원자재 50곳(레미콘 19곳)/지연 301곳', assumption: '원자재·레미콘 원인 지연 확률 50% 감소 [가정], 추가비 = 계약금액 × 0.2% [가정]',
+      applicable: (p, mode) => mode === 'public',
+      apply: c => ({ drivers: c.drivers.map(d => d.id === KR_PUBLIC.id ? { ...d, prob: d.prob * (1 - 0.5 * (50 / 301)) } : d), cost: c.econ.contractAmount * 0.002 }) },
+  };
+
+  // 표본 → 비용 통계. T: 달력일 표본, C: 계약공기
+  function costStats(T, C, econ, respCost){
+    const amt = econ.contractAmount, perDay = amt * econ.indirectRate / C, ldMax = econ.ldCap * amt;
+    const tot = Array.from(T, t => respCost + Math.min(ldMax, econ.ldRatePerDay * amt * Math.max(0, t - C)) + perDay * t).sort((a, b) => a - b);
+    const n = tot.length, k = Math.max(1, Math.floor(n * 0.05)), mean = tot.reduce((a, b) => a + b, 0) / n;
+    let ld = 0, late = 0, onTime = 0; for (const t of T) { const d = Math.max(0, t - C); ld += Math.min(ldMax, econ.ldRatePerDay * amt * d); late += d; if (t <= C) onTime++; }
+    return { expectedCost: mean, cvar95: tot.slice(n - k).reduce((a, b) => a + b, 0) / k, expectedLD: ld / n, expectedDelay: late / n, onTimeProb: onTime / n, indirectPerDay: perDay };
+  }
+
+  // 평가: 기준 + 대응안(단독, 그리고 combos 로 준 묶음). 모든 경우 같은 시드(공통 난수)
+  function evaluate(p, opts = {}){
+    const mode = opts.mode || 'public', econ = { ...ECON_DEFAULT, ...(opts.econ || {}) }, N = opts.N || 2000, seed = opts.seed || 20261020;
+    const baseTpl = H().template(p), C = econ.contractDays || baseTpl.lh.total;
+    const baseDrivers = mode === 'public' ? [KR_PUBLIC] : [];
+    const run = (ids) => {
+      let ctx = { p, tpl: baseTpl, drivers: baseDrivers, econ }, cost = 0, safety = 0, notes = [];
+      for (const id of ids) {
+        const o = OPTIONS[id]; if (!o) throw new Error('없는 대응안: ' + id);
+        if (o.applicable && !o.applicable(ctx.p, mode)) return null;
+        const r = o.apply(ctx);
+        if (r.params) { ctx = { ...ctx, p: r.params, tpl: H().template(r.params) }; }
+        if (r.tpl) ctx = { ...ctx, tpl: r.tpl };
+        if (r.drivers) ctx = { ...ctx, drivers: r.drivers };
+        cost += r.cost || 0; safety += r.safety || 0; notes.push(o.assumption);
+      }
+      const sim = L().simulate(ctx.tpl.model, { N, seed, calendar: ctx.tpl.calendar, prior: opts.prior, riskDrivers: ctx.drivers });
+      const cs = costStats(sim.samples, C, econ, cost);
+      return { id: ids.join('+') || 'base', name: ids.length ? ids.map(i => OPTIONS[i].name).join(' + ') : '대응 없음(LH 기준)', ids,
+        lhTotal: ctx.tpl.lh.total, deterministic: sim.deterministic, p50: sim.p50, p80: sim.p80, p80cal: sim.p80cal, responseCost: cost,
+        safetyExposure: 1 + safety, ...cs, start: ctx.p.start, evidence: ids.map(i => OPTIONS[i].evidence), assumptions: notes,
+        qstar: sim.qstar, sorted: sim.sorted, tpl: ctx.tpl };
+    };
+    const sets = [[], ...(opts.options || Object.keys(OPTIONS)).map(i => [i]), ...(opts.combos || [])];
+    const rows = sets.map(run).filter(Boolean);
+    const base = rows[0];
+    for (const r of rows) { r.dP80 = r.p80cal - base.p80cal; r.dCost = r.expectedCost - base.expectedCost; }
+    return { mode, contractDays: C, econ, rows, pareto: pareto(rows, ['p80cal', 'expectedCost', 'cvar95']).map(r => r.id) };
+  }
+
+  // 비지배 해: 모든 기준(작을수록 좋음)에서 다른 해보다 나쁘지 않고 하나 이상 더 좋은 해가 없으면 남김
+  function pareto(rows, keys){
+    return rows.filter(a => !rows.some(b => b !== a && keys.every(k => b[k] <= a[k]) && keys.some(k => b[k] < a[k])));
+  }
+
+  // TOPSIS: criteria [{ key, w, better:'min'|'max' }] → 이상해와의 상대 근접도(1에 가까울수록 좋음)
+  function topsis(rows, criteria){
+    const norm = criteria.map(c => Math.sqrt(rows.reduce((a, r) => a + r[c.key] ** 2, 0)) || 1);
+    const V = rows.map(r => criteria.map((c, k) => c.w * r[c.key] / norm[k]));
+    const best = criteria.map((c, k) => (c.better === 'max' ? Math.max : Math.min)(...V.map(v => v[k])));
+    const worst = criteria.map((c, k) => (c.better === 'max' ? Math.min : Math.max)(...V.map(v => v[k])));
+    const d = (v, ref) => Math.sqrt(v.reduce((a, x, k) => a + (x - ref[k]) ** 2, 0));
+    return rows.map((r, i) => ({ id: r.id, score: d(V[i], worst) / ((d(V[i], best) + d(V[i], worst)) || 1) })).sort((a, b) => b.score - a.score);
+  }
+
+  G.SA_RESPONSE_CORE = { KR_PUBLIC, ECON_DEFAULT, OPTIONS, finishFlow, costStats, evaluate, pareto, topsis };
+})();
+</script>
+<style id="sa-prob-ui-css">
+.p6grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 16px;}
+.p6grid label{margin-top:8px;}
+.p6grid input,.p6grid select{width:100%;}
+.p6chart{width:100%;margin-top:10px;overflow-x:auto;}
+.p6chart svg{width:100%;min-width:640px;height:auto;display:block;}
+.p6chart text{font-family:var(--font-sans);fill:var(--text-secondary);}
+.p6kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px;}
+.p6kpi{border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+.p6kpi b{display:block;font-size:20px;color:var(--text-primary);font-variant-numeric:tabular-nums;}
+.p6kpi span{font-size:12.5px;color:var(--text-muted);}
+.p6weights{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0 4px;}
+.p6weights label{margin:0;font-size:13px;}
+.p6weights input{width:64px;}
+#p6RespTable td,#p6RespTable th{white-space:nowrap;font-variant-numeric:tabular-nums;}
+#p6RespTable td:nth-child(2){white-space:normal;min-width:220px;}
+#p6RespTable details summary{cursor:pointer;color:var(--text-muted);font-size:12px;}
+#p6RespTable details p{margin:4px 0 0;font-size:12px;color:var(--text-muted);white-space:normal;}
+@media (max-width:640px){.p6grid{grid-template-columns:1fr 1fr;}}
+</style>
+<script id="sa-prob-ui">
+/* 6번 탭(확률 공정 · 대응안) 화면 — 입력 → LH 기준 공기 → 학습 분포 → 대응안 비교 → 흐름선. 계산은 SA_*_CORE 모듈이 한다. */
+(function(){
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const n0 = x => Math.round(x).toLocaleString('ko-KR'), n1 = x => (Math.round(x * 10) / 10).toLocaleString('ko-KR'), pct = x => Math.round(x * 100) + '%';
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#555';
+  let PRIOR = null, LAST = null;
+  const prior = () => PRIOR || (PRIOR = JSON.parse(document.getElementById('sa-duration-prior').textContent));
+
+  function params(){
+    const v = id => $(id).value, num = id => Number($(id).value);
+    const pile = v('p6Pile') ? { method: v('p6Pile'), depth: num('p6PileDepth'), count: num('p6PileCount') } : null;
+    return { region: v('p6Region').trim(), start: v('p6Start'), floors: num('p6Floors'), basement: num('p6Base'), basementTall: Math.min(num('p6BaseTall'), num('p6Base')),
+      formwork: v('p6Form'), parking: v('p6Park'), retaining: v('p6Ret'), retainingScale: v('p6RetScale'), pile, roof: v('p6Roof') === 'flat' ? null : v('p6Roof'), housing: v('p6Housing') };
+  }
+  function econ(){
+    const c = Number($('p6Contract').value);
+    return { contractAmount: Number($('p6Amount').value), contractDays: c > 0 ? c : null, ldRatePerDay: Number($('p6Ld').value) / 1000, indirectRate: Number($('p6Indirect').value) / 100 };
+  }
+
+  // ── 차트 ───────────────────────────────────────────
+  function gantt(lh){
+    const W = 900, rowH = 22, left = 150, top = 18, ph = lh.phases, total = lh.total, H = top + ph.length * rowH + 26;
+    const short = t => t.replace(/\(.*\)/, '').trim();          // 괄호 설명은 막대 툴팁으로
+    const x = d => left + (W - left - 10) * d / total; let acc = 0, s = '';
+    ph.forEach((p, i) => {
+      const y = top + i * rowH, w = Math.max(1.5, x(acc + p.days) - x(acc));
+      const work = p.work ? (W - left - 10) * (p.work / total) : 0;
+      s += `<text x="${left - 8}" y="${y + 14}" text-anchor="end" font-size="12">${esc(short(p.label))}<title>${esc(p.label)}</title></text>`;
+      s += `<rect x="${x(acc)}" y="${y + 4}" width="${w}" height="${rowH - 8}" fill="${css('--gantt-bar')}" rx="2"><title>${esc(p.label)} ${p.start}~${p.end} · ${p.days}일${p.work ? ` (작업 ${p.work} + 비작업 ${p.nonwork})` : ''}</title></rect>`;
+      if (p.work) s += `<rect x="${x(acc)}" y="${y + 4}" width="${Math.min(w, work)}" height="${rowH - 8}" fill="${css('--text-primary')}" rx="2" opacity=".75"/>`;
+      acc += p.days;
+    });
+    const yr = top + ph.length * rowH + 16;
+    for (let d = 0; d <= total; d += 180) s += `<text x="${x(d)}" y="${yr}" font-size="11" text-anchor="middle">${d}일</text>`;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="LH 기준 구간별 공기 막대: 진한 부분은 작업일, 연한 부분은 비작업일">${s}</svg>`;
+  }
+  function hist(sorted, marks){
+    const W = 900, H = 250, L = 40, R = 40, T = 34, B = 34, nb = 40, Q = window.SA_LBS_CORE.quantile;
+    // 표시 범위: 0.5~99.5% 구간(긴 꼬리가 본체를 누르지 않게) — 기준선은 항상 포함
+    const lo = Math.min(Q(sorted, 0.005), ...marks.map(m => m.v)), hi = Math.max(Q(sorted, 0.995), ...marks.map(m => m.v));
+    const w = (hi - lo) / nb || 1, cnt = new Array(nb).fill(0);
+    let out = 0; for (const t of sorted) { if (t < lo || t > hi) { out++; continue; } cnt[Math.min(nb - 1, Math.floor((t - lo) / w))]++; }
+    const mx = Math.max(...cnt), x = v => L + (W - L - R) * (v - lo) / (hi - lo || 1), y = c => T + (H - T - B) * (1 - c / mx);
+    let s = '';
+    cnt.forEach((c, k) => { s += `<rect x="${x(lo + k * w) + 0.5}" y="${y(c)}" width="${Math.max(1, x(lo + (k + 1) * w) - x(lo + k * w) - 1)}" height="${H - B - y(c)}" fill="${css('--gantt-bar')}"/>`; });
+    let lx = L;                                                   // 범례: 선 이름과 값은 위쪽 한 줄에
+    marks.forEach(m => {
+      s += `<line x1="${x(m.v)}" x2="${x(m.v)}" y1="${T}" y2="${H - B}" stroke="${m.c}" stroke-width="2" ${m.dash ? 'stroke-dasharray="5 4"' : ''}><title>${esc(m.t)} ${n0(m.v)}일</title></line>`;
+      s += `<line x1="${lx}" x2="${lx + 18}" y1="12" y2="12" stroke="${m.c}" stroke-width="2.5" ${m.dash ? 'stroke-dasharray="5 4"' : ''}/><text x="${lx + 23}" y="16" font-size="12.5" style="fill:${m.c}">${esc(m.t)} ${n0(m.v)}일</text>`;
+      lx += 46 + (m.t.length + String(n0(m.v)).length) * 9;
+    });
+    for (let k = 0; k <= 5; k++) { const v = lo + (hi - lo) * k / 5; s += `<text x="${x(v)}" y="${H - 12}" font-size="11" text-anchor="${k === 0 ? 'start' : k === 5 ? 'end' : 'middle'}">${n0(v)}일</text>`; }
+    if (out) s += `<text x="${W - R}" y="${T + 4}" font-size="11" text-anchor="end">범위 밖 표본 ${(out / sorted.length * 100).toFixed(1)}% 생략</text>`;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="시뮬레이션 공기 분포 히스토그램과 기준선">${s}</svg>`;
+  }
+  function scatter(rows, rank, pareto){
+    const W = 900, H = 260, L = 92, R = 20, T = 16, B = 40, xs = rows.map(r => r.p80cal), ys = rows.map(r => r.expectedCost);
+    const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)], px = (x1 - x0) * 0.08 || 10, py = (y1 - y0) * 0.1 || 1;
+    const x = v => L + (W - L - R) * (v - x0 + px) / (x1 - x0 + 2 * px), y = v => T + (H - T - B) * (1 - (v - y0 + py) / (y1 - y0 + 2 * py));
+    let s = `<text x="${(W + L) / 2}" y="${H - 6}" font-size="12" text-anchor="middle">보정 P80 공기(일) → 짧을수록 좋음</text><text x="14" y="${H / 2}" font-size="12" transform="rotate(-90 14 ${H / 2})" text-anchor="middle">기대 총비용(억원)</text>`;
+    rows.forEach(r => { const pr = pareto.includes(r.id); s += `<circle cx="${x(r.p80cal)}" cy="${y(r.expectedCost)}" r="${pr ? 7 : 5}" fill="${pr ? css('--status-active') : '#fff'}" stroke="${pr ? css('--status-active') : css('--text-muted')}" stroke-width="1.5"><title>${esc(r.name)} · P80 ${n0(r.p80cal)}일 · ${n1(r.expectedCost)}억</title></circle><text x="${x(r.p80cal) + 9}" y="${y(r.expectedCost) + 4}" font-size="12">${rank[r.id]}</text>`; });
+    for (let k = 0; k <= 4; k++) { const v = x0 - px + (x1 - x0 + 2 * px) * k / 4, w = y0 - py + (y1 - y0 + 2 * py) * k / 4; s += `<text x="${x(v)}" y="${H - B + 16}" font-size="11" text-anchor="middle">${n0(v)}</text><text x="${L - 6}" y="${y(w) + 4}" font-size="11" text-anchor="end">${n1(w)}</text>`; }
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="대응안별 보정 P80 공기와 기대 총비용 산점도. 숫자는 순위, 채운 점은 파레토">${s}</svg>`;
+  }
+  function flowline(tpl, baseTpl){
+    const L = window.SA_LBS_CORE, W = 900, H = 320, Lm = 46, R = 12, T = 12, B = 30;
+    const sch = t => { const net = L.expand(t.model); return { net, s: L.schedule(net, Float64Array.from(net.acts, a => a.dur), L.makeCalendar(net, t.calendar)) }; };
+    const a = sch(tpl), b = baseTpl ? sch(baseTpl) : null, G = tpl.model.locations.filter(l => l.id !== 'site').length;
+    const tmax = Math.max(a.s.T, b ? b.s.T : 0), x = d => Lm + (W - Lm - R) * d / tmax, y = f => T + (H - T - B) * (1 - f / G);
+    const draw = (S, task, color, dash, label) => {
+      let d = '';
+      S.net.acts.forEach((act, i) => { if (act.task !== task || act.loc === 'site') return; const f = act.k; d += `M${x(S.s.es[i])},${y(f)}L${x(S.s.ef[i])},${y(f + 1)}`; });
+      return d ? `<path d="${d}" stroke="${color}" stroke-width="2.4" fill="none" ${dash ? 'stroke-dasharray="6 4" opacity=".55"' : ''}><title>${esc(label)}</title></path>` : '';
+    };
+    let s = '';
+    for (let f = 0; f <= G; f += Math.max(1, Math.round(G / 10))) s += `<line x1="${Lm}" x2="${W - R}" y1="${y(f)}" y2="${y(f)}" stroke="${css('--border')}"/><text x="${Lm - 6}" y="${y(f) + 4}" font-size="11" text-anchor="end">${f}층</text>`;
+    for (let d = 0; d <= tmax; d += 180) s += `<text x="${x(d)}" y="${H - 10}" font-size="11" text-anchor="middle">${d}일</text>`;
+    const C = { superFrame: css('--text-primary'), wet: css('--status-done'), dry: css('--status-active') };
+    if (b) for (const k of ['superFrame', 'wet', 'dry']) s += draw(b, k, C[k], true, '대응 없음: ' + k);
+    for (const k of ['superFrame', 'wet', 'dry']) s += draw(a, k, C[k], false, k);
+    // 층 단위가 아닌 마감(LH 일괄)은 막대로
+    const block = (S, task, color, dash) => { const i = S.net.acts.findIndex(q => q.task === task && q.loc === 'site'); return i < 0 ? '' : `<rect x="${x(S.s.es[i])}" y="${T}" width="${x(S.s.ef[i]) - x(S.s.es[i])}" height="${H - T - B}" fill="${color}" opacity="${dash ? 0.06 : 0.14}"/>`; };
+    if (b) s = block(b, 'wet', C.wet, true) + block(b, 'dry', C.dry, true) + s;
+    s = block(a, 'wet', C.wet, false) + block(a, 'dry', C.dry, false) + s;
+    const leg = `<text x="${Lm + 6}" y="${T + 12}" font-size="12" style="fill:${C.superFrame}">— 지상골조</text><text x="${Lm + 90}" y="${T + 12}" font-size="12" style="fill:${C.wet}">— 습식마감</text><text x="${Lm + 180}" y="${T + 12}" font-size="12" style="fill:${C.dry}">— 건식마감</text>${b ? `<text x="${Lm + 270}" y="${T + 12}" font-size="12">점선 = 대응 없음(LH 기준) · 면 = 층 구분 없는 일괄 마감</text>` : ''}`;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="층별 흐름선: 가로 시간, 세로 층">${s}${leg}</svg>`;
+  }
+
+  // ── 표 ─────────────────────────────────────────────
+  function rankRows(){
+    if (!LAST) return;
+    const R = window.SA_RESPONSE_CORE, w = id => Math.max(0, Number($(id).value) || 0);
+    const crit = [{ key: 'p80cal', w: w('p6wT'), better: 'min' }, { key: 'expectedCost', w: w('p6wC'), better: 'min' }, { key: 'cvar95', w: w('p6wR'), better: 'min' }, { key: 'safetyExposure', w: w('p6wS'), better: 'min' }].filter(c => c.w > 0);
+    const ev = LAST.ev, top = crit.length ? R.topsis(ev.rows, crit) : ev.rows.map((r, i) => ({ id: r.id, score: 1 - i / ev.rows.length }));
+    const rank = Object.fromEntries(top.map((t, i) => [t.id, i + 1])), rows = [...ev.rows].sort((a, b) => rank[a.id] - rank[b.id]);
+    let h = '<thead><tr><th scope="col">순위</th><th scope="col">대응안</th><th scope="col">기한 내</th><th scope="col">P50</th><th scope="col">보정 P80</th><th scope="col">기대 지연</th><th scope="col">대응비</th><th scope="col">기대 지체상금</th><th scope="col">기대 총비용</th><th scope="col">CVaR95</th><th scope="col">안전 노출</th><th scope="col">파레토</th></tr></thead><tbody>';
+    rows.forEach((r, i) => {
+      const why = r.ids.length ? `<details><summary>근거·가정</summary>${r.evidence.map(e => `<p>근거: ${esc(e)}</p>`).join('')}${r.assumptions.map(a => `<p>가정: ${esc(a)}</p>`).join('')}</details>` : '<details><summary>설명</summary><p>LH 지침 기준 공정 그대로. 공공 모드는 LH 실적에 맞춘 외부 지연 위험 포함.</p></details>';
+      h += `<tr class="${i === 0 ? 'best' : ''}"><td>${rank[r.id]}</td><td>${esc(r.name)}${why}</td><td>${pct(r.onTimeProb)}</td><td>${n0(r.p50)}일</td><td>${n0(r.p80cal)}일</td><td>${n0(r.expectedDelay)}일</td><td>${n1(r.responseCost)}억</td><td>${n1(r.expectedLD)}억</td><td>${n1(r.expectedCost)}억</td><td>${n1(r.cvar95)}억</td><td>${r.safetyExposure === 1 ? '기준' : '×' + r.safetyExposure}</td><td>${ev.pareto.includes(r.id) ? '●' : ''}</td></tr>`;
+    });
+    $('p6RespTable').innerHTML = h + '</tbody>';
+    $('p6Scatter').innerHTML = scatter(ev.rows, rank, ev.pareto);
+    const sel = $('p6FlowSel'), cur = sel.value;
+    sel.innerHTML = rows.map(r => `<option value="${esc(r.id)}">${rank[r.id]}. ${esc(r.name)}</option>`).join('');
+    sel.value = rows.some(r => r.id === cur) ? cur : rows[0].id;
+    drawFlow();
+  }
+  function drawFlow(){
+    if (!LAST) return;
+    const r = LAST.ev.rows.find(x => x.id === $('p6FlowSel').value) || LAST.ev.rows[0];
+    $('p6Flow').innerHTML = flowline(r.tpl, r.id === 'base' ? null : LAST.ev.rows[0].tpl);
+  }
+
+  function run(){
+    const st = $('p6Status');
+    let p, e;
+    try { p = params(); e = econ(); window.SA_LH_CORE.station(p.region); if (!(p.floors >= 3)) throw new Error('지상 층수는 3층 이상'); if (!(e.contractAmount > 0)) throw new Error('계약금액을 입력하세요'); }
+    catch (err) { st.className = 'status-line err'; st.textContent = err.message; return; }
+    st.className = 'status-line'; st.textContent = '계산 중… (대응안마다 시뮬레이션)'; $('p6Run').disabled = true;
+    setTimeout(() => {
+      try {
+        const t0 = performance.now(), N = Number($('p6N').value), mode = $('p6Mode').value;
+        const ev = window.SA_RESPONSE_CORE.evaluate(p, { mode, N, prior: prior(), econ: e,
+          combos: [['formworkSystem', 'finishFlow'], ['formworkSystem', 'finishFlow', 'materialDual'], ['finishFlow', 'materialDual'], ['finishFlow', 'overtimeFrame']] });
+        const base = ev.rows[0], lh = base.tpl.lh;
+        const sym = window.SA_LBS_CORE.simulate(base.tpl.model, { N, seed: 20261020, calendar: base.tpl.calendar, ratio: 'sym15', riskDrivers: mode === 'public' ? [window.SA_RESPONSE_CORE.KR_PUBLIC] : [] });
+        LAST = { ev, p, e, lh, sym };
+        $('p6LhCard').hidden = $('p6DistCard').hidden = $('p6RespCard').hidden = $('p6FlowCard').hidden = false;
+        $('p6LhDesc').innerHTML = `${esc(lh.region)}(${lh.grade}급지) · ${esc(lh.start)} 착공 → <b>${esc(lh.end)} 준공, ${n0(lh.total)}일</b>. 지상골조 동절기 층: ${base.tpl.lh.phases.find(x => x.key === 'superFrame').winterFloors.join(', ') || '없음'}.`;
+        $('p6Gantt').innerHTML = gantt(lh);
+        $('p6LhTable').innerHTML = `<table class="cmp"><thead><tr><th>구간</th><th>시작</th><th>끝</th><th>일수</th><th>작업</th><th>비작업</th></tr></thead><tbody>${lh.phases.map(x => `<tr><td>${esc(x.label)}</td><td>${x.start}</td><td>${x.end}</td><td>${x.days}</td><td>${x.work ?? '-'}</td><td>${x.work ? x.nonwork : '-'}</td></tr>`).join('')}</tbody></table>`;
+        const C = ev.contractDays;
+        $('p6Kpis').innerHTML = [['LH 기준', n0(lh.total) + '일'], ['P50', n0(base.p50) + '일'], ['보정 P80', n0(base.p80cal) + '일'], ['계약 공기 내 준공', pct(base.onTimeProb)], ['기대 지연', n0(base.expectedDelay) + '일'], ['±15% 대칭이면 P80', n0(sym.p80) + '일']]
+          .map(([k, v]) => `<div class="p6kpi"><span>${k}</span><b>${v}</b></div>`).join('');
+        $('p6Hist').innerHTML = hist(base.sorted, [{ v: lh.total, t: 'LH', c: css('--status-done') }, { v: base.p50, t: 'P50', c: css('--text-secondary') }, { v: base.p80cal, t: '보정 P80', c: css('--status-risk') }, { v: C, t: '계약', c: css('--text-primary'), dash: true }]);
+        $('p6HistNote').textContent = `${mode === 'public' ? '공공 모드: LH 395단지 지연 실적에 맞춘 외부 지연(발생 94%, 중앙값 75일) 포함. ' : '민간 모드: 작업 분포만 사용. '}보정 P80 = 시뮬레이션 ${(base.qstar * 100).toFixed(1)} 분위(공개 프로젝트 백테스트로 정한 값). 반복 ${n0(N)}회.`;
+        rankRows();
+        st.className = 'status-line ok'; st.textContent = `완료 — 대응안 ${ev.rows.length}개, ${n0(performance.now() - t0)}ms`;
+      } catch (err) { st.className = 'status-line err'; st.textContent = '계산 오류: ' + err.message; console.error(err); }
+      finally { $('p6Run').disabled = false; }
+    }, 30);
+  }
+
+  function init(){
+    if (!$('tab6')) return;
+    const R = window.SA_LH_CORE.RULES;
+    $('p6RegionList').innerHTML = [...Object.keys(R.nonwork.frame), ...Object.keys(R.alias)].sort((a, b) => a.localeCompare(b, 'ko')).map(r => `<option value="${esc(r)}">`).join('');
+    $('p6Run').addEventListener('click', run);
+    for (const id of ['p6wT', 'p6wC', 'p6wR', 'p6wS']) $(id).addEventListener('input', rankRows);
+    $('p6FlowSel').addEventListener('change', drawFlow);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
 <script id="ground9">

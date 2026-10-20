@@ -4,13 +4,13 @@
 // ③ 대안 구성: 조치 유형별 전략 묶음(사건마다 만든 정책이 후보를 폭증시키지 않음)
 import { test } from 'node:test'; import assert from 'node:assert/strict';
 import fs from 'node:fs'; import crypto from 'node:crypto'; import vm from 'node:vm';
-const here = new URL('.', import.meta.url).pathname, html = fs.readFileSync(here + '../index.html', 'utf8');
+const here = new URL('.', import.meta.url), html = fs.readFileSync(new URL('../index.html', here), 'utf8');
 const block = id => { const m = html.match(new RegExp(`<script id="${id}">([\\s\\S]*?)</script>`)); assert.ok(m, id); return m[1]; };
 const ctx = vm.createContext({ console }); ctx.globalThis = ctx;
 vm.runInContext(block('sa-adaptive13-engine'), ctx); vm.runInContext(block('sa-v12-logic'), ctx);
 const E = ctx.SA_ADAPTIVE13_ENGINE, L = ctx.SA_V12_LOGIC;
 const h = x => crypto.createHash('sha1').update(JSON.stringify(x)).digest('hex').slice(0, 16);
-const load = f => JSON.parse(fs.readFileSync(here + 'fixtures/' + f, 'utf8'));
+const load = f => JSON.parse(fs.readFileSync(new URL('fixtures/' + f, here), 'utf8'));
 // v30(최적화 전) 엔진으로 기록한 값 — 대안은 [대응 없음, 정책별 단독, 전체 조합]
 const GOLDEN = {
   'ifc36_bare.json':  { K: 10, ref: 'ae1e29edf8554af4', compact: '0c89aeadbf4d6ac3', detailed: '18ee80e841505e21', noRef: '4b52943565e13f9c' },
